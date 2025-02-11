@@ -1,0 +1,19 @@
+
+
+.add-option-container {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin-top: 1rem !important;
+}
+
+
+.valor-input {
+    width: 60% !important;
+}
+
+
+#preguntasList {
+    max-height: 60vh  !important;
+    overflow-y: auto !important;
+}

@@ -1,0 +1,12 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ index.php [L]
+
+    RewriteRule ^info$ index.php?uri=/info [L,QSA]
+    RewriteRule ^faq$ index.php?uri=/faq [L,QSA]
+    RewriteRule ^cookie$ index.php?uri=/cookie [L,QSA]
+    RewriteRule ^privacy$ index.php?uri=/privacy [L,QSA]
+</IfModule>
