@@ -1,6 +1,6 @@
 <div class="my-4">
         <!-- Logos -->
-        <div class="text-center container-fluid mb-4">
+        <div class="row justify-content-around col-lg-8 offset-lg-2  ">
             <?php
 
             
@@ -20,7 +20,7 @@ if (is_dir($dir) && $handle = opendir($dir)) {
         if (in_array(strtolower(pathinfo($file, PATHINFO_EXTENSION)), ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp'])) {
             // Generar la URL de la imagen dinámicamente
             $imagePath = 'assets/img/' . $file; // Ajusta esto si el prefijo cambia
-            echo '<img class="mx-1 my-2 my-lg-0 img-fluid img-responsive-60" src="' . $imagePath . '" alt="' . pathinfo($file, PATHINFO_FILENAME) . '" title="' . pathinfo($file, PATHINFO_FILENAME) . '">';
+            echo '<img class="mx-1 my-2 my-lg-0 img-fluid img-responsive-60 " src="' . $imagePath . '" alt="' . pathinfo($file, PATHINFO_FILENAME) . '" title="' . pathinfo($file, PATHINFO_FILENAME) . '">';
         }
     }
     closedir($handle);
@@ -31,13 +31,14 @@ if (is_dir($dir) && $handle = opendir($dir)) {
             ?>
             <style>
                 .img-responsive-60 {
-                    max-height: 60px;
+                    max-height: 45px;
                     width: auto;
                 }
 
                 @media (max-width: 767px) {
                     .img-responsive-60 {
                         max-height: 35px;
+                        width: auto;
                     }
                 }
             </style>
