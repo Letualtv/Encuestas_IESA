@@ -6,7 +6,7 @@
             
 
 // Definir la ruta absoluta al directorio de imágenes
-$dir = __DIR__ . '../assets/img/';
+$dir = 'assets/img/';
 
 // Verificar si el directorio existe y abrirlo
 if (is_dir($dir) && $handle = opendir($dir)) {
@@ -19,7 +19,7 @@ if (is_dir($dir) && $handle = opendir($dir)) {
         // Filtrar por extensiones válidas
         if (in_array(strtolower(pathinfo($file, PATHINFO_EXTENSION)), ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp'])) {
             // Generar la URL de la imagen dinámicamente
-            $imagePath = '/../assets/img/' . $file; // Ajusta esto si el prefijo cambia
+            $imagePath = 'assets/img/' . $file; // Ajusta esto si el prefijo cambia
             echo '<img class="mx-1 my-2 my-lg-0 img-fluid img-responsive-60" src="' . $imagePath . '" alt="' . pathinfo($file, PATHINFO_FILENAME) . '" title="' . pathinfo($file, PATHINFO_FILENAME) . '">';
         }
     }
@@ -59,7 +59,7 @@ if (is_dir($dir) && $handle = opendir($dir)) {
                 </button>
 
                 <a class="navbar-brand d-lg-none" href="inicio">
-                    <img src="/assets/img/2.png" alt="Logo" height="40">
+                    <img src="assets/img/2.png" alt="Logo" height="40">
                 </a>
 
                 <div class="collapse navbar-collapse" id="navbarNav">
