@@ -68,7 +68,8 @@
 
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" id="mostrar-jump-rules" name="mostrar-jump-rules" onchange="mostrarJumpRules()">
-                <label class="form-check-label" for="mostrar-jump-rules"><h4>Reglas de salto</h4>
+                <label class="form-check-label" for="mostrar-jump-rules">
+                    <h4>Reglas de salto</h4>
                 </label>
             </div>
 

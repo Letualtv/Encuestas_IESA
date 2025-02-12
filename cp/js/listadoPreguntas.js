@@ -1,3 +1,5 @@
+
+
 // Función para cargar preguntas en la lista
 function cargarPreguntas() {
     fetch("obtenerPreguntas.php")
@@ -11,68 +13,12 @@ function cargarPreguntas() {
             const preguntasList = document.getElementById("preguntasList");
             preguntasList.innerHTML = ""; // Limpiar la lista
 
-            // Si no hay preguntas disponibles, mostrar un mensaje
             if (data.length === 0) {
                 preguntasList.innerHTML = "<p class='text-muted text-center'>No hay preguntas disponibles.</p>";
                 return;
             }
 
-            // Crear tabla
-            const table = document.createElement("table");
-            table.classList.add("table", "table-bordered", "table-sm");
-
-            // Encabezado de la tabla
-            const thead = document.createElement("thead");
-            thead.innerHTML = `
-                <tr class="table-primary text-center align-middle">
-                    <th>ID</th>
-                    <th>Título</th>
-                    <th>Nº página</th>
-                    <th>Tipo</th>
-                    <th>Acciones</th>
-                </tr>
-            `;
-            table.appendChild(thead);
-
-            // Cuerpo de la tabla
-            const tbody = document.createElement("tbody");
-            tbody.classList.add("tbody", "table-group-divider");
-
-            const tipoMap = {
-                radio: "Radio",
-                numberInput: "Entrada numérica",
-                checkbox: "Checkbox",
-                formSelect: "Radio desplegable",
-            };
-
-            data.forEach(pregunta => {
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                    <th scope="row" class="align-middle text-center fw-bold text-primary">${pregunta.id}</th>
-                    <td class="align-middle">${pregunta.titulo}</td>
-                    <td class="align-middle text-center">${pregunta.n_pag}</td>
-                    <td class="align-middle text-center">${tipoMap[pregunta.tipo]}</td>
-                    <td class="align-middle d-flex justify-content-center align-items-center gap-2">
-                        <button 
-                            class="btn btn-sm btn-warning" 
-                            onclick="editarPregunta(${pregunta.id})"
-                            title="Editar pregunta"
-                        >
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button 
-                            type="button" 
-                            class="btn btn-danger btn-sm" 
-                            onclick="confirmarBorrarPregunta(${pregunta.id})"
-                        >
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-
-            table.appendChild(tbody);
+            const table = crearTablaPreguntas(data);
             preguntasList.appendChild(table);
         })
         .catch(error => {
@@ -82,6 +28,64 @@ function cargarPreguntas() {
                     Error al cargar las preguntas. Inténtalo de nuevo más tarde.
                 </p>`;
         });
+}
+
+// Función para crear una tabla de preguntas
+function crearTablaPreguntas(data) {
+    const table = document.createElement("table");
+    table.classList.add("table", "table-bordered", "table-sm");
+
+    const thead = document.createElement("thead");
+    thead.innerHTML = `
+        <tr class="table-primary text-center align-middle">
+            <th>ID</th>
+            <th>Título</th>
+            <th>Nº página</th>
+            <th>Tipo</th>
+            <th>Acciones</th>
+        </tr>
+    `;
+    table.appendChild(thead);
+
+    const tbody = document.createElement("tbody");
+    tbody.classList.add("tbody", "table-group-divider");
+
+    const tipoMap = {
+        radio: "Radio",
+        numberInput: "Entrada numérica",
+        checkbox: "Checkbox",
+        formSelect: "Radio desplegable",
+    };
+
+    data.forEach(pregunta => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <th scope="row" class="align-middle text-center fw-bold text-primary">${pregunta.id}</th>
+            <td class="align-middle">${pregunta.titulo}</td>
+            <td class="align-middle text-center">${pregunta.n_pag}</td>
+            <td class="align-middle text-center">${tipoMap[pregunta.tipo]}</td>
+            <td class="align-middle d-flex justify-content-center align-items-center gap-2">
+                <button 
+                    class="btn btn-sm btn-warning" 
+                    onclick="editarPregunta(${pregunta.id})"
+                    title="Editar pregunta"
+                >
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button 
+                    type="button" 
+                    class="btn btn-danger btn-sm" 
+                    onclick="confirmarBorrarPregunta(${pregunta.id})"
+                >
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+
+    table.appendChild(tbody);
+    return table;
 }
 
 // Función para confirmar el borrado de una pregunta
@@ -123,22 +127,15 @@ function borrarPregunta(id) {
 // Función para buscar preguntas
 function buscarPregunta() {
     const searchTerm = document.getElementById("searchQuestions").value.toLowerCase();
-    const tableBody = document.querySelector("#preguntasList tbody");
-    const rows = tableBody.querySelectorAll("tr");
+    const rows = document.querySelectorAll("#preguntasList tbody tr");
 
     rows.forEach(row => {
-        const cells = row.querySelectorAll("td");
-        let matchFound = false;
-
-        cells.forEach(cell => {
-            if (cell.textContent.toLowerCase().includes(searchTerm)) {
-                matchFound = true;
-            }
-        });
-
+        const cells = Array.from(row.querySelectorAll("td"));
+        const matchFound = cells.some(cell => cell.textContent.toLowerCase().includes(searchTerm));
         row.style.display = matchFound ? "" : "none";
     });
 }
 
 // Cargar preguntas al cargar la página
 document.addEventListener("DOMContentLoaded", cargarPreguntas);
+

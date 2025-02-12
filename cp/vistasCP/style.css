@@ -13,10 +13,9 @@
 }
 
 
-#preguntasList {
-    height: 60vh !important;
-}
+
 .listaPreguntas {
-   
+    height: 60vh !important;
+
     overflow-y: auto !important;
 }

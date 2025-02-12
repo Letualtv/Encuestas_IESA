@@ -14,17 +14,36 @@ if (file_exists($archivo)) {
         exit;
     }
 
-    // Mensaje de depuración: verificar el contenido decodificado
-    error_log("Contenido del archivo JSON: " . json_encode($preguntas, JSON_PRETTY_PRINT));
-    
-    // Devolver todas las preguntas
-    echo json_encode($preguntas);
-    exit;
+    // Obtener el ID de la pregunta desde la solicitud GET
+    $id = $_GET['id'] ?? null;
+
+    if ($id) {
+        // Buscar la pregunta por ID
+        $pregunta = null;
+        foreach ($preguntas as $p) {
+            if ($p['id'] == $id) {
+                $pregunta = $p;
+                break;
+            }
+        }
+
+        if (!$pregunta) {
+            error_log("Pregunta no encontrada para el ID: " . $id);
+            echo json_encode(['success' => false, 'message' => 'Pregunta no encontrada']);
+            exit;
+        }
+
+        // Devolver la pregunta como JSON
+        echo json_encode($pregunta);
+        exit;
+    } else {
+        // Devolver todas las preguntas
+        echo json_encode($preguntas);
+        exit;
+    }
 } else {
     error_log("Archivo no encontrado: " . $archivo);
     echo json_encode(['success' => false, 'message' => 'Archivo no encontrado.']);
     exit;
 }
-
-echo json_encode(null);
 ?>

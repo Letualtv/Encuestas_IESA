@@ -771,37 +771,5 @@
             "5": "Estudios primarios"
         },
         "subTitulo": ""
-    },
-    {
-        "id": 116,
-        "n_pag": 37,
-        "tipo": "formSelect",
-        "titulo": "Por favor, indique la universidad en la que obtuvo el t\u00edtulo de dotorado:",
-        "opciones": {
-            "1": {
-                "label": "Una universidad de otro pa\u00eds"
-            },
-            "2": {
-                "label": "Una universidad espa\u00f1ola:",
-                "subLabel": {
-                    "21": "Universidad Espa\u00f1ola 1",
-                    "22": "Universidad Espa\u00f1ola 2",
-                    "23": "Universidad Espa\u00f1ola 3",
-                    "24": "Otra universidad"
-                }
-            }
-        },
-        "subTitulo": ""
-    },
-    {
-        "id": 117,
-        "n_pag": 38,
-        "tipo": "radio",
-        "titulo": "Ya hemos acabado, \u00bfDesea que le enviemos los resultados del estudio?",
-        "opciones": {
-            "1": "S\u00ed",
-            "2": "No"
-        },
-        "subTitulo": ""
     }
 ]

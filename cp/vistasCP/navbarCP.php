@@ -12,13 +12,11 @@
     <link rel="stylesheet" href="vistasCP/style.css">
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-light bg-ligh mb-3">
-  
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+<nav class="navbar navbar-expand navbar-light mb-3  shadow">
+  <div class="container-fluid mx-3">
+
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="nav nav-pills">
+            <ul class="nav nav-pills  gap-2">
                 <li class="nav-item">
                     <a class="nav-link" href="controlPanel.php">Encuesta</a>
                 </li>
@@ -35,26 +33,28 @@
         </div>
       
         <img src="../assets/img/2.png" alt="Logo" width="180" class="d-inline-block align-text-top ms-auto">
-
+</div>
 </nav>
 
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    // Obtener la URL actual
-    const currentUrl = window.location.pathname;
+    document.addEventListener("DOMContentLoaded", function() {
+        // Obtener la URL actual
+        const currentUrl = window.location.pathname.split("/").pop();
 
-    // Obtener todos los enlaces de navegación
-    const navLinks = document.querySelectorAll('.nav-link');
+        // Obtener todos los enlaces de navegación
+        const navLinks = document.querySelectorAll('.nav-link');
 
-    // Recorrer los enlaces y añadir la clase "active" al enlace correspondiente
-    navLinks.forEach(link => {
-        if (link.getAttribute('href') === currentUrl) {
-            link.classList.add('active');
-        } else {
-            link.classList.remove('active');
-        }
+        // Recorrer los enlaces y añadir la clase "active" al enlace correspondiente
+        navLinks.forEach(link => {
+            if (link.getAttribute('href') === currentUrl) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
     });
 </script>
 </body>
