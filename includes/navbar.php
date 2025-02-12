@@ -6,7 +6,7 @@
             
 
 // Definir la ruta absoluta al directorio de imágenes
-$dir = __DIR__ . '/../assets/img/';
+$dir = __DIR__ . '../assets/img/';
 
 // Verificar si el directorio existe y abrirlo
 if (is_dir($dir) && $handle = opendir($dir)) {

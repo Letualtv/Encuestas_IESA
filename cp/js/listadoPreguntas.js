@@ -1,6 +1,6 @@
 // Función para cargar preguntas en la lista
 function cargarPreguntas() {
-    fetch("../obtenerPreguntas.php")
+    fetch("obtenerPreguntas.php")
         .then(response => {
             if (!response.ok) {
                 throw new Error("Error en la solicitud: " + response.status);
@@ -19,25 +19,26 @@ function cargarPreguntas() {
 
             // Crear tabla
             const table = document.createElement("table");
-            table.classList.add("table", "table-bordered",  "table-sm");
+            table.classList.add("table", "table-bordered", "table-sm");
 
             // Encabezado de la tabla
             const thead = document.createElement("thead");
             thead.innerHTML = `
                 <tr class="table-primary text-center align-middle">
-                    <th class="col fw-bold">ID</th>
-                    <th class="col fw-bold">Título</th>
-                    <th class="col fw-bold">Nº página</th>
-                    <th class="col fw-bold">Tipo</th>
-                    <th class="col fw-bold">Acciones</th>
+                    <th>ID</th>
+                    <th>Título</th>
+                    <th>Nº página</th>
+                    <th>Tipo</th>
+                    <th>Acciones</th>
                 </tr>
             `;
             table.appendChild(thead);
 
             // Cuerpo de la tabla
             const tbody = document.createElement("tbody");
-                        tbody.classList.add("tbody", "table-group-divider");
-const tipoMap = {
+            tbody.classList.add("tbody", "table-group-divider");
+
+            const tipoMap = {
                 radio: "Radio",
                 numberInput: "Entrada numérica",
                 checkbox: "Checkbox",
@@ -47,37 +48,24 @@ const tipoMap = {
             data.forEach(pregunta => {
                 const row = document.createElement("tr");
                 row.innerHTML = `
-                    <!-- ID -->
                     <th scope="row" class="align-middle text-center fw-bold text-primary">${pregunta.id}</th>
-                    
-                    <!-- Título -->
                     <td class="align-middle">${pregunta.titulo}</td>
-                    
-                    <!-- Número de página -->
                     <td class="align-middle text-center">${pregunta.n_pag}</td>
-                    
-                    <!-- Tipo -->
-                    <td class="align-middle text-center">
-                        <span >${tipoMap[pregunta.tipo]}</span>
-                    </td>
-                    
-                    <!-- Acciones -->
+                    <td class="align-middle text-center">${tipoMap[pregunta.tipo]}</td>
                     <td class="align-middle d-flex justify-content-center align-items-center gap-2">
-                        <!-- Botón Editar -->
                         <button 
-                            class="btn btn-sm btn-warning d-flex align-items-center" 
+                            class="btn btn-sm btn-warning" 
                             onclick="editarPregunta(${pregunta.id})"
                             title="Editar pregunta"
                         >
-                            <i class="fas fa-edit"></i> Editar
+                            <i class="fas fa-edit"></i>
                         </button>
-                        
-                        <!-- Botón Borrar -->
-                                                    <button type="button" class="btn btn-danger btn-sm icon-change" onclick="confirmarBorrarPregunta(${pregunta.id})">
-
-
-                        
-                            <i class="fas fa-trash"></i> 
+                        <button 
+                            type="button" 
+                            class="btn btn-danger btn-sm" 
+                            onclick="confirmarBorrarPregunta(${pregunta.id})"
+                        >
+                            <i class="fas fa-trash"></i>
                         </button>
                     </td>
                 `;
@@ -100,7 +88,6 @@ const tipoMap = {
 function confirmarBorrarPregunta(id) {
     const confirmDeleteButton = document.getElementById('confirmDeleteButton');
     confirmDeleteButton.onclick = function () {
-        
         borrarPregunta(id);
         const confirmDeleteModal = document.getElementById('confirmDeleteModal');
         const modalInstance = bootstrap.Modal.getInstance(confirmDeleteModal);
@@ -122,29 +109,17 @@ function borrarPregunta(id) {
         .then(data => {
             if (data.success) {
                 cargarPreguntas(); // Recargar la lista de preguntas
-                alert("Pregunta eliminada correctamente.");
+                showToast("Pregunta eliminada correctamente.", "success");
             } else {
-                alert("Error al eliminar la pregunta.");
+                showToast("Error al eliminar la pregunta.", "danger");
             }
         })
         .catch(error => {
             console.error("Error al borrar la pregunta:", error);
-            alert("Ocurrió un error al intentar borrar la pregunta. Inténtalo de nuevo más tarde.");
+            showToast("Ocurrió un error al intentar borrar la pregunta. Inténtalo de nuevo más tarde.", "danger");
         });
 }
 
-// Función para ajustar los parámetros del formulario según el tipo de pregunta
-function ajustarParametros() {
-    const tipo = document.getElementById("tipo").value;
-    const numberInputFields = document.getElementById("numberInputFields");
-
-    // Mostrar u ocultar campos adicionales según el tipo de pregunta
-    if (tipo === "numberInput") {
-        numberInputFields.style.display = "block";
-    } else {
-        numberInputFields.style.display = "none";
-    }
-}
 // Función para buscar preguntas
 function buscarPregunta() {
     const searchTerm = document.getElementById("searchQuestions").value.toLowerCase();
@@ -161,7 +136,9 @@ function buscarPregunta() {
             }
         });
 
-        // Mostrar u ocultar la fila según el resultado de la búsqueda
         row.style.display = matchFound ? "" : "none";
     });
 }
+
+// Cargar preguntas al cargar la página
+document.addEventListener("DOMContentLoaded", cargarPreguntas);

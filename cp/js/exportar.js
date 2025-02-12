@@ -1,5 +1,5 @@
 function exportarJSON() {
-    fetch('../obtenerPreguntas.php')
+    fetch('obtenerPreguntas.php')
       .then(response => response.json())
       .then(data => {
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -14,7 +14,7 @@ function exportarJSON() {
       });
   }
   function exportarCSV() {
-    fetch('../obtenerPreguntas.php')
+    fetch('obtenerPreguntas.php')
       .then(response => response.json())
       .then(data => {
         const csvRows = [];
@@ -40,7 +40,7 @@ function exportarJSON() {
   }
   
   function exportarExcel() {
-    fetch('../obtenerPreguntas.php')
+    fetch('obtenerPreguntas.php')
       .then(response => response.json())
       .then(data => {
         const wb = XLSX.utils.book_new();

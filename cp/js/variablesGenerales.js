@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Función para cargar las variables
     function cargarVariables() {
         variablesList.innerHTML = "<p class='text-muted text-center'>Cargando variables...</p>";
-        fetch("vistasControlPanel/admin_variables.php?accion=listar")
+        fetch("includesCP/variablesGenerales.php?accion=listar")
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        fetch("vistasControlPanel/admin_variables.php", {
+        fetch("includesCP/variablesGenerales.php", {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: `accion=guardar&clave=${encodeURIComponent(clave)}&valor=${encodeURIComponent(valor)}`
@@ -130,7 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const confirmDeleteButton = document.getElementById('confirmDeleteButton');
 
         confirmDeleteButton.onclick = function () {
-            fetch("./vistasControlPanel/admin_variables.php", {
+            fetch("includesCP/variablesGenerales.php", {
                 method: "POST",
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 body: `accion=borrar&clave=${encodeURIComponent(clave)}`,
@@ -178,7 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            fetch("vistasControlPanel/admin_variables.php", {
+            fetch("includesCP/variablesGenerales.php", {
                 method: "POST",
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 body: `accion=actualizar&clave=${encodeURIComponent(clave)}&nuevaClave=${encodeURIComponent(nuevaClave)}&valor=${encodeURIComponent(nuevoValor)}`,

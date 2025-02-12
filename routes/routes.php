@@ -35,7 +35,7 @@ function logError($message)
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
 // Eliminar el prefijo /Version2.0/ de la URI
-$base_path = '/Version2.0'; // Cambia esto si usas otro prefijo
+$base_path = '/INNOQUAL'; // Cambia esto si usas otro prefijo
 if (strpos($uri, $base_path) === 0) {
     $uri = substr($uri, strlen($base_path));
 }

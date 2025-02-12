@@ -1,0 +1,60 @@
+[
+    {
+        "id": "1",
+        "n_pag": 1,
+        "tipo": "radio",
+        "titulo": "Pregunta de tipo radio",
+        "subTitulo": "",
+        "opciones": {
+            "1": "No, trabajo actualmente en esta instituci\u00f3n",
+            "2": "He trabajado, pero estoy jubilado o no activo",
+            "3": "He trabajado, pero ahora trabajo en otro lugar",
+            "4": "S\u00ed trabajo aqu\u00ed",
+            "5": "Que te parece $estudio",
+            "6": "Me gusta el $estudio"
+        }
+    },
+    {
+        "id": "2",
+        "n_pag": 2,
+        "tipo": "numberInput",
+        "titulo": "Pregunta 2",
+        "subTitulo": "Marca todos los lenguajes que dominas.",
+        "opciones": {
+            "1": "Indicar a\u00f1o:",
+            "2": "No me acuerdo $hola",
+            "3": "No deseo contestar"
+        },
+        "valores": {
+            "min": 2000,
+            "max": 2024,
+            "placeholder": "AAAA"
+        }
+    },
+    {
+        "id": 3,
+        "n_pag": 3,
+        "tipo": "checkbox",
+        "titulo": "\u00bfCu\u00e1l es su \u00e1rea de conocimiento principal?",
+        "subTitulo": "(Por favor, elija la que tenga m\u00e1s correspondencia con su situaci\u00f3n)",
+        "opciones": {
+            "1": "No estaba interesado\/a en el trabajo",
+            "2": "No ten\u00eda posibilidad de continuar en esa instituci\u00f3n",
+            "3": "Oportunidades laborales muy limitadas en el campo de la investigaci\u00f3n",
+            "4": "Mejores oportunidades de desarrollo profesional",
+            "5": "Falta de estructura para el desarrollo de la carrera investigadora",
+            "6": "Trabajar en un lugar con mayor reconocimiento y prestigio",
+            "7": "Mejora de las condiciones laborales",
+            "8": "Ambiente de trabajo",
+            "9": "Obligaci\u00f3n de movilidad a otra instituci\u00f3n",
+            "10": "Baja remuneraci\u00f3n",
+            "11": "Malas condiciones laborales",
+            "12": "Falta de reconocimiento p\u00fablico a la investigaci\u00f3n",
+            "13": "Incertidumbre sobre las perspectivas profesionales a largo plazo",
+            "14": "Conciliaci\u00f3n, cuidado u otras responsabilidades familiares",
+            "15": "Motivos personales",
+            "16": "Otros"
+        }
+    }
+    
+]
