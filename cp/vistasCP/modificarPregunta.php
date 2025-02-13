@@ -67,21 +67,26 @@
             </div>
 
             <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" id="mostrar-jump-rules" name="mostrar-jump-rules" onchange="mostrarJumpRules()">
-                <label class="form-check-label" for="mostrar-jump-rules">
-                    <h4>Reglas de salto</h4>
+                <input class="form-check-input " type="checkbox" id="mostrar-filtro" name="mostrar-filtro" onchange="mostrarFiltro()">
+                <label class="form-check-label align-top" for="mostrar-filtro">
+                    Reglas de filtro
                 </label>
             </div>
-
-            <div id="jump-rules" style="display: none;">
-                <div id="jumpRulesContainer"></div>
-                <div class="add-jump-rule-container my-2">
-                    <a type="button" class="btn btn-sm btn-outline-primary hover-zoom" onclick="agregarJumpRule()">
-                        <i class="fa-solid fa-plus"></i> Agregar regla de salto
-                    </a>
+            <div class="row col-12 col-md-5">
+                <div id="filtro-container" style="display: none;">
+                    <span class="muted small ">
+                        <ol class="alert alert-info">
+                        <li class="mx-2">Indicamos el ID de la pregunta donde queremos añadir el filtro</li>
+                        <li class="mx-2">Introducimos el valor necesario para visualizar ésta pregunta</li></ol>
+                    </span>
+                    <div id="filtroRulesContainer"></div>
+                    <div class="add-jump-rule-container my-2">
+                        <a type="button" class="btn btn-sm btn-outline-primary hover-zoom" onclick="agregarFiltro()">
+                            <i class="fa-solid fa-plus"></i> Agregar regla
+                        </a>
+                    </div>
                 </div>
             </div>
-
             <div class="d-flex justify-content-end mt-4">
                 <button type="submit" class="btn btn-primary">
                     <i class="fa-solid fa-save me-2"></i>Guardar pregunta

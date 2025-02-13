@@ -22,13 +22,16 @@
         "subTitulo": "Marca todos los lenguajes que dominas.",
         "opciones": {
             "1": "Indicar a\u00f1o:",
-            "2": "No me acuerdo $hola",
-            "3": "No deseo contestar"
+            "88": "No me acuerdo $hola",
+            "99": "No deseo contestar"
         },
         "valores": {
             "min": 2000,
             "max": 2024,
             "placeholder": "AAAA"
+        },
+        "filtro": {
+            "1": 4
         }
     },
     {

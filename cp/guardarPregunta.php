@@ -1,15 +1,14 @@
 <?php
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);
-
     $id = isset($data['id']) && !empty($data['id']) ? $data['id'] : time();
     $titulo = $data['titulo'];
     $n_pag = $data['n_pag'];
     $tipo = $data['tipo'];
     $subTitulo = $data['subTitulo'];
-    $opciones = $data['opciones'];
-    $next_pag = $data['next_pag'];
+    $opciones = $data['opciones']; // Opciones ya deben ser un objeto clave-valor
     $valores = isset($data['valores']) ? $data['valores'] : [];
+    $filtro = isset($data['filtro']) ? $data['filtro'] : []; // Manejar filtro como un objeto vacío si no existe
 
     $nuevaPregunta = [
         'id' => $id,
@@ -17,18 +16,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'tipo' => $tipo,
         'titulo' => $titulo,
         'subTitulo' => $subTitulo,
-        'opciones' => []
+        'opciones' => $opciones,
+        'filtro' => $filtro, 
     ];
-
-    foreach ($opciones as $index => $opcion) {
-        $nuevaPregunta['opciones'][$index + 1] = $opcion;
-    }
 
     if ($tipo === 'numberInput') {
         $nuevaPregunta['valores'] = [
             'min' => isset($valores['min']) ? (int)$valores['min'] : 1950,
             'max' => isset($valores['max']) ? (int)$valores['max'] : 2025,
-            'placeholder' => isset($valores['placeholder']) ? $valores['placeholder'] : 'AAAA'
+            'placeholder' => isset($valores['placeholder']) ? $valores['placeholder'] : 'AAAA',
         ];
     }
 
@@ -45,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 break;
             }
         }
-        
+
         // Si no se encontró, añadir la nueva pregunta
         if (!$found) {
             $preguntas[] = $nuevaPregunta;
@@ -62,4 +58,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 } else {
     echo json_encode(['success' => false]);
 }
-?>

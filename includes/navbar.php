@@ -47,7 +47,7 @@ if (is_dir($dir) && $handle = opendir($dir)) {
         <!-- Título -->
         <div class="text-center my-4 mx-2">
             <h3><?php 
-           echo $variables['$estudio']; 
+           echo $variables['$textoCabecera']; 
            
            ?></h3>
         </div>
