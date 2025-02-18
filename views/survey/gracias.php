@@ -1,11 +1,10 @@
 <body class="d-flex flex-column min-vh-100">
-<?php include __DIR__ . '/../../includes/navigationPregunta.php'; ?>
-<div class="container d-flex justify-content-center align-items-center flex-grow-1">
-        <div class="d-block text-center mx-auto">
+<?php include __DIR__ . '/../../includes/navigation.php'; ?>
+<div class="container">
+<div class="d-block text-center mx-auto mt-5">
             <h3 class="pb-3">¡Gracias por completar la encuesta!</h3>
-            <p class="pb-3">Tu opinión es muy valiosa para nosotros.</p>
-            <a href="encuesta" class="btn btn-primary">Regresar a la página principal</a>
+            <p class="pb-3">Tu opinión es muy valiosa para el estudio.</p>
         </div>
     </div>
-    <?php include __DIR__ . '/../../includes/footerPregunta.php'; ?>
+    <?php include __DIR__ . '/../../includes/footer.php'; ?>
 </body>

@@ -1,10 +1,9 @@
 <div id="alertaPregunta" class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-light" style="z-index: 1050; display: none;">
-    <div class="alert alert-danger text-center" role="alert">
-        <h4 class="alert-heading">Pregunta no encontrada</h4>
-        <p>No se encontró la pregunta. Serás redirigido a la primera página.</p>
+    <div class="alert alert-danger text-center  mb-5" role="alert">
+        <h4 class="alert-heading mb-4">Pregunta no encontrada</h4>
         <a href="inicio" class="btn btn-primary">Ir a la página principal</a>
     </div>
-</div>
+    </div>
 <script>
 document.addEventListener('DOMContentLoaded', (event) => {
     const preguntasEnPagina = <?php echo json_encode($preguntasEnPagina); ?>;

@@ -7,16 +7,23 @@
 
 <?php
 session_start();
+// Si la autenticación es exitosa
+$_SESSION['user_id'] = $user_id; // Guardar el ID del usuario en la sesión
+$_SESSION['LAST_ACTIVITY'] = time(); // Inicializar la hora de la última actividad
 
+// Configurar la cookie de sesión
+setcookie('PHPSESSID', session_id(), time() + 1800, '/'); 
+
+
+// Asegúrate de que el `clave_id` esté disponible en la sesión
+if (!isset($_SESSION['clave'])) {
+    header('Location: sesionExpirada');
+    exit;
+}
 include __DIR__ . '/../../controller/PreguntasController.php';
 include_once  __DIR__ . '/../../config/db.php';
 $variables = include_once  __DIR__ . '/../../models/variables.php';
 
-// Asegúrate de que el `clave_id` esté disponible en la sesión
-if (!isset($_SESSION['clave'])) {
-    header('Location: /../views/errors/errorClave.php');
-    exit;
-}
 
 // Recupera las respuestas del controlador
 $controller = new PreguntasController();

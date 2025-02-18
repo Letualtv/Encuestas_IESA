@@ -1,33 +1,3 @@
-// Variable global para rastrear si se está editando una pregunta
-let isEditing = false;
-
-// Función para agregar una nueva opción dinámicamente
-function agregarOpcion(clave = "", opcion = "") {
-  const opcionesDiv = document.getElementById("opcionesContainer"); // Cambiado a opcionesContainer
-  const nuevaOpcion = document.createElement("div");
-  nuevaOpcion.classList.add("input-group", "mb-2");
-  nuevaOpcion.innerHTML = `
-        <button type="button" class="btn btn-outline-danger btn-sm" onclick="eliminarOpcion(this)">
-            <i class="fa-solid fa-trash"></i>
-        </button>
-        <input type="text" class="form-control shadow-sm" name="claves[]" placeholder="Clave" value="${clave}" required>
-        <input type="text" class="form-control w-75 shadow-sm" name="opciones[]" placeholder="Opción" value="${opcion}" required>
-    `;
-  opcionesDiv.appendChild(nuevaOpcion);
-
-  // Asegurarse de que el botón "Agregar Opción" exista solo una vez
-  let addButtonContainer = document.querySelector(".add-option-container");
-  if (!addButtonContainer) {
-    addButtonContainer = document.createElement("div");
-    addButtonContainer.classList.add("add-option-container", "my-2");
-    addButtonContainer.innerHTML = `
-            <a type="button" class="hover-zoom" onclick="agregarOpcion()">
-                <i class="fa-xl fa-solid fa-circle-plus"></i>
-            </a>
-        `;
-    opcionesDiv.parentElement.appendChild(addButtonContainer);
-  }
-}
 
 // Función para ajustar los parámetros del formulario según el tipo de pregunta
 function ajustarParametros() {
@@ -37,6 +7,7 @@ function ajustarParametros() {
   // Mostrar u ocultar campos adicionales según el tipo de pregunta
   if (tipo === "numberInput") {
     numberInputFields.style.display = "block";
+  
   } else {
     numberInputFields.style.display = "none";
   }
@@ -47,8 +18,9 @@ function eliminarOpcion(button) {
   button.parentElement.remove();
 }
 
+// Función para editar una pregunta existente
 function editarPregunta(id) {
-  fetch(`obtenerPreguntas.php?id=${id}`)
+  fetch(`includesCP/obtenerPreguntas.php?id=${id}`)
     .then((response) => {
       if (!response.ok) {
         throw new Error("Error en la solicitud: " + response.status);
@@ -68,13 +40,27 @@ function editarPregunta(id) {
       document.getElementById("subTitulo").value = pregunta.subTitulo || "";
 
       const opcionesDiv = document.getElementById("opciones");
-      opcionesDiv.innerHTML = ""; // Limpiar opciones previas
+
+      // Limpiar opciones previas
+      while (opcionesDiv.firstChild) {
+        opcionesDiv.removeChild(opcionesDiv.firstChild);
+      }
 
       // Agregar las opciones existentes
-      const opciones = pregunta.opciones || {};
-      Object.keys(opciones).forEach((key) => {
-        agregarOpcion(key, opciones[key]);
-      });
+      if (pregunta.tipo === "formSelect") {
+        const opciones = pregunta.opciones || {};
+        Object.keys(opciones).forEach((clavePrincipal) => {
+          const opcion = opciones[clavePrincipal];
+          const label = opcion.label || "";
+          const subLabels = opcion.subLabel || {};
+          agregarOpcion(clavePrincipal, label, subLabels);
+        });
+      } else {
+        const opciones = pregunta.opciones || {};
+        Object.keys(opciones).forEach((key) => {
+          agregarOpcion(key, opciones[key]);
+        });
+      }
 
       if (pregunta.tipo === "numberInput") {
         document.getElementById("min").value = pregunta.valores?.min || "";
@@ -82,6 +68,37 @@ function editarPregunta(id) {
         document.getElementById("placeholder").value =
           pregunta.valores?.placeholder || "";
       }
+
+// Recuperar y mostrar la descripción (si existe)
+const descripcion = pregunta.cabecera || null; // Obtener la cabecera de la pregunta
+const mostrarDescripcionCheckbox = document.getElementById("mostrar-descripcion");
+const descripcionContainer = document.getElementById("descripcionContainer");
+
+if (descripcion) {
+  // Verificar si todos los campos de descripción están vacíos
+  const texto1Vacio = !descripcion.texto1 || descripcion.texto1.trim() === "";
+  const listaVacia = !descripcion.lista || descripcion.lista.trim() === "";
+  const texto2Vacio = !descripcion.texto2 || descripcion.texto2.trim() === "";
+
+  if (texto1Vacio && listaVacia && texto2Vacio) {
+    // Si todos los campos están vacíos, desactivar el checkbox y ocultar el contenedor
+    mostrarDescripcionCheckbox.checked = false;
+    descripcionContainer.style.display = "none";
+  } else {
+    // Si hay contenido en al menos un campo, activar el checkbox y mostrar el contenedor
+    mostrarDescripcionCheckbox.checked = true;
+    descripcionContainer.style.display = "block";
+
+    // Rellenar los campos de descripción
+    document.querySelector("#descripcionRule .texto1").value = descripcion.texto1 || "";
+    document.querySelector("#descripcionRule .lista").value = descripcion.lista || "";
+    document.querySelector("#descripcionRule .texto2").value = descripcion.texto2 || "";
+  }
+} else {
+  // Desactivar el interruptor de descripción si no hay descripción
+  mostrarDescripcionCheckbox.checked = false;
+  descripcionContainer.style.display = "none";
+}
 
       // Ajustar parámetros del formulario
       ajustarParametros();
@@ -106,106 +123,3 @@ function editarPregunta(id) {
       );
     });
 }
-// Función para guardar una pregunta
-document
-  .getElementById("preguntaForm")
-  .addEventListener("submit", function (event) {
-    event.preventDefault();
-    const submitButton = document.querySelector('button[type="submit"]');
-    submitButton.innerHTML = "Guardando...";
-    submitButton.disabled = true;
-
-    const preguntaId = document.getElementById("preguntaId").value;
-    const titulo = document.getElementById("titulo").value;
-    const n_pag = document.getElementById("n_pag").value;
-    const tipo = document.getElementById("tipo").value;
-    const subTitulo = document.getElementById("subTitulo").value;
-    const opciones = Array.from(
-      document.querySelectorAll('[name="opciones[]"]')
-    ).map((input) => input.value);
-    const claves = Array.from(
-      document.querySelectorAll('[name="claves[]"]')
-    ).map((input) => input.value);
-
-    const valores =
-      tipo === "numberInput"
-        ? {
-            min: document.getElementById("min").value,
-            max: document.getElementById("max").value,
-            placeholder: document.getElementById("placeholder").value,
-          }
-        : {};
-
-    // Recopilar las reglas de filtro (si existen)
-    const filtro = {};
-    const rangos = Array.from(
-      document.querySelectorAll('[name="filtro[rango][]"]')
-    ).map((input) => input.value.trim());
-    const paginasDestino = Array.from(
-      document.querySelectorAll('[name="filtro[paginaDestino][]"]')
-    ).map((input) => input.value.trim());
-
-    rangos.forEach((rango, index) => {
-      const paginaDestino = paginasDestino[index];
-      // Validar que tanto el rango como la página destino sean válidos
-      if (rango && paginaDestino && !isNaN(parseInt(paginaDestino))) {
-        filtro[rango] = parseInt(paginaDestino);
-      }
-    });
-
-    // Recopilar las opciones como un objeto
-    const opcionesObj = {};
-    Array.from(document.querySelectorAll('[name="claves[]"]')).forEach(
-      (claveInput, index) => {
-        const clave = claveInput.value.trim();
-        const opcion = document
-          .querySelectorAll('[name="opciones[]"]')
-          [index].value.trim();
-        if (clave && opcion) {
-          opcionesObj[clave] = opcion;
-        }
-      }
-    );
-    fetch("guardarPregunta.php", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        id: preguntaId,
-        titulo,
-        n_pag,
-        tipo,
-        subTitulo,
-        opciones: opcionesObj,
-        valores,
-        filtro: Object.keys(filtro).length ? filtro : {},
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          showToast("Pregunta guardada correctamente.", "success");
-          setTimeout(() => {
-            submitButton.innerHTML = "Guardar pregunta";
-            submitButton.disabled = false;
-            document.getElementById("preguntaForm").reset();
-            document.getElementById("preguntaId").value = "";
-            document.getElementById("opciones").innerHTML = "";
-            cargarPreguntas();
-            isEditing = false;
-          }, 500);
-        } else {
-          showToast("Error al guardar la pregunta.", "danger");
-          submitButton.innerHTML = "Guardar pregunta";
-          submitButton.disabled = false;
-        }
-      })
-      .catch((error) => {
-        console.error("Error al guardar la pregunta:", error);
-        showToast(
-          "Ocurrió un error al intentar guardar la pregunta.",
-          "danger"
-        );
-        submitButton.innerHTML = "Guardar pregunta";
-        submitButton.disabled = false;
-      });
-  });

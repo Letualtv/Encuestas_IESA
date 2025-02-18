@@ -2,7 +2,7 @@
 
 // Función para cargar preguntas en la lista
 function cargarPreguntas() {
-    fetch("obtenerPreguntas.php")
+    fetch("includesCP/obtenerPreguntas.php")
         .then(response => {
             if (!response.ok) {
                 throw new Error("Error en la solicitud: " + response.status);
@@ -55,6 +55,9 @@ function crearTablaPreguntas(data) {
         numberInput: "Entrada numérica",
         checkbox: "Checkbox",
         formSelect: "Radio desplegable",
+        matrix1: "Matriz con rango",
+        matrix2: "Matriz simple",
+        matrix3: "Matriz doble",
     };
 
     data.forEach(pregunta => {
@@ -103,7 +106,7 @@ function confirmarBorrarPregunta(id) {
 
 // Función para borrar una pregunta
 function borrarPregunta(id) {
-    fetch(`borrarPregunta.php?id=${id}`, { method: "DELETE" })
+    fetch(`includesCP/borrarPregunta.php?id=${id}`, { method: "DELETE" })
         .then(response => {
             if (!response.ok) {
                 throw new Error("Error en la solicitud: " + response.status);
@@ -127,15 +130,23 @@ function borrarPregunta(id) {
 // Función para buscar preguntas
 function buscarPregunta() {
     const searchTerm = document.getElementById("searchQuestions").value.toLowerCase();
-    const rows = document.querySelectorAll("#preguntasList tbody tr");
+    const tableBody = document.querySelector("#preguntasList tbody");
+    const rows = tableBody.querySelectorAll("tr");
 
     rows.forEach(row => {
-        const cells = Array.from(row.querySelectorAll("td"));
-        const matchFound = cells.some(cell => cell.textContent.toLowerCase().includes(searchTerm));
-        row.style.display = matchFound ? "" : "none";
+        const cells = row.querySelectorAll("td");
+        let matchFound = false;
+
+        cells.forEach(cell => {
+            if (cell.textContent.toLowerCase().includes(searchTerm)) {
+                matchFound = true;
+            }
+        });
+
+        // Mostrar u ocultar la fila según el resultado de la búsqueda
+        row.style.display = matchFound || !searchTerm ? "" : "none";
     });
 }
-
 // Cargar preguntas al cargar la página
 document.addEventListener("DOMContentLoaded", cargarPreguntas);
 

@@ -35,19 +35,35 @@ if (isset($pregunta['opciones']) && is_array($pregunta['opciones'])) {
 
 <script>
    
+   (function() {
+    const form = document.querySelector('form');
+    const checkboxes = form.querySelectorAll('input[type=checkbox]');
+    const checkboxLength = checkboxes.length;
+    const firstCheckbox = checkboxLength > 0 ? checkboxes[0] : null;
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const checkboxes = document.querySelectorAll('.main-checkbox');
-
-        // Inicializa la visibilidad de los inputs number cuando la página carga
-        checkboxes.forEach(checkbox => {
-            if (checkbox.checked) {
-                const clave = checkbox.value;
-                const preguntaId = checkbox.name.replace('[]', ''); // Eliminar los corchetes del nombre si es un array
-                toggleNumberInput(checkbox, preguntaId, clave); // Llama a la función para mostrar el input number si ya está seleccionado
+    function init() {
+        if (firstCheckbox) {
+            for (let i = 0; i < checkboxLength; i++) {
+                checkboxes[i].addEventListener('change', checkValidity);
             }
-        });
 
-    
-    });
+            checkValidity();
+        }
+    }
+
+    function isChecked() {
+        for (let i = 0; i < checkboxLength; i++) {
+            if (checkboxes[i].checked) return true;
+        }
+
+        return false;
+    }
+
+    function checkValidity() {
+        const errorMessage = !isChecked() ? 'Debe seleccionar al menos una opción.' : '';
+        firstCheckbox.setCustomValidity(errorMessage);
+    }
+
+    init();
+})();
 </script>

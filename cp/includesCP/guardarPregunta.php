@@ -8,8 +8,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $subTitulo = $data['subTitulo'];
     $opciones = $data['opciones']; // Opciones ya deben ser un objeto clave-valor
     $valores = isset($data['valores']) ? $data['valores'] : [];
-    $filtro = isset($data['filtro']) ? $data['filtro'] : []; // Manejar filtro como un objeto vacío si no existe
-
+    $filtro = isset($data['filtro']) ? (object)$data['filtro'] : (object)[]; // Filtro como objeto
+// Descripción (cabecera)
+$descripcion = $data['cabecera'] ?? null;
+$texto1 = $descripcion && isset($descripcion['texto1']) ? $descripcion['texto1'] : '';
+$lista = $descripcion && isset($descripcion['lista']) ? $descripcion['lista'] : '';
+$texto2 = $descripcion && isset($descripcion['texto2']) ? $descripcion['texto2'] : '';
+    
     $nuevaPregunta = [
         'id' => $id,
         'n_pag' => (int)$n_pag,
@@ -17,7 +22,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'titulo' => $titulo,
         'subTitulo' => $subTitulo,
         'opciones' => $opciones,
-        'filtro' => $filtro, 
+        'filtro' => $filtro,
+'cabecera' => [
+            'texto1' => $texto1,
+            'lista' => $lista,
+            'texto2' => $texto2,
+        ],
     ];
 
     if ($tipo === 'numberInput') {
@@ -28,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ];
     }
 
-    $archivo = '../models/Preguntas.json';
+    $archivo = '../../models/Preguntas.json';
     if (file_exists($archivo)) {
         $preguntas = json_decode(file_get_contents($archivo), true);
 

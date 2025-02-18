@@ -1,7 +1,7 @@
 <?php
 if ($_SERVER['REQUEST_METHOD'] === 'DELETE' && isset($_GET['id'])) {
     $id = $_GET['id'];
-    $archivo =  '../models/Preguntas.json';
+    $archivo =  '../../models/Preguntas.json';
 
     if (file_exists($archivo)) {
         $preguntas = json_decode(file_get_contents($archivo), true);

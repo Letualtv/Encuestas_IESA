@@ -15,7 +15,8 @@
 
 
 .listaPreguntas {
-    height: 60vh !important;
+    height: 80vh !important;
 
     overflow-y: auto !important;
 }
+

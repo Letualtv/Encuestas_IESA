@@ -1,5 +1,5 @@
 <?php
-$archivo = '../models/Preguntas.json'; // Asegúrate de que la ruta sea correcta
+$archivo = '../../models/Preguntas.json'; // Asegúrate de que la ruta sea correcta
 
 // Mensaje de depuración: verificar la ruta del archivo
 error_log("Ruta del archivo JSON: " . $archivo);

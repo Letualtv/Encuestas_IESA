@@ -11,7 +11,13 @@
             "3": "He trabajado, pero ahora trabajo en otro lugar",
             "4": "S\u00ed trabajo aqu\u00ed",
             "5": "Que te parece $estudio",
-            "6": "Me gusta el $estudio"
+            "7": "Me gusta el"
+        },
+        "filtro": {},
+        "cabecera": {
+            "texto1": "",
+            "lista": "",
+            "texto2": ""
         }
     },
     {
@@ -22,20 +28,20 @@
         "subTitulo": "Marca todos los lenguajes que dominas.",
         "opciones": {
             "1": "Indicar a\u00f1o:",
-            "88": "No me acuerdo $hola",
-            "99": "No deseo contestar"
+            "2": "No me acuerdo $hola",
+            "3": "No deseo contestar"
+        },
+        "filtro": {
+            "1": "!=1"
         },
         "valores": {
             "min": 2000,
             "max": 2024,
             "placeholder": "AAAA"
-        },
-        "filtro": {
-            "1": 4
         }
     },
     {
-        "id": 3,
+        "id": "3",
         "n_pag": 3,
         "tipo": "checkbox",
         "titulo": "\u00bfCu\u00e1l es su \u00e1rea de conocimiento principal?",
@@ -55,11 +61,10 @@
             "12": "Falta de reconocimiento p\u00fablico a la investigaci\u00f3n",
             "13": "Incertidumbre sobre las perspectivas profesionales a largo plazo",
             "14": "Conciliaci\u00f3n, cuidado u otras responsabilidades familiares",
-            "15": "Motivos personales",
-            "16": "Otros"
+            "15": "Motivos personales"
         },
         "filtro": {
-            "1": "2"
+            "1": "2+"
         }
     },
     {
@@ -69,68 +74,8 @@
         "titulo": "Pregunta 4: \u00bfQu\u00e9 lenguajes de programaci\u00f3n conoces?",
         "subTitulo": "Marca todos los lenguajes que dominas.",
         "opciones": {
-            "1": {
-                "label": "Una universidad espa\u00f1ola:",
-                "subLabel": {
-                    "11": "Universidad Espa\u00f1ola 1",
-                    "12": "Universidad Espa\u00f1ola 2",
-                    "13": "Universidad Espa\u00f1ola 3",
-                    "14": "Otra universidad"
-                }
-            },
             "2": {
-                "label": "Una universidad espa\u00f1ola:",
-                "subLabel": {
-                    "21": "Universidad Espa\u00f1ola 1",
-                    "22": "Universidad Espa\u00f1ola 2",
-                    "23": "Universidad Espa\u00f1ola 3",
-                    "24": "Otra universidad"
-                }
-            },
-            "3": {
-                "label": "Una universidad espa\u00f1ola:",
-                "subLabel": {
-                    "31": "Universidad Espa\u00f1ola 1",
-                    "32": "Universidad Espa\u00f1ola 2",
-                    "33": "Universidad Espa\u00f1ola 3",
-                    "34": "Otra universidad"
-                }
-            },
-            "4": {
                 "label": "Una universidad espa\u00f1ola:"
-            },
-            "5": {
-                "label": "Una universidad espa\u00f1ola:"
-            },
-            "6": {
-                "label": "Una universidad espa\u00f1ola:"
-            }
-        }
-    },
-    {
-        "id": 5,
-        "n_pag": 5,
-        "tipo": "formSelect",
-        "titulo": "Pregunta 5: \u00bfCu\u00e1l es tu puesto o rol en tu entorno laboral o acad\u00e9mico?",
-        "subTitulo": "Selecciona tu puesto actual.",
-        "opciones": {
-            "1": {
-                "label": "Una universidad espa\u00f1ola:",
-                "subLabel": {
-                    "11": "Universidad Espa\u00f1ola 1",
-                    "12": "Universidad Espa\u00f1ola 2",
-                    "13": "Universidad Espa\u00f1ola 3",
-                    "14": "Otra universidad"
-                }
-            },
-            "2": {
-                "label": "Una universidad espa\u00f1ola:",
-                "subLabel": {
-                    "21": "Universidad Espa\u00f1ola 1",
-                    "22": "Universidad Espa\u00f1ola 2",
-                    "23": "Universidad Espa\u00f1ola 3",
-                    "24": "Otra universidad"
-                }
             },
             "3": {
                 "label": "Una universidad espa\u00f1ola:",
@@ -168,7 +113,33 @@
                     "64": "Otra universidad"
                 }
             }
-        }
+        },
+        "filtro": [],
+        "texto1": null,
+        "lista": null,
+        "texto2": null
+    },
+    {
+        "id": "5",
+        "n_pag": 5,
+        "tipo": "formSelect",
+        "titulo": "Pregunta 5: \u00bfCu\u00e1l es tu puesto o rol en tu entorno laboral o acad\u00e9mico?",
+        "subTitulo": "Selecciona tu puesto actual.",
+        "opciones": {
+            "1": {
+                "label": "Una universidad espa\u00f1ola:",
+                "subLabel": {
+                    "11": "Universidad Espa\u00f1ola 1",
+                    "12": "Universidad Espa\u00f1ola 2",
+                    "13": "Universidad Espa\u00f1ola 3",
+                    "14": "Otra universidad"
+                }
+            }
+        },
+        "filtro": [],
+        "texto1": null,
+        "lista": null,
+        "texto2": null
     },
     {
         "id": 6,
@@ -573,13 +544,12 @@
         "id": 89,
         "n_pag": 24,
         "tipo": "matrix1",
-        "titulo": "A cont\u00f3n, se pregunta sobre situaciones hipot\u00e9ticas",
-        "texto1": "<b>Mar\u00eda<\/b> y <b>Pedro<\/b> trabajan en {{ getInstitutionName() }} desde hace a\u00f1os.",
-        "lista": {
-            "Mar\u00eda": "Los criterios para ser contratado o aprobar un concurso o posici\u00f3n <b>son oscuros o ambiguos<\/b>",
-            "Pedro": "Los criterios para ser contratado o aprobar un concurso o posici\u00f3n <b>son claros<\/b>"
+        "titulo": "A continuaci\u00f3n, se pregunta sobre situaciones hipot\u00e9ticas",
+        "cabecera": {
+            "texto1": "<b>Mar\u00eda<\/b> y <b>Pedro<\/b> trabajan en {{ getInstitutionName() }} desde hace a\u00f1os.",
+            "lista": "<li>Los criterios para ser contratado o aprobar un concurso o posici\u00f3n <b>son oscuros o ambiguos<\/b><\/li><li>Los criterios para ser contratado o aprobar un concurso o posici\u00f3n <b>son claros<\/b><\/li>",
+            "texto2": "<b>\u00bfCon cu\u00e1l de las afirmaciones est\u00e1 m\u00e1s de acuerdo?<\/b>"
         },
-        "texto2": "<b>\u00bfCon cu\u00e1l de las afirmaciones est\u00e1 m\u00e1s de acuerdo?<\/b>",
         "opciones": {
             "89": "Totalmente con Mar\u00eda - Totalmente con Pedro "
         },
@@ -772,6 +742,38 @@
             "3": "Diplomatura o similar",
             "4": "Estudios secundarios (FP o Bachillerato)",
             "5": "Estudios primarios"
+        },
+        "subTitulo": ""
+    },
+    {
+        "id": 116,
+        "n_pag": 37,
+        "tipo": "formSelect",
+        "titulo": "Por favor, indique la universidad en la que obtuvo el t\u00edtulo de dotorado:",
+        "opciones": {
+            "1": {
+                "label": "Una universidad de otro pa\u00eds"
+            },
+            "2": {
+                "label": "Una universidad espa\u00f1ola:",
+                "subLabel": {
+                    "21": "Universidad Espa\u00f1ola 1",
+                    "22": "Universidad Espa\u00f1ola 2",
+                    "23": "Universidad Espa\u00f1ola 3",
+                    "24": "Otra universidad"
+                }
+            }
+        },
+        "subTitulo": ""
+    },
+    {
+        "id": 117,
+        "n_pag": 38,
+        "tipo": "radio",
+        "titulo": "Ya hemos acabado, \u00bfDesea que le enviemos los resultados del estudio?",
+        "opciones": {
+            "1": "S\u00ed",
+            "2": "No"
         },
         "subTitulo": ""
     }

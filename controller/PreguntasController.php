@@ -59,7 +59,7 @@ class PreguntasController
 
         // Calcular el progreso
         $totalPaginas = max(array_column($preguntas, 'n_pag'));
-        $progreso = round(($n_pag / $totalPaginas) * 100, 2);
+        $progreso = round(($n_pag / $totalPaginas) * 100);
         $_SESSION['current_page'] = $n_pag;
 
         // Calcular la paginación
@@ -158,68 +158,20 @@ class PreguntasController
         // Calcular la página siguiente (nextPag)
         $nextPag = null;
     
-        // Aplicar reglas de salto si existen
-        if ($preguntaActual && isset($preguntaActual['jump_rules'])) {
-            $idPreguntaActual = $preguntaActual['id'];
-            if (isset($respuestas[$idPreguntaActual])) {
-                $respuestaSeleccionada = $respuestas[$idPreguntaActual];
-                error_log("Respuesta seleccionada para la pregunta {$idPreguntaActual}: {$respuestaSeleccionada}");
-    
-                // Verificar si la respuesta es numérica
-                if (is_numeric($respuestaSeleccionada)) {
-                    $respuestaSeleccionada = (int)$respuestaSeleccionada; // Convertir a entero
-                    foreach ($preguntaActual['jump_rules'] as $rango => $paginaDestino) {
-                        // Interpretar el rango
-                        if (strpos($rango, '-') !== false) {
-                            // Rango del tipo "X-Y"
-                            list($min, $max) = array_map('intval', explode('-', $rango));
-                            if ($respuestaSeleccionada >= $min && $respuestaSeleccionada <= $max) {
-                                $nextPag = $paginaDestino;
-                                error_log("Rango '{$rango}' coincide. Siguiente página: {$nextPag}");
-                                break;
-                            }
-                        } elseif (strpos($rango, '+') !== false) {
-                            // Rango del tipo "X+"
-                            $min = (int)rtrim($rango, '+');
-                            if ($respuestaSeleccionada >= $min) {
-                                $nextPag = $paginaDestino;
-                                error_log("Rango '{$rango}' coincide. Siguiente página: {$nextPag}");
-                                break;
-                            }
-                        } else {
-                            // Valor único
-                            $valorUnico = (int)$rango;
-                            if ($respuestaSeleccionada === $valorUnico) {
-                                $nextPag = $paginaDestino;
-                                error_log("Valor único '{$rango}' coincide. Siguiente página: {$nextPag}");
-                                break;
-                            }
-                        }
-                    }
-                }
+        // Verificar reglas de visibilidad (filtro) para la siguiente página
+        $siguientesPreguntas = array_filter($preguntas, fn($p) => $p['n_pag'] > $n_pag);
+        foreach ($siguientesPreguntas as $pregunta) {
+            if ($this->esPaginaVisible($pregunta, $respuestas)) {
+                $nextPag = $pregunta['n_pag'];
+                error_log("La página {$nextPag} cumple con las reglas de visibilidad.");
+                break;
             }
         }
     
-        // Si no hay regla de salto, calcular la siguiente página normalmente
+        // Si no hay página siguiente visible, calcular normalmente
         if (!$nextPag) {
             $nextPag = count(array_filter($preguntas, fn($p) => $p['n_pag'] === $n_pag + 1)) > 0 ? $n_pag + 1 : null;
-            error_log("No hay regla de salto. Siguiente página calculada: {$nextPag}");
-        }
-    
-        // Verificar reglas de visibilidad (filtro) para la siguiente página
-        if ($nextPag) {
-            $siguientePregunta = array_filter($preguntas, fn($p) => $p['n_pag'] === $nextPag);
-            $siguientePregunta = reset($siguientePregunta);
-    
-            if (isset($siguientePregunta['filtro'])) { // Cambio aquí: visibility_rules -> filtro
-                foreach ($siguientePregunta['filtro'] as $preguntaId => $respuestaRequerida) {
-                    if (!isset($respuestas[$preguntaId]) || $respuestas[$preguntaId] != $respuestaRequerida) {
-                        // Si no se cumple la regla de visibilidad, omitir esta página
-                        error_log("La página {$nextPag} no cumple con las reglas de visibilidad.");
-                        $nextPag = $this->calcularPaginaSiguienteConReglas($preguntas, $nextPag + 1);
-                    }
-                }
-            }
+            error_log("No hay página siguiente visible. Siguiente página calculada: {$nextPag}");
         }
     
         // Calcular la página anterior (prevPag)
@@ -230,8 +182,10 @@ class PreguntasController
             foreach ($respuestas as $preguntaId => $valor) {
                 foreach ($preguntas as $pregunta) {
                     if ($pregunta['id'] == $preguntaId && $pregunta['n_pag'] < $n_pag) {
-                        if ($pregunta['n_pag'] > $ultimaPaginaRespondida) {
-                            $ultimaPaginaRespondida = $pregunta['n_pag'];
+                        if ($this->esPaginaVisible($pregunta, $respuestas)) {
+                            if ($pregunta['n_pag'] > $ultimaPaginaRespondida) {
+                                $ultimaPaginaRespondida = $pregunta['n_pag'];
+                            }
                         }
                     }
                 }
@@ -245,7 +199,59 @@ class PreguntasController
             'nextPag' => $nextPag,
         ];
     }
-    private function calcularPaginaSiguienteConReglas(array $preguntas, int $startPag): ?int
+    
+    /**
+     * Función para verificar si una página es visible según sus reglas de filtro
+     */
+    private function esPaginaVisible(array $pregunta, array $respuestas): bool
+    {
+        if (!isset($pregunta['filtro'])) {
+            return true; // Si no hay filtro, la página siempre es visible
+        }
+    
+        foreach ($pregunta['filtro'] as $preguntaId => $respuestaRequerida) {
+            if (!isset($respuestas[$preguntaId]) || !$this->cumpleCondicion($respuestas[$preguntaId], $respuestaRequerida)) {
+                error_log("La página {$pregunta['n_pag']} no cumple con la condición '{$respuestaRequerida}' para la pregunta {$preguntaId}.");
+                return false;
+            }
+        }
+    
+        return true;
+    }
+    
+    /**
+     * Función auxiliar para evaluar condiciones
+     */
+    private function cumpleCondicion(string $respuestaSeleccionada, string $condicion): bool
+    {
+        if (strpos($condicion, '-') !== false && strpos($condicion, '+') === false) {
+            // Rango del tipo "X-Y"
+            list($min, $max) = array_map('intval', explode('-', $condicion));
+            $respuestaSeleccionada = (int)$respuestaSeleccionada;
+            return $respuestaSeleccionada >= $min && $respuestaSeleccionada <= $max;
+        } elseif (strpos($condicion, '+') !== false) {
+            // Rango del tipo "X+"
+            $min = (int)rtrim($condicion, '+');
+            $respuestaSeleccionada = (int)$respuestaSeleccionada;
+            return $respuestaSeleccionada >= $min;
+        } elseif (strpos($condicion, '-') !== false && strpos($condicion, '+') === false) {
+            // Rango del tipo "X-"
+            $max = (int)rtrim($condicion, '-');
+            $respuestaSeleccionada = (int)$respuestaSeleccionada;
+            return $respuestaSeleccionada <= $max;
+        } elseif (strpos($condicion, '!=') !== false) {
+            // Condición del tipo "!= X"
+            $valor = (int)trim(str_replace('!=', '', $condicion));
+            $respuestaSeleccionada = (int)$respuestaSeleccionada;
+            return $respuestaSeleccionada !== $valor;
+        } else {
+            // Valor único
+            $valorUnico = (int)$condicion;
+            $respuestaSeleccionada = (int)$respuestaSeleccionada;
+            return $respuestaSeleccionada === $valorUnico;
+        }
+    }
+/*     private function calcularPaginaSiguienteConReglas(array $preguntas, int $startPag): ?int
 {
     for ($i = $startPag; $i <= max(array_column($preguntas, 'n_pag')); $i++) {
         $siguientePregunta = array_filter($preguntas, fn($p) => $p['n_pag'] === $i);
@@ -272,7 +278,7 @@ class PreguntasController
         }
     }
     return null;
-}
+} */
     public function recuperarRespuestasDeBD($clave): array
     {
         global $pdo;

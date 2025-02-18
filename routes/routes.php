@@ -12,6 +12,7 @@ $routes = [
     '/cuestionario' => 'views/survey/cuestionario.php',
     '/encuestafinalizada' => 'views/survey/yaFinalizada.php',
     '/gracias' => 'views/survey/gracias.php',
+    '/sesionExpirada' => 'views/errors/sesionExpirada.php',
 ];
 
 // Manejo de errores

@@ -9,23 +9,20 @@
     <?php endif; ?>
 
     <div class="card-body p-4">
-        <?php if (isset($pregunta['texto1']) || isset($pregunta['lista']) || isset($pregunta['texto2'])): ?>
-            <div class="pb-2">
-                <?php if (isset($pregunta['texto1'])): ?>
-                    <p><?= $pregunta['texto1'] ?></p>
-                <?php endif; ?>
-                <?php if (isset($pregunta['lista']) && is_array($pregunta['lista'])): ?>
-                    <ul>
-                        <?php foreach ($pregunta['lista'] as $item): ?>
-                            <li><?= $item ?></li>
-                        <?php endforeach; ?>
-                    </ul>
-                <?php endif; ?>
-                <?php if (isset($pregunta['texto2'])): ?>
-                    <p><?= $pregunta['texto2'] ?></p>
-                <?php endif; ?>
-            </div>
+    <?php if (isset($pregunta['cabecera'])): ?>
+    <div class="pb-2">
+        <?php if (isset($pregunta['cabecera']['texto1'])): ?>
+            <p><?= $pregunta['cabecera']['texto1'] ?></p>
         <?php endif; ?>
+        <?php if (isset($pregunta['cabecera']['lista'])): ?>
+            <p><?= $pregunta['cabecera']['lista'] ?></p>
+        <?php endif; ?>
+        <?php if (isset($pregunta['cabecera']['texto2'])): ?>
+            <p><?= $pregunta['cabecera']['texto2'] ?></p>
+        <?php endif; ?>
+    </div>
+<?php endif; ?>
+
         <?php include_once __DIR__ . '/tipo_de_pregunta/encabezado.php'; ?>
         <?php
         switch ($pregunta['tipo']) {

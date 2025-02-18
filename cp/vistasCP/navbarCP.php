@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,51 +12,71 @@
     <!-- Estilos Personalizados -->
     <link rel="stylesheet" href="vistasCP/style.css">
 </head>
+
 <body>
-<nav class="navbar navbar-expand navbar-light mb-3  shadow">
-  <div class="container-fluid mx-3">
+    <nav class="navbar navbar-expand navbar-light mb-4  shadow">
+        <div class="container-fluid mx-2">
 
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="nav nav-pills  gap-2">
-                <li class="nav-item">
-                    <a class="nav-link" href="controlPanel.php">Encuesta</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="parametrosGenerales.php">Parámetros Generales</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="textos.php">Textos</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="usuarios.php">Usuarios</a>
-                </li>
-            </ul>
+    <ul class="nav nav-pills gap-2 w-100">
+        <li class="nav-item">
+            <a class="nav-link" href="controlPanel.php">Modificar encuesta</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="parametrosGenerales.php">Parámetros generales</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="textos.php">Textos</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="poblacion.php">Población</a>
+        </li>
+        <div class="ms-auto d-flex">
+            <li class="nav-item">
+                <a class="nav-link " href="usuarios.php">
+                    <i class="fa-solid fa-userfa-xl"></i>
+                </a>
+            </li>
+            <li class="nav-item">
+            <div class="d-flex  col align-items-center gap-2 justify-content-center ">
+                            <a class="btn btn-primary d-flex align-items-center justify-content-center " href="usuarios.php" style="width: 40px; height: 40px;">
+                                <i class="fa-solid fa-user fa-lg"></i>
+                            </a>
+                            <a class="btn btn-secondary d-flex align-items-center justify-content-center" href="exportar.php" style="width: 40px; height: 40px;">
+                                <i class="fa-solid fa-file-export fa-lg"></i>
+                            </a>
+                        </div>
+            </li>
         </div>
-      
-        <img src="../assets/img/2.png" alt="Logo" width="180" class="d-inline-block align-text-top ms-auto">
+    </ul>
 </div>
-</nav>
 
-<!-- Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        // Obtener la URL actual
-        const currentUrl = window.location.pathname.split("/").pop();
+        </div>
+    </nav>
 
-        // Obtener todos los enlaces de navegación
-        const navLinks = document.querySelectorAll('.nav-link');
+    <!-- Scripts -->
 
-        // Recorrer los enlaces y añadir la clase "active" al enlace correspondiente
-        navLinks.forEach(link => {
-            if (link.getAttribute('href') === currentUrl) {
-                link.classList.add('active');
-            } else {
-                link.classList.remove('active');
-            }
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Obtener la URL actual
+            const currentUrl = window.location.pathname.split("/").pop();
+
+            // Obtener todos los enlaces de navegación
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            // Recorrer los enlaces y añadir la clase "active" al enlace correspondiente
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentUrl) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
         });
-    });
-</script>
+    </script>    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
