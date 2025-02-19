@@ -9,15 +9,35 @@ function agregarOpcion(clave = "", opcion = "", subLabels = {}) {
   // Crear la nueva opción principal
   const nuevaOpcion = document.createElement("div");
   nuevaOpcion.classList.add("input-group", "mb-2");
-  nuevaOpcion.innerHTML = `
-    <button type="button" class="btn btn-outline-danger btn-sm" onclick="eliminarOpcion(this)">
-      <i class="fa-solid fa-trash"></i>
-    </button>
-    <input type="text" class="form-control shadow-sm clave-principal" name="claves[]" placeholder="Clave" value="${clave}" required>
-    <input type="text" class="form-control w-75 shadow-sm label-principal" name="opciones[]" placeholder="Opción" value="${opcion}" required>
-  `;
+
+  if (tipoPregunta === "matrix1") {
+    const [izquierda, derecha] = opcion.split(" - ");
+
+
+
+    nuevaOpcion.innerHTML = `
+      <button type="button" class="btn btn-outline-danger btn-sm" onclick="eliminarOpcion(this)">
+        <i class="fa-solid fa-trash"></i>
+      </button>
+      <input type="text" class="form-control shadow-sm clave-principal" name="claves[]" placeholder="Clave" value="${clave}" required>
+      <input type="text" class="form-control shadow-sm w-25" name="izquierda[]" placeholder="Extremo izquierdo" value="${izquierda || ''}" required>
+      <div class="input-group-text"><i class="fa-solid fa-minus"></i></div>
+      <input type="text" class="form-control shadow-sm w-25" name="derecha[]" placeholder="Extremo derecho" value="${derecha || ''}" required>
+    `;
+  } else {
+    // Para otros tipos de preguntas, usar los inputs estándar
+    nuevaOpcion.innerHTML = `
+      <button type="button" class="btn btn-outline-danger btn-sm" onclick="eliminarOpcion(this)">
+        <i class="fa-solid fa-trash"></i>
+      </button>
+      <input type="text" class="form-control shadow-sm clave-principal" name="claves[]" placeholder="Clave" value="${clave}" required>
+      <input type="text" class="form-control w-75 shadow-sm label-principal" name="opciones[]" placeholder="Opción" value="${opcion}" required>
+    `;
+  }
+
   opcionesDiv.appendChild(nuevaOpcion);
 
+  // Agregar subLabels solo si el tipo de pregunta es formSelect
   if (tipoPregunta === "formSelect") {
     const subLabelsDiv = document.createElement("div");
     subLabelsDiv.classList.add("sublabels-container", "ms-4");

@@ -1,3 +1,5 @@
+<?php $variables = include __DIR__ . '/../models/variables.php';
+ ?>
 
 
 <!DOCTYPE html>
@@ -12,8 +14,6 @@
 </head>
 <body>
 
-<?php $variables = include_once __DIR__ . '/../models/variables.php';
- ?>
 <?php  include __DIR__ . '/navbarPregunta.php'; ?>
 
 

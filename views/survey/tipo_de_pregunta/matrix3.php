@@ -1,4 +1,5 @@
 <?php
+$rangoNumeros = isset($pregunta['rango_numeros']) ? $pregunta['rango_numeros'] : ['inicio' => 1, 'fin' => 7];
 if (isset($pregunta['opciones']) && is_array($pregunta['opciones']) && isset($pregunta['subOpciones']) && is_array($pregunta['subOpciones'])) {
     $opciones = $pregunta['opciones'];
     $subOpciones = $pregunta['subOpciones'];
@@ -38,7 +39,7 @@ if (isset($pregunta['opciones']) && is_array($pregunta['opciones']) && isset($pr
 
             <div class="col-12 col-md-6 text-center col-lg-auto">
                 <div class="btn-group my-3 my-lg-0">
-                <?php for ($i = 1; $i <= 7; $i++):
+                <?php for ($i = $rangoNumeros['inicio']; $i <= $rangoNumeros['fin']; $i++):
                     $checked = '';
                     if (isset($respuestas[$clave]) && $respuestas[$clave] == $i) {
                         $checked = 'checked';

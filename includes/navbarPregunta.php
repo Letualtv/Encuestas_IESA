@@ -4,7 +4,6 @@
     <div class="col-12 col-md-6  text-center">
         <h6 class="navbar-text px-2 px-md-0 align-middle">
         <?php 
-// Accede e imprime un valor específico del array
 echo $variables['$textoCabeceraEncuesta']; 
 ?>
 

@@ -23,6 +23,42 @@ document.getElementById("preguntaForm").addEventListener("submit", function (eve
     // Recopilar la descripción (solo si está activada)
   const descripcion = recopilarDescripcion();
 
+// Recopilar el encabezado solo si el tipo de pregunta es matrix2 o matrix3
+const encabezado =
+  tipo === "matrix2" || tipo === "matrix3"
+    ? {
+        label: document.getElementById("label")?.value.trim() || "",
+        uno: {
+          [document.getElementById("unoClave")?.value]: document.getElementById("unoValor")?.value.trim() || "",
+        },
+        dos: {
+          [document.getElementById("dosClave")?.value]: document.getElementById("dosValor")?.value.trim() || "",
+        },
+        tres: document.getElementById("tres")?.value.trim() || "",
+      }
+    : {};
+
+// Validar que los elementos existan
+if (tipo === "matrix2" || tipo === "matrix3") {
+  if (!document.getElementById("label") || !document.getElementById("unoClave") || !document.getElementById("unoValor") || !document.getElementById("dosClave") || !document.getElementById("dosValor")) {
+    console.error("Error: Faltan elementos del encabezado en el DOM.");
+    return;
+  }
+}
+
+// Filtrar el encabezado para eliminar campos vacíos
+const encabezadoFiltrado = Object.keys(encabezado).length
+  ? Object.fromEntries(
+      Object.entries(encabezado).filter(([key, value]) => {
+        if (key === "uno" || key === "dos") {
+          return Object.values(value)[0]; // Solo incluir si hay un valor asociado a la clave
+        }
+        return value; // Incluir otros campos si no están vacíos
+      })
+    )
+  : {};
+  const encabezadoParaEnviar = Object.keys(encabezadoFiltrado).length ? encabezadoFiltrado : undefined;
+
     // Recopilar valores específicos para numberInput
     const valores =
       tipo === "numberInput"
@@ -120,6 +156,21 @@ document.getElementById("preguntaForm").addEventListener("submit", function (eve
           }
         }
       });
+    } else if (tipoPregunta === "matrix1") {
+      Array.from(document.querySelectorAll('[name="claves[]"]')).forEach((claveInput) => {
+        const clave = claveInput.value.trim();
+        const opcionContainer = claveInput.closest(".input-group");
+    
+        // Buscar los inputs de izquierda y derecha dentro del mismo contenedor
+        const izquierda = opcionContainer.querySelector('[name="izquierda[]"]')?.value.trim();
+        const derecha = opcionContainer.querySelector('[name="derecha[]"]')?.value.trim();
+    
+        if (clave && izquierda && derecha) {
+          opcionesObj[clave] = `${izquierda} - ${derecha}`;
+        } else {
+          console.warn(`Opción inválida: Clave=${clave}, Izquierda=${izquierda}, Derecha=${derecha}`);
+        }
+      });
     } else {
       // Para otros tipos de preguntas, guardar solo las opciones principales
       Array.from(document.querySelectorAll('[name="claves[]"]')).forEach((claveInput, index) => {
@@ -154,6 +205,7 @@ document.getElementById("preguntaForm").addEventListener("submit", function (eve
         valores,
         filtro: Object.keys(filtro).length ? filtro : {},
         cabecera: descripcion || undefined, // Incluir la descripción solo si existe
+        encabezado: encabezadoParaEnviar, // Solo incluir si hay datos
       }),
     })
       .then((response) => response.json())

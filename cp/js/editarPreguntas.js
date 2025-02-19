@@ -13,6 +13,18 @@ function ajustarParametros() {
   }
 }
 
+function ajustarEncabezado() {
+  const tipo = document.getElementById("tipo").value;
+  const encabezadoFields = document.getElementById("encabezadoFields");
+
+  // Mostrar u ocultar los campos de encabezado según el tipo de pregunta
+  if (tipo === "matrix2" || tipo === "matrix3") {
+    encabezadoFields.style.display = "block";
+  } else {
+    encabezadoFields.style.display = "none";
+  }
+}
+
 // Función para eliminar una opción dinámicamente
 function eliminarOpcion(button) {
   button.parentElement.remove();
@@ -55,6 +67,13 @@ function editarPregunta(id) {
           const subLabels = opcion.subLabel || {};
           agregarOpcion(clavePrincipal, label, subLabels);
         });
+      } else if (pregunta.tipo === "matrix1") {
+        const opciones = pregunta.opciones || {};
+        Object.keys(opciones).forEach((clave) => {
+          const opcionCompleta = opciones[clave];
+          const [izquierda, derecha] = opcionCompleta.split(" - ");
+          agregarOpcion(clave, `${izquierda} - ${derecha}`);
+        });
       } else {
         const opciones = pregunta.opciones || {};
         Object.keys(opciones).forEach((key) => {
@@ -68,7 +87,23 @@ function editarPregunta(id) {
         document.getElementById("placeholder").value =
           pregunta.valores?.placeholder || "";
       }
-
+      if (pregunta.encabezado) {
+        document.getElementById("label").value = pregunta.encabezado.label || "";
+      
+        // Recuperar la clave y el valor dinámicos para "uno"
+        const unoClave = Object.keys(pregunta.encabezado.uno)[0];
+        const unoValor = pregunta.encabezado.uno[unoClave];
+        document.getElementById("unoClave").value = unoClave || "";
+        document.getElementById("unoValor").value = unoValor || "";
+      
+        // Recuperar la clave y el valor dinámicos para "dos"
+        const dosClave = Object.keys(pregunta.encabezado.dos)[0];
+        const dosValor = pregunta.encabezado.dos[dosClave];
+        document.getElementById("dosClave").value = dosClave || "";
+        document.getElementById("dosValor").value = dosValor || "";
+      
+        document.getElementById("tres").value = pregunta.encabezado.tres || "";
+      }
 // Recuperar y mostrar la descripción (si existe)
 const descripcion = pregunta.cabecera || null; // Obtener la cabecera de la pregunta
 const mostrarDescripcionCheckbox = document.getElementById("mostrar-descripcion");
@@ -102,6 +137,7 @@ if (descripcion) {
 
       // Ajustar parámetros del formulario
       ajustarParametros();
+      ajustarEncabezado();
 
       // Cargar las reglas de filtro (si existen)
       cargarFiltro(pregunta.filtro || {});

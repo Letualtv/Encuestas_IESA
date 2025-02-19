@@ -1,4 +1,5 @@
 <?php
+$rangoNumeros = isset($pregunta['rango_numeros']) ? $pregunta['rango_numeros'] : ['inicio' => 1, 'fin' => 7];
 if (isset($pregunta['opciones']) && is_array($pregunta['opciones'])) {
     $options = $pregunta['opciones'];
 
@@ -29,11 +30,11 @@ if (isset($pregunta['opciones']) && is_array($pregunta['opciones'])) {
             <div class='col-12 col-md-6 text-center col-lg-auto'>
                 <div class='btn-group my-3 my-lg-0'>";
 
-        for ($i = 1; $i <= 7; $i++) {
-            $checked = '';
-            if (isset($respuestas[$clave]) && $respuestas[$clave] == $i) {
-                $checked = 'checked';
-            }
+                for ($i = $rangoNumeros['inicio']; $i <= $rangoNumeros['fin']; $i++) {
+                    $checked = '';
+                    if (isset($respuestas[$clave]) && $respuestas[$clave] == $i) {
+                        $checked = 'checked';
+                    }
 
             echo "
             <input type='radio' class='btn-check' required 

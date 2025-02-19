@@ -39,36 +39,67 @@
                 </div>
             </div>
 
-<!-- Contenedor para la descripción -->
-<div class="form-check form-switch my-2 rounded ">
-  <input
-    class="form-check-input"
-    type="checkbox"
-    id="mostrar-descripcion"
-    onchange="toggleDescripcion()"
-  />
-  <label class="form-check-label align-top " for="mostrar-descripcion">
-    Añadir descripción de pregunta
-  </label>
-</div>
+            <!-- Contenedor para la descripción -->
+            <div class="form-check form-switch my-2 rounded ">
+                <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="mostrar-descripcion"
+                    onchange="toggleDescripcion()" />
+                <label class="form-check-label align-top " for="mostrar-descripcion">
+                    Añadir descripción de pregunta
+                </label>
+            </div>
 
-<!-- Contenedor de la descripción (inicialmente oculto) -->
-<div id="descripcionContainer" class="mt-2" style="display: none;">
-  <div id="descripcionRule" class="descripcion-rule ">
-    <div class="input-group input-group-sm mb-1 ">
-      <span class="input-group-text col-md-2">Texto cabecera</span>
-      <input type="text" class="form-control shadow-sm texto1" placeholder="Cabecera">
-    </div>
-    <div class="input-group input-group-sm mb-1 ">
-      <span class="input-group-text col-md-2">Cajón de texto</span>
-      <textarea class="form-control form-control-sm shadow-sm lista" placeholder="Párrafo"></textarea>
-    </div>
-    <div class="input-group input-group-sm mb-1">
-      <span class="input-group-text col-md-2">Texto pie</span>
-      <input type="text" class="form-control shadow-sm texto2" placeholder="Pie">
-    </div>
-  </div>
-</div>
+            <!-- Contenedor de la descripción (inicialmente oculto) -->
+            <div id="descripcionContainer" class="mt-2" style="display: none;">
+                <div id="descripcionRule" class="descripcion-rule ">
+                    <div class="input-group input-group-sm mb-1 ">
+                        <span class="input-group-text col-md-2">Texto cabecera</span>
+                        <input type="text" class="form-control shadow-sm texto1" placeholder="Cabecera">
+                    </div>
+                    <div class="input-group input-group-sm mb-1 ">
+                        <span class="input-group-text col-md-2">Cajón de texto</span>
+                        <textarea class="form-control form-control-sm shadow-sm lista" placeholder="Párrafo"></textarea>
+                    </div>
+                    <div class="input-group input-group-sm mb-1">
+                        <span class="input-group-text col-md-2">Texto pie</span>
+                        <input type="text" class="form-control shadow-sm texto2" placeholder="Pie">
+                    </div>
+                </div>
+            </div>
+
+            <div id="encabezadoFields" style="display: none;" class="mt-3 bg-light p-3 rounded">
+                <h6 class="text-muted">Configuración del encabezado</h6>
+                <div class="mb-2">
+                    <label for="label" class="mb-2">Texto descriptivo:</label>
+                    <input type="text" id="label" name="label" class="form-control form-control-sm" placeholder="Ej: La importancia de la institución...">
+                </div>
+                <div class="row mb-2">
+                    <div class="col-6">
+                        <label  class="mb-2">Margen izquierdo</label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text ">Clave:</span>
+                            <input type="text" id="unoClave" name="unoClave" class="form-control ">
+                            <span class="input-group-text">Texto:</span>
+                            <input type="text" id="unoValor" name="unoValor" class="form-control w-50" placeholder="Ej: Muy en desacuerdo">
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <label  class="mb-2">Margen derecho</label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text">Clave:</span>
+                            <input type="text" id="dosClave" name="dosClave" class="form-control " >
+                            <span class="input-group-text">Texto:</span>
+                            <input type="text" id="dosValor" name="dosValor" class="form-control w-50" placeholder="Ej: Muy de acuerdo">
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <label for="tres" class="mb-2">Campo adicional (opcional):</label>
+                    <input type="text" id="tres" name="tres" class="form-control form-control-sm" placeholder="Información adicional">
+                </div>
+            </div>
 
             <div id="valores" class="mt-3">
                 <div id="numberInputFields" class="bg-light p-3 rounded" style="display: none;">
@@ -95,20 +126,20 @@
                 <label for="defaultOption">Opción predeterminada:</label>
                 <input type="text" id="defaultOption" name="defaultOption" placeholder="Clave de la opción predeterminada">
             </div>
-            <div class="bg-light px-2 pb-2 pt-1">
-            <div id="opciones" >
-                <label class="form-label">Opciones:</label>
-                <div id="opcionesContainer"></div>
+            <div class="bg-light p-2">
+                <div id="opciones">
+                    <label class="form-label">Opciones:</label>
+                    <div id="opcionesContainer"></div>
 
+                </div>
+
+
+                <div class="add-option-container my-2 ">
+                    <a type="button" class="btn btn-sm btn-outline-primary hover-zoom" onclick="agregarOpcion()">
+                        <i class="fa-solid fa-plus"></i> Agregar opción
+                    </a>
+                </div>
             </div>
-
-
-            <div class="add-option-container my-2 ">
-                <a type="button" class="btn btn-sm btn-outline-primary hover-zoom" onclick="agregarOpcion()">
-                    <i class="fa-solid fa-plus"></i> Agregar opción
-                </a>
-            </div>
-</div>
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" id="mostrar-filtro" name="mostrar-filtro" onchange="mostrarFiltro()">
                 <label class="form-check-label align-top" for="mostrar-filtro">

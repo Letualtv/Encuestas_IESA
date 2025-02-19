@@ -9,12 +9,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $opciones = $data['opciones']; // Opciones ya deben ser un objeto clave-valor
     $valores = isset($data['valores']) ? $data['valores'] : [];
     $filtro = isset($data['filtro']) ? (object)$data['filtro'] : (object)[]; // Filtro como objeto
-// Descripción (cabecera)
-$descripcion = $data['cabecera'] ?? null;
-$texto1 = $descripcion && isset($descripcion['texto1']) ? $descripcion['texto1'] : '';
-$lista = $descripcion && isset($descripcion['lista']) ? $descripcion['lista'] : '';
-$texto2 = $descripcion && isset($descripcion['texto2']) ? $descripcion['texto2'] : '';
-    
+    $descripcion = $data['cabecera'] ?? null;
+    $texto1 = $descripcion && isset($descripcion['texto1']) ? $descripcion['texto1'] : '';
+    $lista = $descripcion && isset($descripcion['lista']) ? $descripcion['lista'] : '';
+    $texto2 = $descripcion && isset($descripcion['texto2']) ? $descripcion['texto2'] : '';
+
+// Procesar el encabezado si es matrix2 o matrix3
+$encabezado = [];
+if (($data['tipo'] === 'matrix2' || $data['tipo'] === 'matrix3') && isset($data['encabezado'])) {
+    $encabezado = [
+        'label' => $data['encabezado']['label'] ?? '',
+        'uno' => isset($data['encabezado']['uno']) ? (object)$data['encabezado']['uno'] : (object)[],
+        'dos' => isset($data['encabezado']['dos']) ? (object)$data['encabezado']['dos'] : (object)[],
+        'tres' => $data['encabezado']['tres'] ?? '',
+    ];
+}
+
+
+
     $nuevaPregunta = [
         'id' => $id,
         'n_pag' => (int)$n_pag,
@@ -23,13 +35,18 @@ $texto2 = $descripcion && isset($descripcion['texto2']) ? $descripcion['texto2']
         'subTitulo' => $subTitulo,
         'opciones' => $opciones,
         'filtro' => $filtro,
-'cabecera' => [
+        'cabecera' => [
             'texto1' => $texto1,
             'lista' => $lista,
             'texto2' => $texto2,
         ],
+
     ];
 
+// Agregar el encabezado solo si contiene datos válidos
+if (!empty($encabezado)) {
+    $nuevaPregunta['encabezado'] = $encabezado;
+}
     if ($tipo === 'numberInput') {
         $nuevaPregunta['valores'] = [
             'min' => isset($valores['min']) ? (int)$valores['min'] : 1950,

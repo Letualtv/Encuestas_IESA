@@ -13,7 +13,7 @@
             "5": "Que te parece $estudio",
             "7": "Me gusta el"
         },
-        "filtro": {},
+        "filtro": [],
         "cabecera": {
             "texto1": "",
             "lista": "",
@@ -137,12 +137,14 @@
             }
         },
         "filtro": [],
-        "texto1": null,
-        "lista": null,
-        "texto2": null
+        "cabecera": {
+            "texto1": "",
+            "lista": "",
+            "texto2": ""
+        }
     },
     {
-        "id": 6,
+        "id": "6",
         "n_pag": 6,
         "tipo": "checkbox",
         "titulo": "\u00bfCu\u00e1l es su \u00e1rea de conocimiento principal?",
@@ -155,10 +157,16 @@
             "5": "Ciencias Sociales, del comportamiento y ciencias Jur\u00eddicas",
             "6": "Artes y Humanidades",
             "7": "Interdisciplinar y otras"
+        },
+        "filtro": [],
+        "cabecera": {
+            "texto1": "",
+            "lista": "",
+            "texto2": ""
         }
     },
     {
-        "id": 7,
+        "id": "7",
         "n_pag": 7,
         "tipo": "radio",
         "titulo": "\u00bfCu\u00e1l es su \u00e1rea de conocimiento principal?",
@@ -170,13 +178,20 @@
             "4": "Obras, instalaciones, mantenimiento, seguridad",
             "5": "\u00c1reas tecnol\u00f3gicas o cient\u00edficas especializadas",
             "6": "Otros"
+        },
+        "filtro": [],
+        "cabecera": {
+            "texto1": "",
+            "lista": "",
+            "texto2": ""
         }
     },
     {
-        "id": 8,
+        "id": "8",
         "n_pag": 8,
         "tipo": "matrix1",
         "titulo": "Valore su entorno de trabajo habitual m\u00e1s cercano (departamento, \u00e1rea, facultad, etc) en {{ getInstitutionName() }} en los siguientes aspectos:",
+        "subTitulo": "",
         "opciones": {
             "8": "Inflexible - Flexible",
             "9": "Hostil - Amigable",
@@ -186,21 +201,33 @@
             "13": "Estresante - Relajado",
             "14": "Discriminador - Inclusivo"
         },
-        "subTitulo": ""
+        "filtro": [],
+        "cabecera": {
+            "texto1": "",
+            "lista": "",
+            "texto2": ""
+        }
     },
     {
-        "id": 15,
+        "id": "15",
         "n_pag": 9,
         "tipo": "matrix2",
         "titulo": "Para cada una de las siguientes frases, por favor elija la respuesta que mejor describe su situaci\u00f3n en el trabajo en esta instituci\u00f3n.",
+        "subTitulo": "",
         "opciones": {
             "15": "Tengo la capacidad para influir en decisiones que son importantes para mi trabajo",
             "16": "Estoy satisfecho\/a con el nivel de promoci\u00f3n que he logrado en mi carrera",
             "17": "Estoy contento\/a con el salario que recibo",
             "18": "Tengo claras mis funciones y responsabilidades"
         },
-        "encabezado2": {
-            "label": "La promoci\u00f3n en { getInstitutionName() } depende...",
+        "filtro": {},
+        "cabecera": {
+            "texto1": "",
+            "lista": "",
+            "texto2": ""
+        },
+        "encabezado": {
+            "label": "La promoci\u00f3n en $estudio depende...",
             "uno": {
                 "1": "Muy en desacuerdo"
             },
@@ -208,8 +235,7 @@
                 "7": "Muy de acuerdo"
             },
             "tres": ""
-        },
-        "subTitulo": ""
+        }
     },
     {
         "id": 19,
@@ -222,7 +248,7 @@
             "21": "... de <b>contactos y relaciones<\/b> con las personas que ya trabajan en ella.",
             "22": "... de la capacidad para <b>superar una oposici\u00f3n o prueba<\/b> selectiva desde el inicio."
         },
-        "encabezado2": {
+        "encabezado": {
             "label": "La promoci\u00f3n en { getInstitutionName() } depende...",
             "uno": {
                 "1": "Muy en desacuerdo"
@@ -245,7 +271,7 @@
             "25": "... de <b>contactos y relaciones<\/b> con las personas que ya trabajan en ella.",
             "26": "... de la capacidad para <b>superar una oposici\u00f3n o prueba selectiva<\/b>."
         },
-        "encabezado2": {
+        "encabezado": {
             "label": "La promoci\u00f3n en { getInstitutionName() } depende...",
             "uno": {
                 "1": "Muy en desacuerdo"
@@ -278,7 +304,7 @@
             "3": "... de <b>contactos y relaciones<\/b> con las personas que ya trabajan en ella.",
             "4": "... de la capacidad para <b>superar una oposici\u00f3n o prueba selectiva<\/b>."
         },
-        "encabezado2": {
+        "encabezado": {
             "label": "La promoci\u00f3n en { getInstitutionName() } depende...",
             "uno": {
                 "1": "Muy en desacuerdo"
@@ -301,7 +327,7 @@
             "37": "Considero que un funcionamiento adecuado de la instituci\u00f3n es <b>esencial para el entorno<\/b> en el que se encuentra",
             "38": "Hay una <b>buena cooperaci\u00f3n<\/b> entre esta instituci\u00f3n y <b>la administraci\u00f3n<\/b> de la que depende"
         },
-        "encabezado2": {
+        "encabezado": {
             "label": "La promoci\u00f3n en { getInstitutionName() } depende...",
             "uno": {
                 "1": "Muy en desacuerdo"
@@ -327,7 +353,7 @@
             "44": "El desarrollo del <b>entorno local<\/b> o <b>regional<\/b> (en forma de fuentes de riqueza en el territorio y empleo)",
             "45": "El aumento de la <b>cohesi\u00f3n social<\/b> (igualdad social, de oportunidades, etc.)"
         },
-        "encabezado2": {
+        "encabezado": {
             "label": "La importancia de la instituci\u00f3n en el exterior depende...",
             "uno": {
                 "1": "Muy en desacuerdo"
@@ -353,7 +379,7 @@
             "51": "El desarrollo del <b>entorno local<\/b> o <b>regional<\/b> (en forma de fuentes de riqueza en el territorio y empleo)",
             "52": "El aumento de la <b>cohesi\u00f3n social<\/b> (igualdad social, de oportunidades, etc.)"
         },
-        "encabezado2": {
+        "encabezado": {
             "label": "La importancia de la instituci\u00f3n en el exterior depende...",
             "uno": {
                 "1": "Muy en desacuerdo"
@@ -376,7 +402,7 @@
             "55": "...<b>instrumental tecnol\u00f3gico especializado<\/b> necesario para llevar a cabo nuestro trabajo",
             "56": "...nuevos m\u00e9todos para organizar las <b>relaciones externas<\/b> con otros organismos o empresas (alianzas para realizar actividades, nuevos m\u00e9todos para subcontratar, para trabajar con proveedores, etc.)"
         },
-        "encabezado2": {
+        "encabezado": {
             "label": "La importancia de la instituci\u00f3n en el exterior depende...",
             "uno": {
                 "1": "Muy en desacuerdo"
@@ -426,7 +452,7 @@
             "61": "La que es responsabilidad de   $getInstitutionName()  ",
             "62": "La que procede de <b>otros organismos<\/b> (Convocatorias de proyectos, infraestructuras, evaluaciones externas, etc.)"
         },
-        "encabezado2": {
+        "encabezado": {
             "label": "La importancia de la instituci\u00f3n en el exterior depende...",
             "uno": {
                 "1": "Muy en desacuerdo"
@@ -449,7 +475,7 @@
             "65": "La mayor\u00eda de <b>los\/as trabajadores\/as<\/b> trabajan de acuerdo con los objetivos de la instituci\u00f3n",
             "66": "La mayor\u00eda de <b>los\/as trabajadores\/as<\/b> se esfuerzan por mejorar la calidad de los servicios y beneficiar a los usuarios."
         },
-        "encabezado2": {
+        "encabezado": {
             "label": "",
             "uno": {
                 "1": "Muy en desacuerdo"
@@ -475,7 +501,7 @@
             "72": "Grupos de <b>personal administrativo<\/b> o de servicios",
             "73": "Grupos de una determinada <b>ideolog\u00eda, tenedencia pol\u00edtica o religi\u00f3n<\/b>"
         },
-        "encabezado2": {
+        "encabezado": {
             "label": "",
             "uno": {
                 "1": "No tienen ninguna influencia en la instituci\u00f3n"
@@ -501,7 +527,7 @@
             "79": "Grupos de <b>personal administrativo<\/b> o de servicios",
             "80": "Grupos de una determinada <b>ideolog\u00eda, tenedencia pol\u00edtica o religi\u00f3n<\/b>"
         },
-        "encabezado2": {
+        "encabezado": {
             "label": "",
             "uno": {
                 "1": "No tienen ninguna influencia en la instituci\u00f3n"
@@ -528,7 +554,7 @@
             "87": "Las <b>asociaciones profesionales<\/b>, colegios profesionales o similares",
             "88": "Los sindicatos<\/b>"
         },
-        "encabezado2": {
+        "encabezado": {
             "label": "",
             "uno": {
                 "1": "Presta muy poco apoyo"

@@ -25,7 +25,7 @@ $menuItems = [
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <link rel="stylesheet" href="assets/css/app.css">
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-    <title><?php echo $pageTitle ?? 'Mi Sitio Web'; ?></title>
+    <title><?php echo $pageTitle ?? 'Encuestas IESA'; ?></title>
 </head>
 <body>
 

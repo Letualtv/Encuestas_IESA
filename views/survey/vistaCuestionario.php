@@ -23,7 +23,12 @@
     </div>
 <?php endif; ?>
 
-        <?php include_once __DIR__ . '/tipo_de_pregunta/encabezado.php'; ?>
+<?php
+// Verifica si el encabezado existe en el JSON
+if (isset($pregunta['encabezado'])) {
+    include_once __DIR__ . '/tipo_de_pregunta/encabezado.php';
+}
+?>
         <?php
         switch ($pregunta['tipo']) {
             case 'radio':
