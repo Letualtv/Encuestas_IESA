@@ -5,7 +5,7 @@
         <?= $encabezado['label'] ?>
     </div>
 
-    <div class="col-12 col-md-6 col-lg-5">
+    <div class="col-12 col-md-6 col-lg-4 mx-lg-5">
         <div class="d-flex justify-content-lg-evenly justify-content-md-center justify-content-between">
             <?php
             // Función para evitar la repetición de código

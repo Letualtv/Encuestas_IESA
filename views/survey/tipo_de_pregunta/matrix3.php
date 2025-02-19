@@ -1,5 +1,6 @@
 <?php
-$rangoNumeros = isset($pregunta['rango_numeros']) ? $pregunta['rango_numeros'] : ['inicio' => 1, 'fin' => 7];
+$encabezado = isset($pregunta['encabezado']) ? $pregunta['encabezado'] : null;
+
 if (isset($pregunta['opciones']) && is_array($pregunta['opciones']) && isset($pregunta['subOpciones']) && is_array($pregunta['subOpciones'])) {
     $opciones = $pregunta['opciones'];
     $subOpciones = $pregunta['subOpciones'];
@@ -37,13 +38,14 @@ if (isset($pregunta['opciones']) && is_array($pregunta['opciones']) && isset($pr
                 <label for="q<?= $clave ?>_<?= $subId ?>_1" class="form-label"><?= $Label ?></label>
             </div>
 
-            <div class="col-12 col-md-6 text-center col-lg-auto">
+            <div class="col-12 col-md-6 text-center col-lg-auto mx-auto">
                 <div class="btn-group my-3 my-lg-0">
-                <?php for ($i = $rangoNumeros['inicio']; $i <= $rangoNumeros['fin']; $i++):
-                    $checked = '';
-                    if (isset($respuestas[$clave]) && $respuestas[$clave] == $i) {
-                        $checked = 'checked';
-                    }
+                <?php 
+                    for ($i = $keyUno; $i <= $keyDos; $i++):
+                        $checked = '';
+                        if (isset($respuestas[$clave]) && $respuestas[$clave] == $i) {
+                            $checked = 'checked';
+                        }
                 ?>
                     <input type="radio" required class="btn-check" name="<?= $clave ?>" 
                         id="q<?= $clave ?>_<?= $subId ?>_<?= $i ?>" value="<?= $i ?>" <?= $checked ?> autocomplete="off"> 
@@ -52,7 +54,7 @@ if (isset($pregunta['opciones']) && is_array($pregunta['opciones']) && isset($pr
                 </div>
             </div>
 
-            <div class="col-12 col-md-6 col-lg-3 mt-3 mt-md-0">
+            <div class="col-12 col-md-6 col-lg-3 mt-3 mt-md-0 ">
                 <div class="justify-content-md-end justify-content-evenly d-flex gap-0 gap-md-2 text-center">
                     <input type="radio" required name="<?= $clave ?>" value="88" class="btn-check"
                         id="q<?= $clave ?>_<?= $subId ?>_88" <?= $checked88 ?> autocomplete="off">
