@@ -199,7 +199,9 @@
             "11": "No meritocr\u00e1tico - Meritocr\u00e1tico",
             "12": "No competitivo - Competitivo",
             "13": "Estresante - Relajado",
-            "14": "Discriminador - Inclusivo"
+            "14": "Discriminador - Inclusivo",
+            "15": "fasdf - asdf",
+            "16": "asdf - asdf"
         },
         "filtro": [],
         "cabecera": {
@@ -220,7 +222,7 @@
             "17": "Estoy contento\/a con el salario que recibo",
             "18": "Tengo claras mis funciones y responsabilidades"
         },
-        "filtro": {},
+        "filtro": [],
         "cabecera": {
             "texto1": "",
             "lista": "",
@@ -238,15 +240,22 @@
         }
     },
     {
-        "id": 19,
+        "id": "19",
         "n_pag": 10,
         "tipo": "matrix2",
         "titulo": "A continuaci\u00f3n, le vamos a exponer algunas situaciones sobre <b>el acceso<\/b> a esta instituci\u00f3n, referidas a <b>la primera<\/b> vez que se comienza trabajar en cualquier modalidad. Indique su grado de acuerdo con cada una de ellas.",
+        "subTitulo": "",
         "opciones": {
             "19": "... del <b>prestigio cient\u00edfico o profesional externo<\/b> (el reconocimiento general en una especialidad o trayectoria).",
             "20": "... de la <b>capacidad de adaptarse<\/b> bien a las necesidades del lugar de trabajo (equipo, departamento, etc,)",
             "21": "... de <b>contactos y relaciones<\/b> con las personas que ya trabajan en ella.",
-            "22": "... de la capacidad para <b>superar una oposici\u00f3n o prueba<\/b> selectiva desde el inicio."
+            "25": "... de la capacidad para <b>superar una oposici\u00f3n o prueba<\/b> selectiva desde el inicio."
+        },
+        "filtro": [],
+        "cabecera": {
+            "texto1": "",
+            "lista": "",
+            "texto2": ""
         },
         "encabezado": {
             "label": "La promoci\u00f3n en { getInstitutionName() } depende...",
@@ -257,8 +266,7 @@
                 "7": "Muy de acuerdo"
             },
             "tres": ""
-        },
-        "subTitulo": ""
+        }
     },
     {
         "id": 23,
@@ -284,25 +292,22 @@
         "subTitulo": ""
     },
     {
-        "id": 27,
+        "id": "27",
         "n_pag": 12,
         "tipo": "matrix3",
         "titulo": "A continuaci\u00f3n le vamos a nombrar una serie de actividades que pueden producirse en <b>{{ getInstitutionName() }}<\/b>. \u00bfQu\u00e9 grado de <b>importancia<\/b> tiene en su <b>carga de trabajo habitual<\/b>? y, \u00bfQu\u00e9 grado de <b>importancia<\/b> tienen para <b>su promoci\u00f3n profesional<\/b>?",
+        "subTitulo": "",
         "opciones": {
-            "27": "Carga de trabajo habitual",
-            "28": "Promoci\u00f3n profesional",
-            "29": "Carga de trabajo habitual",
-            "30": "Promoci\u00f3n profesional",
-            "31": "Carga de trabajo habitual",
-            "32": "Promoci\u00f3n profesional",
-            "33": "Carga de trabajo habitual",
-            "34": "Promoci\u00f3n profesional"
+            "1": {
+                "label": "Inflexible",
+                "subLabel": []
+            }
         },
-        "subOpciones": {
-            "1": "<b>Docencia<\/b> universitaria.",
-            "2": "<b>Publicaciones cient\u00edficas<\/b> de car\u00e1cter acad\u00e9mico",
-            "3": "... de <b>contactos y relaciones<\/b> con las personas que ya trabajan en ella.",
-            "4": "... de la capacidad para <b>superar una oposici\u00f3n o prueba selectiva<\/b>."
+        "filtro": {},
+        "cabecera": {
+            "texto1": "",
+            "lista": "",
+            "texto2": ""
         },
         "encabezado": {
             "label": "La promoci\u00f3n en { getInstitutionName() } depende...",
@@ -313,8 +318,7 @@
                 "7": "Muy de acuerdo"
             },
             "tres": ""
-        },
-        "subTitulo": ""
+        }
     },
     {
         "id": 35,
@@ -415,7 +419,7 @@
         "subTitulo": ""
     },
     {
-        "id": 57,
+        "id": "57",
         "n_pag": 17,
         "tipo": "numberInput",
         "titulo": "\u00bfQu\u00e9 porcentaje de su trabajo suele dedicar a <b>procedimientos administrativos y de gesti\u00f3n<\/b>?",
@@ -425,9 +429,15 @@
             "88": "No me acuerdo",
             "99": "No deseo contestar"
         },
+        "filtro": [],
+        "cabecera": {
+            "texto1": "",
+            "lista": "",
+            "texto2": ""
+        },
         "valores": {
-            "min": "0",
-            "max": "100",
+            "min": 0,
+            "max": 100,
             "placeholder": "0-100%"
         }
     },
@@ -802,5 +812,102 @@
             "2": "No"
         },
         "subTitulo": ""
+    },
+    {
+        "id": "16",
+        "n_pag": 9,
+        "tipo": "matrix2",
+        "titulo": "Para cada una de las siguientes frases, por favor elija la respuesta que mejor describe su situaci\u00f3n en el trabajo en esta instituci\u00f3n.",
+        "subTitulo": "",
+        "opciones": {
+            "15": "Tengo la capacidad para influir en decisiones que son importantes para mi trabajo",
+            "16": "Estoy satisfecho\/a con el nivel de promoci\u00f3n que he logrado en mi carrera",
+            "17": "Estoy contento\/a con el salario que recibo",
+            "18": "Tengo claras mis funciones y responsabilidades"
+        },
+        "filtro": [],
+        "cabecera": {
+            "texto1": "",
+            "lista": "",
+            "texto2": ""
+        },
+        "encabezado": {
+            "label": "La promoci\u00f3n en $estudio depende...",
+            "uno": {
+                "1": "Muy en desacuerdo"
+            },
+            "dos": {
+                "7": "Muy de acuerdo"
+            },
+            "tres": ""
+        }
+    },
+    {
+        "id": "9",
+        "n_pag": 8,
+        "tipo": "matrix1",
+        "titulo": "Valore su entorno de trabajo habitual m\u00e1s cercano (departamento, \u00e1rea, facultad, etc) en {{ getInstitutionName() }} en los siguientes aspectos:",
+        "subTitulo": "",
+        "opciones": {
+            "8": "Inflexible - Flexible",
+            "9": "Hostil - Amigable",
+            "10": "Rutinario - Creativo",
+            "11": "No meritocr\u00e1tico - Meritocr\u00e1tico",
+            "12": "No competitivo - Competitivo",
+            "13": "Estresante - Relajado",
+            "14": "Discriminador - Inclusivo"
+        },
+        "filtro": [],
+        "cabecera": {
+            "texto1": "",
+            "lista": "",
+            "texto2": ""
+        }
+    },
+    {
+        "id": "10",
+        "n_pag": 8,
+        "tipo": "matrix1",
+        "titulo": "Valore su entorno de trabajo habitual m\u00e1s cercano (departamento, \u00e1rea, facultad, etc) en {{ getInstitutionName() }} en los siguientes aspectos:",
+        "subTitulo": "",
+        "opciones": {
+            "8": "Inflexible - Flexible",
+            "9": "Hostil - Amigable",
+            "10": "Rutinario - Creativo",
+            "11": "No meritocr\u00e1tico - Meritocr\u00e1tico",
+            "12": "No competitivo - Competitivo",
+            "13": "Estresante - Relajado",
+            "14": "Discriminador - Inclusivo"
+        },
+        "filtro": [],
+        "cabecera": {
+            "texto1": "",
+            "lista": "",
+            "texto2": ""
+        }
+    },
+    {
+        "id": "40",
+        "n_pag": 8,
+        "tipo": "matrix1",
+        "titulo": "Valore su entorno de trabajo habitual m\u00e1s cercano (departamento, \u00e1rea, facultad, etc) en {{ getInstitutionName() }} en los siguientes aspectos:",
+        "subTitulo": "",
+        "opciones": {
+            "40": "Inflexible - Flexible",
+            "41": "Hostil - Amigable",
+            "42": "Rutinario - Creativo",
+            "43": "No meritocr\u00e1tico - Meritocr\u00e1tico",
+            "44": "No competitivo - Competitivo",
+            "45": "Estresante - Relajado",
+            "46": "Discriminador - Inclusivo",
+            "47": "fasdf - asdf",
+            "48": "asdf - asdf"
+        },
+        "filtro": [],
+        "cabecera": {
+            "texto1": "",
+            "lista": "",
+            "texto2": ""
+        }
     }
 ]

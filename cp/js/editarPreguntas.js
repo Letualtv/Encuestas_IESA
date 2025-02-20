@@ -1,4 +1,3 @@
-
 // Función para ajustar los parámetros del formulario según el tipo de pregunta
 function ajustarParametros() {
   const tipo = document.getElementById("tipo").value;
@@ -7,7 +6,6 @@ function ajustarParametros() {
   // Mostrar u ocultar campos adicionales según el tipo de pregunta
   if (tipo === "numberInput") {
     numberInputFields.style.display = "block";
-  
   } else {
     numberInputFields.style.display = "none";
   }
@@ -59,7 +57,7 @@ function editarPregunta(id) {
       }
 
       // Agregar las opciones existentes
-      if (pregunta.tipo === "formSelect") {
+      if (pregunta.tipo === "formSelect" || pregunta.tipo === "matrix3") {
         const opciones = pregunta.opciones || {};
         Object.keys(opciones).forEach((clavePrincipal) => {
           const opcion = opciones[clavePrincipal];
@@ -74,6 +72,14 @@ function editarPregunta(id) {
           const [izquierda, derecha] = opcionCompleta.split(" - ");
           agregarOpcion(clave, `${izquierda} - ${derecha}`);
         });
+      } else if (tipoPregunta === "matrix1" || tipoPregunta === "matrix2") {
+        Array.from(opcionesDiv.children).forEach((opcion, index) => {
+          const claveInput = opcion.querySelector('[name="claves[]"]');
+          if (claveInput) {
+            claveInput.value = preguntaId + index;
+          }
+        });
+      
       } else {
         const opciones = pregunta.opciones || {};
         Object.keys(opciones).forEach((key) => {
@@ -88,52 +94,63 @@ function editarPregunta(id) {
           pregunta.valores?.placeholder || "";
       }
       if (pregunta.encabezado) {
-        document.getElementById("label").value = pregunta.encabezado.label || "";
-      
+        document.getElementById("label").value =
+          pregunta.encabezado.label || "";
+
         // Recuperar la clave y el valor dinámicos para "uno"
         const unoClave = Object.keys(pregunta.encabezado.uno)[0];
         const unoValor = pregunta.encabezado.uno[unoClave];
         document.getElementById("unoClave").value = unoClave || "";
         document.getElementById("unoValor").value = unoValor || "";
-      
+
         // Recuperar la clave y el valor dinámicos para "dos"
         const dosClave = Object.keys(pregunta.encabezado.dos)[0];
         const dosValor = pregunta.encabezado.dos[dosClave];
         document.getElementById("dosClave").value = dosClave || "";
         document.getElementById("dosValor").value = dosValor || "";
-      
+
         document.getElementById("tres").value = pregunta.encabezado.tres || "";
       }
-// Recuperar y mostrar la descripción (si existe)
-const descripcion = pregunta.cabecera || null; // Obtener la cabecera de la pregunta
-const mostrarDescripcionCheckbox = document.getElementById("mostrar-descripcion");
-const descripcionContainer = document.getElementById("descripcionContainer");
+      // Recuperar y mostrar la descripción (si existe)
+      const descripcion = pregunta.cabecera || null; // Obtener la cabecera de la pregunta
+      const mostrarDescripcionCheckbox = document.getElementById(
+        "mostrar-descripcion"
+      );
+      const descripcionContainer = document.getElementById(
+        "descripcionContainer"
+      );
 
-if (descripcion) {
-  // Verificar si todos los campos de descripción están vacíos
-  const texto1Vacio = !descripcion.texto1 || descripcion.texto1.trim() === "";
-  const listaVacia = !descripcion.lista || descripcion.lista.trim() === "";
-  const texto2Vacio = !descripcion.texto2 || descripcion.texto2.trim() === "";
+      if (descripcion) {
+        // Verificar si todos los campos de descripción están vacíos
+        const texto1Vacio =
+          !descripcion.texto1 || descripcion.texto1.trim() === "";
+        const listaVacia =
+          !descripcion.lista || descripcion.lista.trim() === "";
+        const texto2Vacio =
+          !descripcion.texto2 || descripcion.texto2.trim() === "";
 
-  if (texto1Vacio && listaVacia && texto2Vacio) {
-    // Si todos los campos están vacíos, desactivar el checkbox y ocultar el contenedor
-    mostrarDescripcionCheckbox.checked = false;
-    descripcionContainer.style.display = "none";
-  } else {
-    // Si hay contenido en al menos un campo, activar el checkbox y mostrar el contenedor
-    mostrarDescripcionCheckbox.checked = true;
-    descripcionContainer.style.display = "block";
+        if (texto1Vacio && listaVacia && texto2Vacio) {
+          // Si todos los campos están vacíos, desactivar el checkbox y ocultar el contenedor
+          mostrarDescripcionCheckbox.checked = false;
+          descripcionContainer.style.display = "none";
+        } else {
+          // Si hay contenido en al menos un campo, activar el checkbox y mostrar el contenedor
+          mostrarDescripcionCheckbox.checked = true;
+          descripcionContainer.style.display = "block";
 
-    // Rellenar los campos de descripción
-    document.querySelector("#descripcionRule .texto1").value = descripcion.texto1 || "";
-    document.querySelector("#descripcionRule .lista").value = descripcion.lista || "";
-    document.querySelector("#descripcionRule .texto2").value = descripcion.texto2 || "";
-  }
-} else {
-  // Desactivar el interruptor de descripción si no hay descripción
-  mostrarDescripcionCheckbox.checked = false;
-  descripcionContainer.style.display = "none";
-}
+          // Rellenar los campos de descripción
+          document.querySelector("#descripcionRule .texto1").value =
+            descripcion.texto1 || "";
+          document.querySelector("#descripcionRule .lista").value =
+            descripcion.lista || "";
+          document.querySelector("#descripcionRule .texto2").value =
+            descripcion.texto2 || "";
+        }
+      } else {
+        // Desactivar el interruptor de descripción si no hay descripción
+        mostrarDescripcionCheckbox.checked = false;
+        descripcionContainer.style.display = "none";
+      }
 
       // Ajustar parámetros del formulario
       ajustarParametros();

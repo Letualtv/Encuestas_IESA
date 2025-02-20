@@ -5,40 +5,68 @@ let isEditing = true;
 function agregarOpcion(clave = "", opcion = "", subLabels = {}) {
   const opcionesDiv = document.getElementById("opciones");
   const tipoPregunta = document.getElementById("tipo").value;
+  const preguntaId = parseInt(document.getElementById("preguntaId").value) || 0;
 
   // Crear la nueva opción principal
   const nuevaOpcion = document.createElement("div");
   nuevaOpcion.classList.add("input-group", "mb-2");
-
-  if (tipoPregunta === "matrix1") {
-    const [izquierda, derecha] = opcion.split(" - ");
-
-
+  
+  if (tipoPregunta === "matrix3") {
+    // Generar clave autoincremental para labels principales (1, 2, 3, ...)
+    const claveAutomatica = opcionesDiv.children.length + 1;
 
     nuevaOpcion.innerHTML = `
+      <div class="input-group-text shadow-sm fw-bold">Clave</div>
+      <input type="text" class="form-control shadow-sm clave-principal col-1" name="claves[]" value="${clave || claveAutomatica}" required>
       <button type="button" class="btn btn-outline-danger btn-sm" onclick="eliminarOpcion(this)">
         <i class="fa-solid fa-trash"></i>
       </button>
-      <input type="text" class="form-control shadow-sm clave-principal" name="claves[]" placeholder="Clave" value="${clave}" required>
+      <input type="text" class="form-control w-75 shadow-sm label-principal" name="opciones[]" placeholder="Opción" value="${opcion}" required>
+    `;
+  } else if (tipoPregunta === "matrix1") {
+    const [izquierda, derecha] = opcion.split(" - ");
+    // Generar clave automática basada en el ID para matrix1
+    const claveAutomatica = preguntaId + opcionesDiv.children.length;
+
+    nuevaOpcion.innerHTML = `
+      <div class="input-group-text shadow-sm fw-bold">ID</div>
+      <input type="text" class="input-group-text shadow-sm clave-principal col-1" name="claves[]" value="${clave || claveAutomatica}" disabled>
+      <button type="button" class="btn btn-outline-danger btn-sm" onclick="eliminarOpcion(this)">
+        <i class="fa-solid fa-trash"></i>
+      </button>
       <input type="text" class="form-control shadow-sm w-25" name="izquierda[]" placeholder="Extremo izquierdo" value="${izquierda || ''}" required>
       <div class="input-group-text"><i class="fa-solid fa-minus"></i></div>
       <input type="text" class="form-control shadow-sm w-25" name="derecha[]" placeholder="Extremo derecho" value="${derecha || ''}" required>
     `;
+  } else if (tipoPregunta === "matrix2") {
+    // Generar clave automática basada en el ID para matrix2
+    const claveAutomatica = preguntaId + opcionesDiv.children.length;
+
+    nuevaOpcion.innerHTML = `
+      <div class="input-group-text shadow-sm fw-bold">ID</div>
+      <input type="text" class="input-group-text shadow-sm clave-principal col-1" name="claves[]" value="${clave || claveAutomatica}" disabled>
+      <button type="button" class="btn btn-outline-danger btn-sm" onclick="eliminarOpcion(this)">
+        <i class="fa-solid fa-trash"></i>
+      </button>
+      <input type="text" class="form-control w-75 shadow-sm label-principal" name="opciones[]" placeholder="Opción" value="${opcion}" required>
+    `;
   } else {
-    // Para otros tipos de preguntas, usar los inputs estándar
+    // Para otros tipos de preguntas, generar claves autoincrementales desde 1
+    const claveAutomatica = opcionesDiv.children.length + 1;
+
     nuevaOpcion.innerHTML = `
       <button type="button" class="btn btn-outline-danger btn-sm" onclick="eliminarOpcion(this)">
         <i class="fa-solid fa-trash"></i>
       </button>
-      <input type="text" class="form-control shadow-sm clave-principal" name="claves[]" placeholder="Clave" value="${clave}" required>
+      <input type="text" class="form-control shadow-sm clave-principal" name="claves[]" placeholder="Clave" value="${clave || claveAutomatica}">
       <input type="text" class="form-control w-75 shadow-sm label-principal" name="opciones[]" placeholder="Opción" value="${opcion}" required>
     `;
   }
 
   opcionesDiv.appendChild(nuevaOpcion);
 
-  // Agregar subLabels solo si el tipo de pregunta es formSelect
-  if (tipoPregunta === "formSelect") {
+  // Agregar subLabels solo si el tipo de pregunta es formSelect o matrix3
+  if (tipoPregunta === "formSelect" || tipoPregunta === "matrix3") {
     const subLabelsDiv = document.createElement("div");
     subLabelsDiv.classList.add("sublabels-container", "ms-4");
 
@@ -51,26 +79,56 @@ function agregarOpcion(clave = "", opcion = "", subLabels = {}) {
     // Botón para agregar un nuevo subLabel
     const addSubLabelButton = document.createElement("button");
     addSubLabelButton.classList.add("btn", "btn-sm", "btn-secondary", "mt-2", "mb-3");
-    addSubLabelButton.textContent = "Agregar opción al desplegable";
+    addSubLabelButton.textContent = tipoPregunta === "matrix3" ? "Agregar opción a la matriz" : "Agregar opción al desplegable";
     addSubLabelButton.onclick = () => agregarSubLabel(subLabelsDiv);
     subLabelsDiv.appendChild(addSubLabelButton);
-
     opcionesDiv.appendChild(subLabelsDiv);
   }
 }
 
+// Evento para actualizar las claves automáticamente cuando el ID cambia
+document.getElementById("preguntaId").addEventListener("input", function () {
+  const preguntaId = parseInt(this.value) || 0;
+  const opcionesDiv = document.getElementById("opciones");
+
+  Array.from(opcionesDiv.children).forEach((opcion, index) => {
+    const claveInput = opcion.querySelector('[name="claves[]"]');
+    if (claveInput) {
+      claveInput.value = preguntaId + index;
+    }
+  });
+});
+
 // Función para agregar un subLabel
 function agregarSubLabel(container, clave = "", valor = "") {
+  const tipoPregunta = document.getElementById("tipo").value;
+  const preguntaId = parseInt(document.getElementById("preguntaId").value) || 0;
+
   const subLabelDiv = document.createElement("div");
-  subLabelDiv.classList.add("input-group", "mb-2", "input-group-sm");
-  subLabelDiv.innerHTML = `
-    <i class="fa-solid fa-arrow-right-from-bracket align-middle px-2 align-self-center"></i>  
-    <button type="button" class="btn btn-outline-danger btn-sm" onclick="eliminarSubLabel(this)">
-      <i class="fa-solid fa-trash"></i>
-    </button>
-    <input type="text" class="form-control shadow-sm clave-sublabel" name="subClaves[]" placeholder="Clave" value="${clave}" required>
-    <input type="text" class="form-control w-75 shadow-sm valor-sublabel" name="subValores[]" placeholder="Valor" value="${valor}" required>
-  `;
+  subLabelDiv.classList.add("input-group", "input-group-sm", "mb-2");
+
+  if (tipoPregunta === "matrix3") {
+    // Generar clave automática basada en el ID y el número de sublabels existentes
+    const claveAutomatica = preguntaId + container.children.length;
+
+    subLabelDiv.innerHTML = `
+      <div class="input-group-text shadow-sm fw-bold">ID</div>
+      <input type="text" class="input-group-text shadow-sm clave-sublabel col-1" name="subClaves[]" value="${clave || claveAutomatica}" disabled>
+      <button type="button" class="btn btn-outline-danger btn-sm" onclick="eliminarSubLabel(this)">
+        <i class="fa-solid fa-trash"></i>
+      </button>
+      <input type="text" class="form-control w-75 shadow-sm sublabel-principal" name="subValores[]" placeholder="SubLabel" value="${valor}" required>
+    `;
+  } else {
+    // Para otros tipos de preguntas, usar inputs estándar
+    subLabelDiv.innerHTML = `
+      <button type="button" class="btn btn-outline-danger btn-sm" onclick="eliminarSubLabel(this)">
+        <i class="fa-solid fa-trash"></i>
+      </button>
+      <input type="text" class="form-control shadow-sm clave-sublabel" name="subClaves[]" placeholder="Clave" value="${clave}">
+      <input type="text" class="form-control w-75 shadow-sm sublabel-principal" name="subValores[]" placeholder="SubLabel" value="${valor}" required>
+    `;
+  }
 
   // Insertar el sublabel antes del botón "Agregar opción al desplegable"
   const addButton = container.querySelector("button.btn-secondary");
@@ -79,6 +137,11 @@ function agregarSubLabel(container, clave = "", valor = "") {
   } else {
     container.appendChild(subLabelDiv);
   }
+}
+
+function obtenerSiguienteClavePrincipal(opcionesDiv) {
+  // Calcular la siguiente clave principal basada en el número de opciones existentes
+  return opcionesDiv.children.length + 1;
 }
 
 // Función para eliminar una opción principal
@@ -92,6 +155,9 @@ function eliminarOpcion(button) {
   
     if (tipoPregunta === "formSelect") {
       modalMessage = "¿Estás seguro de que deseas eliminar esta opción principal y sus opciones de desplegable?";
+    }
+    if (tipoPregunta === "matrix3") {
+      modalMessage = "¿Estás seguro de que deseas eliminar esta opción principal y sus rangos?";
     }
   
     // Actualizar el título y el cuerpo del modal
@@ -130,7 +196,7 @@ function eliminarSubLabel(button) {
     // Actualizar el título y el cuerpo del modal
     document.getElementById("confirmDeleteModalLabel").textContent = "Confirmar eliminación";
     document.querySelector("#confirmDeleteModal .modal-body").textContent =
-      "¿Estás seguro de que deseas eliminar esta opción del desplegable?";
+      "¿Estás seguro de que deseas eliminar esta opción?";
   
     modal.show();
     confirmDeleteButton.onclick = () => {

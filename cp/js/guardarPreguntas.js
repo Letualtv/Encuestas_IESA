@@ -123,7 +123,7 @@ const encabezadoFiltrado = Object.keys(encabezado).length
     const tipoPregunta = document.getElementById("tipo").value;
     let opcionesObj = {}; // Inicializar opcionesObj aquí
 
-    if (tipoPregunta === "formSelect") {
+    if (tipoPregunta === "formSelect" || tipoPregunta ==="matrix3") {
       // Para preguntas de tipo formSelect, incluir sublabels
       Array.from(document.querySelectorAll('[name="claves[]"]')).forEach((claveInput, index) => {
         const clave = claveInput.value.trim();
