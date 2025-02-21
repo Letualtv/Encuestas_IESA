@@ -57,7 +57,23 @@ function editarPregunta(id) {
       }
 
       // Agregar las opciones existentes
-      if (pregunta.tipo === "formSelect" || pregunta.tipo === "matrix3") {
+      if (pregunta.tipo === "matrix3") {
+        const opciones = pregunta.opciones || {};
+        Object.keys(opciones).forEach((clavePrincipal) => {
+          const opcion = opciones[clavePrincipal];
+          const label = opcion.label || "";
+          const subLabels = opcion.subLabel || {};
+
+          // Encontrar la clave máxima de sublabels para inicializar ultimaClaveSublabel
+          const maxSublabelKey = Math.max(
+            ...Object.keys(subLabels).map(Number),
+            pregunta.id
+          );
+          ultimaClaveSublabel = maxSublabelKey;
+
+          agregarOpcion(clavePrincipal, label, subLabels);
+        });
+      } else if (pregunta.tipo === "formSelect" || pregunta.tipo === "matrix3") {
         const opciones = pregunta.opciones || {};
         Object.keys(opciones).forEach((clavePrincipal) => {
           const opcion = opciones[clavePrincipal];

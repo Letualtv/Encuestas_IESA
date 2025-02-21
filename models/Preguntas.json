@@ -10,8 +10,7 @@
             "2": "He trabajado, pero estoy jubilado o no activo",
             "3": "He trabajado, pero ahora trabajo en otro lugar",
             "4": "S\u00ed trabajo aqu\u00ed",
-            "5": "Que te parece $estudio",
-            "7": "Me gusta el"
+            "5": "Que te parece $estudio"
         },
         "filtro": [],
         "cabecera": {
@@ -74,34 +73,14 @@
         "titulo": "Pregunta 4: \u00bfQu\u00e9 lenguajes de programaci\u00f3n conoces?",
         "subTitulo": "Marca todos los lenguajes que dominas.",
         "opciones": {
-            "2": {
-                "label": "Una universidad espa\u00f1ola:"
-            },
-            "3": {
+            "1": {
                 "label": "Una universidad espa\u00f1ola:",
                 "subLabel": {
-                    "31": "Universidad Espa\u00f1ola 1",
-                    "32": "Universidad Espa\u00f1ola 2",
-                    "33": "Universidad Espa\u00f1ola 3",
-                    "34": "Otra universidad"
-                }
-            },
-            "4": {
-                "label": "Una universidad espa\u00f1ola:",
-                "subLabel": {
+                    "14": "asdf",
                     "41": "Universidad Espa\u00f1ola 1",
                     "42": "Universidad Espa\u00f1ola 2",
                     "43": "Universidad Espa\u00f1ola 3",
                     "44": "Otra universidad"
-                }
-            },
-            "5": {
-                "label": "Una universidad espa\u00f1ola:",
-                "subLabel": {
-                    "51": "Universidad Espa\u00f1ola 1",
-                    "52": "Universidad Espa\u00f1ola 2",
-                    "53": "Universidad Espa\u00f1ola 3",
-                    "54": "Otra universidad"
                 }
             },
             "6": {
@@ -115,9 +94,11 @@
             }
         },
         "filtro": [],
-        "texto1": null,
-        "lista": null,
-        "texto2": null
+        "cabecera": {
+            "texto1": "",
+            "lista": "",
+            "texto2": ""
+        }
     },
     {
         "id": "5",
@@ -134,6 +115,17 @@
                     "13": "Universidad Espa\u00f1ola 3",
                     "14": "Otra universidad"
                 }
+            },
+            "2": {
+                "label": "asdf",
+                "subLabel": {
+                    "10": "asdf",
+                    "11": "asdf"
+                }
+            },
+            "3": {
+                "label": "asdf",
+                "subLabel": []
             }
         },
         "filtro": [],
@@ -299,8 +291,18 @@
         "subTitulo": "",
         "opciones": {
             "1": {
-                "label": "Inflexible",
-                "subLabel": []
+                "label": "adf",
+                "subLabel": {
+                    "27": "aasfd",
+                    "28": "asdf"
+                }
+            },
+            "2": {
+                "label": "asdfasdf",
+                "subLabel": {
+                    "29": "asdf",
+                    "30": "asdf"
+                }
             }
         },
         "filtro": {},

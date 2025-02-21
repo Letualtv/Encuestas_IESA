@@ -4,23 +4,28 @@
     $pageTitle = "Contactar";
     include __DIR__ . '/../../includes/navigation.php';
 
-    ?>
+    $jsonData = file_get_contents(__DIR__ . '/../../models/textos.json');
+    $content = json_decode($jsonData, true);
 
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <h3>Contactar</h3>
-                <p>
-                    Si tiene cualquier duda, por favor revise las <a href="faq">preguntas frecuentes</a> por si pueden resolverse.
-                </p>
-                <p>
-                    Para cualquier otra información adicional o relacionada con la encuesta, escríbanos a <b>wmartinez@iesa.csic.es</b> o visite nuestra web institucional
-                    <a href="https://www.iesa.csic.es/" target="_blank">iesa.csic.es</a>.
-                </p>
-            </div>
-        </div>
-    </div>
+    $contactar = $content['contactar'];
 
-    <?php include __DIR__ . '/../../includes/footer.php'; ?>
+    function renderContact($contactar)
+    {
+        echo '<div class="container">';
+        echo '<h3 class="mb-4">Contactar</h3>';
+        foreach ($contactar as $section) {
+            echo '<div class="mb-4">';
+            if (!empty($section['question'])) {
+                echo '<h5>' . $section['question'] . '</h5>';
+            }
+            echo '<p>' . $section['answer'] . '</p>';
+            echo '</div>';
+        }
+        echo '</div>';
+    }
+
+    renderContact($contactar);
+
+    include __DIR__ . '/../../includes/footer.php'; ?>
 
 </body>
