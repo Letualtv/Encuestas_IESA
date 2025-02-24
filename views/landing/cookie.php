@@ -16,11 +16,11 @@
         foreach ($cookies as $section) {
             echo '<div class="mb-4">';
             if (!empty($section['question'])) {
-                echo '<h5>' . $section['question'] . '</h5>';
+                echo '<div>' . $section['question'] . '</div>';
             }
             $answers = explode('<p>', $section['answer']);
             foreach ($answers as $answer) {
-                echo '<p>' . $answer . '</p>';
+                echo '<div>' . $answer . '</div>';
             }
             echo '</div>';
         }

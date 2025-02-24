@@ -15,8 +15,8 @@
         echo '<h3 class="mb-4">Preguntas frecuentes - FAQs</h3>';
         foreach ($faqs as $faq) {
             echo '<div class="mb-4">';
-            echo '<h5>' . $faq['question'] . '</h5>';
-            echo '<p>' . $faq['answer'] . '</p>';
+            echo '<div>' . $faq['question'] . '</div>';
+            echo '<div>' . $faq['answer'] . '</div>';
             echo '</div>';
         }
         echo '</div>';

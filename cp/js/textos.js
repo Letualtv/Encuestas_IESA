@@ -1,155 +1,236 @@
-let originalContent = JSON.parse(document.getElementById('originalContent').textContent);
-let currentContent = JSON.parse(JSON.stringify(originalContent));
-let isEditing = false;
+(() => {
+    let currentSection = null; // Almacena la sección activa
+    let quillEditors = {}; // Almacena instancias de Quill para cada cuadro de texto
 
-// Función para cargar los textos de una sección
-function loadSection(section) {
-    const textsContainer = document.getElementById('textsContainer');
-    textsContainer.innerHTML = '';
+    // Cargar una sección específica
+    window.loadSection = function (section) {
+        currentSection = section;
 
-    if (section && currentContent[section]) {
-        textsContainer.innerHTML += '<input type="hidden" name="section" value="' + section + '">';
-        currentContent[section].forEach((text, index) => {
-            addText(text.question, text.answer, false, index);
+        // Desactivar todas las secciones en la barra lateral
+        document.querySelectorAll('.list-group-item').forEach(item => {
+            item.classList.remove('active');
+        });
+
+        // Activar la sección seleccionada
+        const selectedSection = document.querySelector(`a[onclick="loadSection('${section}')"]`);
+        if (selectedSection) {
+            selectedSection.classList.add('active');
+        }
+
+        // Cargar datos desde el JSON
+        fetch('../models/textos.json')
+            .then(response => response.json())
+            .then(data => {
+                const questions = data[section] || [];
+                renderQuestions(questions);
+            })
+            .catch(error => {
+                console.error('Error al cargar las preguntas:', error);
+                showToast('Error al cargar las preguntas', 'danger');
+            });
+    };
+
+    // Renderizar preguntas en el contenedor
+    function renderQuestions(questions) {
+        const container = document.getElementById('questionsContainer');
+        container.innerHTML = ''; // Limpiar el contenedor
+
+        questions.forEach((questionObj, index) => {
+            const question = questionObj.question;
+            const answer = questionObj.answer;
+
+            // Generar un ID único para el cuadro de texto
+            const cuadroTexto = `cuadroTexto-${index}`;
+
+            // HTML de la pregunta
+            const questionDiv = document.createElement('div');
+            questionDiv.classList.add('col-md-6', 'mb-4'); // Añadir margen inferior y ancho adecuado
+            questionDiv.innerHTML = `
+                <div class="border rounded p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="fw-bold">Párrafo ${index + 1}</h5>
+                        <button type="button" class="btn btn-outline-primary btn-sm" 
+        id="editButton-${cuadroTexto}" onclick="toggleEditMode('${cuadroTexto}', ${index})">
+    <i class="fas fa-edit"></i> Modificar
+</button>
+                    </div>
+                    <hr>  
+                    <div class="row">
+                        <div class="col-12 mb-3 pb-2">
+                            <strong>Cabecera:</strong>
+                            <div id="pregunta-${cuadroTexto}" class="quill-editor card"></div>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <strong>Cuerpo:</strong>
+                            <div id="respuesta-${cuadroTexto}" class="quill-editor card" ></div>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <button type="button" class="btn btn-success btn-sm" id="saveButton-${cuadroTexto}" 
+                                onclick="saveChanges('${cuadroTexto}', '${currentSection}', ${index})" style="display: none;">
+                            <i class="fas fa-save"></i> Guardar
+                        </button>
+                    </div>
+                </div>
+            `;
+            container.appendChild(questionDiv);
+
+// Registrar un bloque personalizado para <h5>
+const Block = Quill.import('blots/block');
+class H5Blot extends Block {
+    static create(value) {
+        const node = super.create();
+        node.setAttribute('class', 'custom-h5'); // Opcional: añadir una clase personalizada
+        return node;
+    }
+
+    static formats() {
+        return 'h5';
+    }
+}
+H5Blot.blotName = 'h5';
+H5Blot.tagName = 'h5';
+Quill.register(H5Blot);
+
+// Inicializar Quill con el bloque personalizado
+quillEditors[`pregunta-${cuadroTexto}`] = new Quill(`#pregunta-${cuadroTexto}`, {
+    theme: 'bubble',
+    modules: {
+        toolbar: [
+            ['bold', 'italic', 'underline'], // Botones básicos
+            ['clean'] // Limpiar formato
+        ]
+    }
+});
+
+// Establecer el contenido inicial como <h5>
+const preguntaEditor = quillEditors[`pregunta-${cuadroTexto}`];
+preguntaEditor.root.innerHTML = `<h5>${question}</h5>`;
+
+            // Inicializar Quill para la respuesta (tema bubble)
+            quillEditors[`respuesta-${cuadroTexto}`] = new Quill(`#respuesta-${cuadroTexto}`, {
+                theme: 'bubble',
+                modules: {
+                    toolbar: [
+                        [{ 'header': [4, 5, 6, false] }], // Tamaños de encabezado más pequeños
+                        ['bold', 'italic', 'underline'], // Botones básicos
+                        [{ 'list': 'ordered' }, { 'list': 'bullet' }], // Listas
+                        ['link'], // Botón para insertar enlaces
+                        ['clean'] // Limpiar formato
+                    ]
+                }
+            });
+            quillEditors[`respuesta-${cuadroTexto}`].root.innerHTML = answer;
+
+            // Deshabilitar los editores inicialmente
+            quillEditors[`pregunta-${cuadroTexto}`].enable(false);
+            quillEditors[`respuesta-${cuadroTexto}`].enable(false);
         });
     }
-}
 
-// Función para agregar una nueva área de texto
-function addText(question = '', answer = '', editable = false, index = null) {
-    const textsContainer = document.getElementById('textsContainer');
+    // Habilitar/deshabilitar el modo edición
+   window.toggleEditMode = function (cuadroTexto, index) {
+    const preguntaEditor = quillEditors[`pregunta-${cuadroTexto}`];
+    const respuestaEditor = quillEditors[`respuesta-${cuadroTexto}`];
+    if (preguntaEditor && respuestaEditor) {
+        const isEditable = !preguntaEditor.isEnabled();
+        preguntaEditor.enable(isEditable);
+        respuestaEditor.enable(isEditable);
 
-    const textGroup = document.createElement('div');
-    textGroup.className = 'form-group mb-3 p-3 border rounded shadow-sm d-flex align-items-center';
+        // Cambiar el estado del botón "Modificar"
+        const editButton = document.getElementById(`editButton-${cuadroTexto}`);
+        if (editButton) {
+            if (isEditable) {
+                editButton.classList.remove('btn-outline-primary');
+                editButton.classList.add('btn-primary');
+                editButton.innerHTML = '<i class="fas fa-edit"></i> Dejar de editar';
+            } else {
+                editButton.classList.remove('btn-primary');
+                editButton.classList.add('btn-outline-primary');
+                editButton.innerHTML = '<i class="fas fa-edit"></i> Modificar';
+            }
+        }
 
-    const textInputs = document.createElement('div');
-    textInputs.className = 'flex-grow-1';
+        // Mostrar/ocultar el botón de guardar
+        const saveButton = document.getElementById(`saveButton-${cuadroTexto}`);
+        if (saveButton) {
+            saveButton.style.display = isEditable ? 'inline-block' : 'none';
+        }
 
-    const questionLabel = document.createElement('label');
-    questionLabel.textContent = 'Pregunta';
-    textInputs.appendChild(questionLabel);
-
-    const questionInput = document.createElement('textarea');
-    questionInput.name = `texts[${index}][question]`;
-    questionInput.className = 'form-control mb-2';
-    questionInput.rows = 1;
-    questionInput.value = question;
-    questionInput.disabled = !editable;
-    textInputs.appendChild(questionInput);
-
-    const answerLabel = document.createElement('label');
-    answerLabel.textContent = 'Respuesta';
-    textInputs.appendChild(answerLabel);
-
-    const answerInput = document.createElement('textarea');
-    answerInput.name = `texts[${index}][answer]`;
-    answerInput.className = 'form-control mb-2';
-    answerInput.rows = 2;
-    answerInput.value = answer;
-    answerInput.disabled = !editable;
-    textInputs.appendChild(answerInput);
-
-    textGroup.appendChild(textInputs);
-
-    const buttonGroup = document.createElement('div');
-    buttonGroup.className = 'd-flex flex-column align-items-end ms-3';
-
-    const modifyButton = document.createElement('button');
-    modifyButton.type = 'button';
-    modifyButton.className = 'btn btn-warning mb-1';
-    modifyButton.textContent = 'Modificar';
-    modifyButton.onclick = function() {
-        questionInput.disabled = false;
-        answerInput.disabled = false;
-        modifyButton.disabled = true;
-        isEditing = true;
-    };
-    buttonGroup.appendChild(modifyButton);
-
-    const saveButton = document.createElement('button');
-    saveButton.type = 'button';
-    saveButton.className = 'btn btn-success mb-1';
-    saveButton.textContent = 'Guardar';
-    saveButton.onclick = function() {
-        saveQuestion(index);
-        questionInput.disabled = true;
-        answerInput.disabled = true;
-        modifyButton.disabled = false;
-        isEditing = false;
-    };
-    buttonGroup.appendChild(saveButton);
-
-    const removeButton = document.createElement('button');
-    removeButton.type = 'button';
-    removeButton.className = 'btn btn-danger';
-    removeButton.textContent = 'Eliminar';
-    removeButton.onclick = function() {
-        textsContainer.removeChild(textGroup);
-    };
-    buttonGroup.appendChild(removeButton);
-
-    textGroup.appendChild(buttonGroup);
-
-    textsContainer.appendChild(textGroup);
-}
-
-// Función para guardar una pregunta específica
-function saveQuestion(index) {
-    const questionInput = document.querySelector(`textarea[name="texts[${index}][question]"]`);
-    const answerInput = document.querySelector(`textarea[name="texts[${index}][answer]"]`);
-
-    if (questionInput && answerInput) {
-        currentContent[document.querySelector('input[name="section"]').value][index] = {
-            question: questionInput.value,
-            answer: answerInput.value
-        };
-
-        originalContent = JSON.parse(JSON.stringify(currentContent));
-        showToast('success', 'Pregunta guardada correctamente.');
-    }
-}
-
-// Función para deshacer cambios
-function undoChange() {
-    const section = document.querySelector('input[name="section"]').value;
-    currentContent = JSON.parse(JSON.stringify(originalContent));
-    loadSection(section);
-}
-
-// Función para mostrar el modal de guardar
-function showSaveModal() {
-    const saveModal = new bootstrap.Modal(document.getElementById('saveModal'));
-    saveModal.show();
-}
-
-// Función para mostrar el modal antes de salir si hay cambios sin guardar
-window.onbeforeunload = function() {
-    if (isEditing) {
-        showModal('confirmExitModal');
-        return false;
+        showToast(isEditable ? 'Modo edición habilitado' : 'Modo edición deshabilitado', 'info');
+    } else {
+        showToast('No se pudo habilitar la edición', 'danger');
     }
 };
 
-// Función para mostrar modales
-function showModal(modalId) {
-    const modal = new bootstrap.Modal(document.getElementById(modalId));
-    modal.show();
-}
+    window.saveChanges = function (cuadroTexto, section, index) {
+        const preguntaEditor = quillEditors[`pregunta-${cuadroTexto}`];
+        const respuestaEditor = quillEditors[`respuesta-${cuadroTexto}`];
+        if (preguntaEditor && respuestaEditor) {
+            const updatedQuestion = preguntaEditor.root.innerHTML.trim(); // Obtener el contenido actualizado
+            const updatedAnswer = respuestaEditor.root.innerHTML.trim(); // Obtener el contenido actualizado
+    
+            // Enviar los datos al servidor
+            fetch('includesCP/guardarTextos.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    section: section,
+                    index: index,
+                    question: updatedQuestion,
+                    answer: updatedAnswer
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Cambios guardados correctamente', 'success');
+    
+                    // Deshabilitar los editores después de guardar
+                    preguntaEditor.enable(false);
+                    respuestaEditor.enable(false);
+    
+                    // Restaurar el botón "Modificar"
+                    const editButton = document.getElementById(`editButton-${cuadroTexto}`);
+                    if (editButton) {
+                        editButton.classList.remove('btn-primary');
+                        editButton.classList.add('btn-outline-primary');
+                        editButton.innerHTML = '<i class="fas fa-edit"></i> Modificar';
+                    }
+    
+                    // Ocultar el botón de guardar
+                    const saveButton = document.getElementById(`saveButton-${cuadroTexto}`);
+                    if (saveButton) {
+                        saveButton.style.display = 'none';
+                    }
+                } else {
+                    showToast('Error al guardar los cambios', 'danger');
+                }
+            })
+            .catch(error => {
+                console.error('Error al guardar los cambios:', error);
+                showToast('Error al guardar los cambios', 'danger');
+            });
+        }
+    };
 
-// Función para mostrar notificaciones toast
-function showToast(type, message) {
-    const toastHTML = `
-        <div class="toast align-items-center text-white bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="d-flex">
-                <div class="toast-body">
-                    ${message}
-                </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-        </div>
-    `;
-    const toastContainer = document.getElementById('toastContainer');
-    toastContainer.innerHTML = toastHTML;
-    const toast = new bootstrap.Toast(toastContainer.firstElementChild);
-    toast.show();
-}
+    // Mostrar un toast (delegado a utils.js)
+    function showToast(message, type = 'info') {
+        // Llama a la función de utils.js
+        if (typeof window.showToast === 'function') {
+            window.showToast(message, type);
+        } else {
+            console.warn('La función showToast no está definida en utils.js');
+        }
+    }
+
+    // Cargar la primera sección al iniciar
+    document.addEventListener('DOMContentLoaded', () => {
+        const firstSection = document.querySelector('.list-group-item');
+        if (firstSection) {
+            firstSection.click(); // Simular clic en la primera sección
+        }
+    });
+})();

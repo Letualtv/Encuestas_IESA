@@ -1,8 +1,6 @@
-<div class="card mb-2">
-    <div class="card-header">
+<div class=" mb-2">
         <h5 class="mb-0"><i class="fa-solid fa-list-ul me-2"></i>Agregar / modificar pregunta</h5>
-    </div>
-
+<hr>
     <div class="bg-body p-2">
         <form id="preguntaForm">
             <div class="row g-3">

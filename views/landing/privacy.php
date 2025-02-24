@@ -16,8 +16,8 @@
         echo '<h3 class="mb-4">Política de privacidad</h3>';
         foreach ($privacidad as $section) {
             echo '<div class="mb-4">';
-            echo '<h5>' . $section['question'] . '</h5>';
-            echo '<p>' . $section['answer'] . '</p>';
+            echo '<div>' . $section['question'] . '</div>';
+            echo '<div>' . $section['answer'] . '</div>';
             echo '</div>';
         }
         echo '</div>';

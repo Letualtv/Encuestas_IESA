@@ -16,9 +16,9 @@
         foreach ($contactar as $section) {
             echo '<div class="mb-4">';
             if (!empty($section['question'])) {
-                echo '<h5>' . $section['question'] . '</h5>';
+                echo '<div>' . $section['question'] . '</div>';
             }
-            echo '<p>' . $section['answer'] . '</p>';
+            echo '<div>' . $section['answer'] . '</div>';
             echo '</div>';
         }
         echo '</div>';

@@ -15,8 +15,8 @@
         echo '<h3 class="mb-4">Información del Estudio</h3>';
         foreach ($informacion as $info) {
             echo '<div class="mb-4">';
-            echo '<h5>' . $info['question'] . '</h5>';
-            echo '<p>' . $info['answer'] . '</p>';
+            echo '<div>' . $info['question'] . '</div>';
+            echo '<div>' . $info['answer'] . '</div>';
             echo '</div>';
         }
         echo '</div>';

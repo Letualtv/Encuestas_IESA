@@ -1,15 +1,16 @@
-<?php include 'vistasCP/navbarCP.php'; ?>
 
 
-<section class="container-fluid d-flex flex-column min-vh-100">
-
-    <div class="d-flex row  pb-3 gy-2 align-items-stretch">
-        <div class="col-12 col-md-6 order-2 order-md-1 ">
+<section class=" d-flex flex-column min-vh-100">
+    <?php include 'vistasCP/navbarCP.php'; ?>
+<div class="container-fluid">
+    <div class="d-flex row  pb-3 gy-2 align-items-stretch ">
+        <div class="col-12 col-md-6 order-2 order-md-1 border-end">
             <!-- Formulario para agregar variables -->
-            <div class="card mb-2 h-100">
-                <div class="card-header">
-                    <h5 class="mb-0"><i class="fa-solid fa-globe me-2"></i>Parámetros Globales</h5>
-                </div>
+            <div class=" mb-2 h-100">
+
+                <h5 class="mb-0"><i class="fa-solid fa-globe me-2"></i>Parámetros Globales</h5>
+                <hr>
+
                 <div class="bg-body p-2">
                     <form id="globalParamsForm">
                         <div class="row justify-content-between align-items-end">
@@ -37,11 +38,11 @@
                 </div>
             </div>
         </div>
-        <div class="col-12 col-md-6 order-1 order-md-2">
-            <div class="card mb-2 h-100">
-                <div class="card-header">
-                    <h5 class="mb-0"><i class="fa-solid fa-circle-info me-2"></i>Información</h5>
-                </div>
+   
+        <div class="col-12 col-md-6 order-1 order-md-2 ">
+            <div class=" mb-2 h-100">
+                <h5 class="mb-0"><i class="fa-solid fa-circle-info me-2"></i>Información</h5>
+                <hr>
                 <div class="bg-body p-2">
                     <h6>Existen una serie de variables pre-definidas que se pueden modificar:</h6>
                     <span class="muted span">(Están incluidas en los Parámetros globales)</span>
@@ -68,20 +69,18 @@
         </div>
     </div>
 
-
+<hr>
     <!-- Imágenes de la encuesta -->
     <div class="row">
         <div class="col-12">
-            <div class="card mb-2">
-                <!-- Encabezado del card -->
-                <div class="card-header d-flex justify-content-between align-items-center">
+            <div class=" mb-2">
+                <div class=" d-flex justify-content-between align-items-center">
                     <h5 class="mb-0"><i class="fa-solid fa-image me-2"></i>Imágenes de la encuesta</h5>
                     <button class="btn btn-sm btn-outline-primary" onclick="cargarImagenes()">
                         <i class="fa-solid fa-sync me-2"></i>Recargar imágenes
                     </button>
                 </div>
 
-                <!-- Contenido del card -->
                 <div class="bg-body row p-2">
                     <!-- Columna izquierda: Lista de imágenes -->
                     <div class="col-12 col-md-6">
@@ -96,7 +95,7 @@
                         <h6 class="mb-3">Subir nueva imagen:</h6>
                         <form id="imageUploadForm" class="input-group" enctype="multipart/form-data">
                             <div class="input-group">
-                                
+
                                 <input type="file" class="form-control" id="encuestaImage" accept="image/*" required>
 
                                 <button type="submit" class="btn btn-primary ">
@@ -109,7 +108,8 @@
             </div>
         </div>
     </div>
-
+</div>
+    <?php include 'vistasCP/footerCP.php'; ?>
 </section>
 <!-- Modal de Confirmación de Borrado -->
 <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
@@ -195,7 +195,6 @@
 <!-- Contenedor de Notificaciones -->
 <div id="notificationContainer" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050;"></div>
 
-<?php include 'vistasCP/footerCP.php'; ?>
 
 
 <script src="js/imagenesGenerales.js"></script>
