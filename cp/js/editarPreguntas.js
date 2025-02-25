@@ -1,31 +1,63 @@
 // Función para ajustar los parámetros del formulario según el tipo de pregunta
-function ajustarParametros() {
+function ajustarFormulario() {
   const tipo = document.getElementById("tipo").value;
+
+  // Ajustar campos adicionales para "numberInput"
   const numberInputFields = document.getElementById("numberInputFields");
+  numberInputFields.style.display = tipo === "numberInput" ? "block" : "none";
 
-  // Mostrar u ocultar campos adicionales según el tipo de pregunta
-  if (tipo === "numberInput") {
-    numberInputFields.style.display = "block";
-  } else {
-    numberInputFields.style.display = "none";
-  }
-}
-
-function ajustarEncabezado() {
-  const tipo = document.getElementById("tipo").value;
+  // Ajustar campos de encabezado para "matrix2" y "matrix3"
   const encabezadoFields = document.getElementById("encabezadoFields");
-
-  // Mostrar u ocultar los campos de encabezado según el tipo de pregunta
-  if (tipo === "matrix2" || tipo === "matrix3") {
-    encabezadoFields.style.display = "block";
-  } else {
-    encabezadoFields.style.display = "none";
-  }
+  encabezadoFields.style.display = ["matrix2", "matrix3"].includes(tipo) ? "block" : "none";
 }
 
 // Función para eliminar una opción dinámicamente
 function eliminarOpcion(button) {
   button.parentElement.remove();
+}
+
+// Función para agregar una nueva opción dinámicamente
+let ultimaClave = 0;
+function agregarOpcion(clave = null, label = "", subLabels = {}) {
+  const opcionesContainer = document.getElementById("opciones");
+
+  // Generar una clave única si no se proporciona
+  const nuevaClave = clave || `opcion${++ultimaClave}`;
+
+  // Crear el contenedor de la opción
+  const opcionDiv = document.createElement("div");
+  opcionDiv.classList.add("input-group", "input-group-sm", "mb-2");
+
+  // Campo de clave
+  const claveInput = document.createElement("input");
+  claveInput.type = "text";
+  claveInput.name = "claves[]";
+  claveInput.value = nuevaClave;
+  claveInput.readOnly = true;
+  claveInput.classList.add("form-control", "w-25");
+
+  // Campo de etiqueta
+  const labelInput = document.createElement("input");
+  labelInput.type = "text";
+  labelInput.name = "labels[]";
+  labelInput.value = label;
+  labelInput.placeholder = "Etiqueta";
+  labelInput.classList.add("form-control");
+
+  // Botón para eliminar la opción
+  const eliminarButton = document.createElement("button");
+  eliminarButton.type = "button";
+  eliminarButton.classList.add("btn", "btn-outline-danger");
+  eliminarButton.innerHTML = '<i class="fa-solid fa-trash"></i>';
+  eliminarButton.onclick = () => opcionDiv.remove();
+
+  // Agregar elementos al contenedor
+  opcionDiv.appendChild(claveInput);
+  opcionDiv.appendChild(labelInput);
+  opcionDiv.appendChild(eliminarButton);
+
+  // Agregar al DOM
+  opcionesContainer.appendChild(opcionDiv);
 }
 
 // Función para editar una pregunta existente
@@ -57,23 +89,7 @@ function editarPregunta(id) {
       }
 
       // Agregar las opciones existentes
-      if (pregunta.tipo === "matrix3") {
-        const opciones = pregunta.opciones || {};
-        Object.keys(opciones).forEach((clavePrincipal) => {
-          const opcion = opciones[clavePrincipal];
-          const label = opcion.label || "";
-          const subLabels = opcion.subLabel || {};
-
-          // Encontrar la clave máxima de sublabels para inicializar ultimaClaveSublabel
-          const maxSublabelKey = Math.max(
-            ...Object.keys(subLabels).map(Number),
-            pregunta.id
-          );
-          ultimaClaveSublabel = maxSublabelKey;
-
-          agregarOpcion(clavePrincipal, label, subLabels);
-        });
-      } else if (pregunta.tipo === "formSelect" || pregunta.tipo === "matrix3") {
+      if (["matrix3", "formSelect"].includes(pregunta.tipo)) {
         const opciones = pregunta.opciones || {};
         Object.keys(opciones).forEach((clavePrincipal) => {
           const opcion = opciones[clavePrincipal];
@@ -88,14 +104,6 @@ function editarPregunta(id) {
           const [izquierda, derecha] = opcionCompleta.split(" - ");
           agregarOpcion(clave, `${izquierda} - ${derecha}`);
         });
-      } else if (tipoPregunta === "matrix1" || tipoPregunta === "matrix2") {
-        Array.from(opcionesDiv.children).forEach((opcion, index) => {
-          const claveInput = opcion.querySelector('[name="claves[]"]');
-          if (claveInput) {
-            claveInput.value = preguntaId + index;
-          }
-        });
-      
       } else {
         const opciones = pregunta.opciones || {};
         Object.keys(opciones).forEach((key) => {
@@ -103,23 +111,21 @@ function editarPregunta(id) {
         });
       }
 
+      // Rellenar valores específicos para "numberInput"
       if (pregunta.tipo === "numberInput") {
         document.getElementById("min").value = pregunta.valores?.min || "";
         document.getElementById("max").value = pregunta.valores?.max || "";
-        document.getElementById("placeholder").value =
-          pregunta.valores?.placeholder || "";
+        document.getElementById("placeholder").value = pregunta.valores?.placeholder || "";
       }
-      if (pregunta.encabezado) {
-        document.getElementById("label").value =
-          pregunta.encabezado.label || "";
 
-        // Recuperar la clave y el valor dinámicos para "uno"
+      // Rellenar encabezados si existen
+      if (pregunta.encabezado) {
+        document.getElementById("label").value = pregunta.encabezado.label || "";
         const unoClave = Object.keys(pregunta.encabezado.uno)[0];
         const unoValor = pregunta.encabezado.uno[unoClave];
         document.getElementById("unoClave").value = unoClave || "";
         document.getElementById("unoValor").value = unoValor || "";
 
-        // Recuperar la clave y el valor dinámicos para "dos"
         const dosClave = Object.keys(pregunta.encabezado.dos)[0];
         const dosValor = pregunta.encabezado.dos[dosClave];
         document.getElementById("dosClave").value = dosClave || "";
@@ -127,58 +133,40 @@ function editarPregunta(id) {
 
         document.getElementById("tres").value = pregunta.encabezado.tres || "";
       }
+
       // Recuperar y mostrar la descripción (si existe)
-      const descripcion = pregunta.cabecera || null; // Obtener la cabecera de la pregunta
-      const mostrarDescripcionCheckbox = document.getElementById(
-        "mostrar-descripcion"
-      );
-      const descripcionContainer = document.getElementById(
-        "descripcionContainer"
-      );
+      const descripcion = pregunta.cabecera || null;
+      const mostrarDescripcionCheckbox = document.getElementById("mostrar-descripcion");
+      const descripcionContainer = document.getElementById("descripcionContainer");
 
       if (descripcion) {
-        // Verificar si todos los campos de descripción están vacíos
-        const texto1Vacio =
-          !descripcion.texto1 || descripcion.texto1.trim() === "";
-        const listaVacia =
-          !descripcion.lista || descripcion.lista.trim() === "";
-        const texto2Vacio =
-          !descripcion.texto2 || descripcion.texto2.trim() === "";
+        const texto1Vacio = !descripcion.texto1 || descripcion.texto1.trim() === "";
+        const listaVacia = !descripcion.lista || descripcion.lista.trim() === "";
+        const texto2Vacio = !descripcion.texto2 || descripcion.texto2.trim() === "";
 
         if (texto1Vacio && listaVacia && texto2Vacio) {
-          // Si todos los campos están vacíos, desactivar el checkbox y ocultar el contenedor
           mostrarDescripcionCheckbox.checked = false;
           descripcionContainer.style.display = "none";
         } else {
-          // Si hay contenido en al menos un campo, activar el checkbox y mostrar el contenedor
           mostrarDescripcionCheckbox.checked = true;
           descripcionContainer.style.display = "block";
-
-          // Rellenar los campos de descripción
-          document.querySelector("#descripcionRule .texto1").value =
-            descripcion.texto1 || "";
-          document.querySelector("#descripcionRule .lista").value =
-            descripcion.lista || "";
-          document.querySelector("#descripcionRule .texto2").value =
-            descripcion.texto2 || "";
+          document.querySelector("#descripcionRule .texto1").value = descripcion.texto1 || "";
+          document.querySelector("#descripcionRule .lista").value = descripcion.lista || "";
+          document.querySelector("#descripcionRule .texto2").value = descripcion.texto2 || "";
         }
       } else {
-        // Desactivar el interruptor de descripción si no hay descripción
         mostrarDescripcionCheckbox.checked = false;
         descripcionContainer.style.display = "none";
       }
 
       // Ajustar parámetros del formulario
-      ajustarParametros();
-      ajustarEncabezado();
+      ajustarFormulario();
 
       // Cargar las reglas de filtro (si existen)
       cargarFiltro(pregunta.filtro || {});
 
       // Mostrar las reglas de filtro (si existen)
-      document.getElementById("mostrar-filtro").checked = !!Object.keys(
-        pregunta.filtro || {}
-      ).length;
+      document.getElementById("mostrar-filtro").checked = !!Object.keys(pregunta.filtro || {}).length;
       mostrarFiltro();
 
       // Indicar que se está editando una pregunta
@@ -191,4 +179,46 @@ function editarPregunta(id) {
         "danger"
       );
     });
+}
+
+// Listener para cambios en el tipo de pregunta
+document.getElementById("tipo").addEventListener("change", () => {
+  ajustarFormulario();
+});
+
+// Función para inicializar el formulario (creación de nueva pregunta)
+function inicializarFormulario() {
+  // Limpiar el formulario
+  document.getElementById("preguntaId").value = "";
+  document.getElementById("titulo").value = "";
+  document.getElementById("n_pag").value = 1;
+  document.getElementById("tipo").value = "radio"; // Valor predeterminado
+  document.getElementById("subTitulo").value = "";
+
+  const opcionesDiv = document.getElementById("opciones");
+  while (opcionesDiv.firstChild) {
+    opcionesDiv.removeChild(opcionesDiv.firstChild);
+  }
+
+  // Limpiar campos específicos
+  document.getElementById("min").value = "";
+  document.getElementById("max").value = "";
+  document.getElementById("placeholder").value = "";
+
+  // Limpiar encabezado
+  document.getElementById("label").value = "";
+  document.getElementById("unoClave").value = "";
+  document.getElementById("unoValor").value = "";
+  document.getElementById("dosClave").value = "";
+  document.getElementById("dosValor").value = "";
+  document.getElementById("tres").value = "";
+
+  // Limpiar descripción
+  const mostrarDescripcionCheckbox = document.getElementById("mostrar-descripcion");
+  const descripcionContainer = document.getElementById("descripcionContainer");
+  mostrarDescripcionCheckbox.checked = false;
+  descripcionContainer.style.display = "none";
+
+  // Ajustar parámetros del formulario
+  ajustarFormulario();
 }

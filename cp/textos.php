@@ -34,11 +34,11 @@
             </div>
             <!-- Panel de preguntas -->
             <div class="col-md-10">
-                <div class="shadow-sm p-4">
+                <div class=" p-4">
 
                     <form method="POST" action="">
                         <!-- Contenedor para las preguntas -->
-                        <div id="questionsContainer" class="row"></div>
+                        <div id="questionsContainer" class="row "></div>
                     </form>
                 </div>
             </div>
@@ -55,12 +55,3 @@
 <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
 <script src="js/textos.js"></script>
 <?php include 'vistasCP/modalGuardado.php'; ?>
-<script>
-    // Cargar la primera sección al iniciar
-    document.addEventListener('DOMContentLoaded', () => {
-        const firstSection = document.querySelector('.list-group-item');
-        if (firstSection) {
-            firstSection.click(); // Simular clic en la primera sección
-        }
-    });
-</script>

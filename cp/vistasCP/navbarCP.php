@@ -32,12 +32,7 @@
             <a class="nav-link" href="poblacion.php">Población</a>
         </li>
         <div class="ms-auto d-flex">
-            <li class="nav-item">
-                <a class="nav-link " href="usuarios.php">
-                    <i class="fa-solid fa-userfa-xl"></i>
-                </a>
-            </li>
-            <li class="nav-item">
+            
             <div class="d-flex  col align-items-center gap-2 justify-content-center ">
                             <a class="btn btn-primary d-flex align-items-center justify-content-center " href="usuarios.php" style="width: 40px; height: 40px;">
                                 <i class="fa-solid fa-user fa-lg"></i>

@@ -36,3 +36,11 @@ a {
 a:hover {
     color: #d3122a !important; /* lighten(#af071f, 10%) */
 }
+
+
+
+
+ol[data-list-type="bullet"] {
+  list-style-type: square !important; /* Personaliza el estilo de las viñetas */
+  font-size: 20rem !important;
+}

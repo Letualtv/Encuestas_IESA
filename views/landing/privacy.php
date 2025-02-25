@@ -4,12 +4,27 @@
     $pageTitle = "Privacidad";
     include __DIR__ . '/../../includes/navigation.php';
 
+    // Incluir las variables globales desde variables.php
+    $variables = include __DIR__ . '/../../models/variables.php';
+
+    // Leer el contenido del archivo textos.json
     $jsonData = file_get_contents(__DIR__ . '/../../models/textos.json');
+
+    // Reemplazar las variables globales en el contenido del JSON
+    foreach ($variables as $key => $value) {
+        $jsonData = str_replace($key, $value, $jsonData);
+    }
+
+    // Decodificar el JSON a un array asociativo
     $content = json_decode($jsonData, true);
+
+    // Verificar si hubo errores en la decodificación
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        throw new Exception("Error al decodificar el archivo JSON: " . json_last_error_msg());
+    }
+
     $privacidad = $content['privacidad'];
-    
-    
-    
+
     function renderPrivacidad($privacidad)
     {
         echo '<div class="container">';
@@ -26,5 +41,5 @@
     renderPrivacidad($privacidad);
 
     include __DIR__ . '/../../includes/footer.php';
- ?>
+    ?>
 </body>

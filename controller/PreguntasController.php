@@ -95,45 +95,49 @@ class PreguntasController
         $stmt->execute();
     }
 
-    public function obtenerPreguntas(): array
-    {
-        // Ruta al archivo de preguntas
-        $archivo = __DIR__ . '/../models/Preguntas.json';
+   public function obtenerPreguntas(): array
+{
+    // Ruta al archivo de preguntas
+    $archivo = __DIR__ . '/../models/Preguntas.json';
 
-        // Verificar si el archivo existe
-        if (!file_exists($archivo)) {
-            error_log("El archivo de preguntas no existe.");
-            return [];
-        }
-
-        // Leer el contenido del archivo JSON
-        $json = file_get_contents($archivo);
-
-        // Cargar las variables globales desde variables.php
-        $variablesFile = __DIR__ . '/../models/variables.php';
-        if (!file_exists($variablesFile)) {
-            throw new Exception("El archivo de variables no existe.");
-        }
-        $variables = include $variablesFile;
-
-        // Validar que las variables sean un array
-        if (!is_array($variables)) {
-            throw new Exception("Las variables no están definidas correctamente.");
-        }
-
-        // Reemplazar las variables globales en el contenido del JSON
-        $json = strtr($json, $variables);
-
-        // Decodificar el JSON a un array asociativo
-        $preguntas = json_decode($json, true);
-
-        // Validar que el JSON sea válido
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new Exception("Error al decodificar el archivo JSON: " . json_last_error_msg());
-        }
-
-        return $preguntas;
+    // Verificar si el archivo existe
+    if (!file_exists($archivo)) {
+        error_log("El archivo de preguntas no existe.");
+        return [];
     }
+
+    // Leer el contenido del archivo JSON
+    $json = file_get_contents($archivo);
+
+    // Cargar las variables globales desde variables.php
+    $variablesFile = __DIR__ . '/../models/variables.php';
+    if (!file_exists($variablesFile)) {
+        throw new Exception("El archivo de variables no existe.");
+    }
+    $variables = include $variablesFile;
+
+    // Validar que las variables sean un array
+    if (!is_array($variables)) {
+        throw new Exception("Las variables no están definidas correctamente.");
+    }
+
+    // Reemplazar las variables globales en el contenido del JSON
+    foreach ($variables as $key => $value) {
+        $json = str_replace('$' . $key, $value, $json);
+    }
+
+    // Decodificar el JSON a un array asociativo
+    $preguntas = json_decode($json, true);
+
+    // Validar que el JSON sea válido
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        throw new Exception("Error al decodificar el archivo JSON: " . json_last_error_msg());
+    }
+
+    return $preguntas;
+}
+
+    
     private function guardarRespuestas(array $respuestas): void
     {
         foreach ($respuestas as $key => $respuesta) {
@@ -251,34 +255,7 @@ class PreguntasController
             return $respuestaSeleccionada === $valorUnico;
         }
     }
-/*     private function calcularPaginaSiguienteConReglas(array $preguntas, int $startPag): ?int
-{
-    for ($i = $startPag; $i <= max(array_column($preguntas, 'n_pag')); $i++) {
-        $siguientePregunta = array_filter($preguntas, fn($p) => $p['n_pag'] === $i);
-        $siguientePregunta = reset($siguientePregunta);
 
-        if (!$siguientePregunta) {
-            continue;
-        }
-
-        // Verificar si la página tiene un filtro
-        if (isset($siguientePregunta['filtro'])) {
-            $cumpleFiltro = true;
-            foreach ($siguientePregunta['filtro'] as $preguntaId => $respuestaRequerida) {
-                if (!isset($_SESSION['respuestas'][$preguntaId]) || $_SESSION['respuestas'][$preguntaId] != $respuestaRequerida) {
-                    $cumpleFiltro = false;
-                    break;
-                }
-            }
-            if ($cumpleFiltro) {
-                return $i;
-            }
-        } else {
-            return $i;
-        }
-    }
-    return null;
-} */
     public function recuperarRespuestasDeBD($clave): array
     {
         global $pdo;

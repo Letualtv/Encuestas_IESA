@@ -100,7 +100,7 @@
             </div>
 
             <div id="valores" class="mt-3">
-                <div id="numberInputFields" class="bg-light p-3 rounded" style="display: none;">
+                <div id="numberInputFields" class="bg-light p-2 rounded" style="display: none;">
                     <h6 class="text-muted">Valores para la entrada numérica:</h6>
                     <div class="row g-3">
                         <div class="col-md-4">
