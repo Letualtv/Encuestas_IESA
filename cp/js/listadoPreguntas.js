@@ -1,5 +1,3 @@
-
-
 // Función para cargar preguntas en la lista
 function cargarPreguntas() {
     fetch("includesCP/obtenerPreguntas.php")
@@ -36,12 +34,13 @@ function crearTablaPreguntas(data) {
     table.classList.add("table", "table-bordered", "table-sm");
 
     const thead = document.createElement("thead");
+    thead.classList.add("sticky-top");
     thead.innerHTML = `
-        <tr class="table-primary text-center align-middle">
-            <th>ID</th>
+        <tr class="table-danger text-center align-middle">
+            <th id="th-id" class="sortable" data-column="id" data-order="asc">ID <i class="fas fa-sort"></i></th>
             <th>Título</th>
-            <th>Nº página</th>
-            <th>Tipo</th>
+            <th id="th-n_pag" class="sortable" data-column="n_pag" data-order="asc">Página <i class="fas fa-sort"></i></th>
+            <th id="th-tipo" class="sortable" data-column="tipo" data-order="asc">Tipo <i class="fas fa-sort"></i></th>
             <th>Acciones</th>
         </tr>
     `;
@@ -88,8 +87,70 @@ function crearTablaPreguntas(data) {
     });
 
     table.appendChild(tbody);
+    addSortEventListeners(table);
     return table;
 }
+
+// Función para agregar eventos de clic a los encabezados para ordenar columnas
+function addSortEventListeners(table) {
+    const headers = table.querySelectorAll(".sortable");
+    headers.forEach(header => {
+        header.addEventListener("click", () => {
+            const column = header.getAttribute("data-column");
+            const order = header.getAttribute("data-order");
+            sortTable(table, column, order);
+            header.setAttribute("data-order", order === "asc" ? "desc" : "asc");
+
+            // Actualizar el icono de ordenación
+            headers.forEach(h => {
+                const icon = h.querySelector("i");
+                if (h === header) {
+                    icon.classList.remove("fa-sort", "fa-sort-up", "fa-sort-down");
+                    icon.classList.add(order === "asc" ? "fa-sort-up" : "fa-sort-down");
+                } else {
+                    icon.classList.remove("fa-sort-up", "fa-sort-down");
+                    icon.classList.add("fa-sort");
+                }
+            });
+        });
+    });
+}
+
+// Función para ordenar la tabla
+function sortTable(table, column, order) {
+    const tbody = table.querySelector("tbody");
+    const rows = Array.from(tbody.querySelectorAll("tr"));
+
+    rows.sort((a, b) => {
+        const cellA = a.querySelector(`th, td:nth-child(${getColumnIndex(column, table) + 1})`).textContent.toLowerCase();
+        const cellB = b.querySelector(`th, td:nth-child(${getColumnIndex(column, table) + 1})`).textContent.toLowerCase();
+
+        if (!isNaN(cellA) && !isNaN(cellB)) {
+            return (order === "asc" ? 1 : -1) * (parseFloat(cellA) - parseFloat(cellB));
+        } else {
+            return (order === "asc" ? 1 : -1) * cellA.localeCompare(cellB);
+        }
+    });
+
+    rows.forEach(row => tbody.appendChild(row));
+}
+
+// Función para obtener el índice de la columna según el nombre
+function getColumnIndex(column, table) {
+    const headers = table.querySelectorAll("thead th");
+    for (let i = 0; i < headers.length; i++) {
+        if (headers[i].getAttribute("data-column") === column) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+// Cargar preguntas al cargar la página
+document.addEventListener("DOMContentLoaded", cargarPreguntas);
+
+
+
 
 // Función para confirmar el borrado de una pregunta
 function confirmarBorrarPregunta(id) {

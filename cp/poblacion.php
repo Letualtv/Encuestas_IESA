@@ -7,7 +7,7 @@
             <div class="col-12 col-md-6 order-2 order-md-1 border-end">
                 <div class=" mb-4">
 
-                    <h5 class="mb-0">Claves existentes</h5>
+                    <h5 class="mb-0"><i class="fa-solid fa-table-list me-2"></i>Claves existentes</h5>
                     <hr>
                     <div class="">
                         <!-- Buscador -->
@@ -59,7 +59,7 @@
 
                 <!-- Tarjeta: Agregar Clave Personalizada -->
                 <div class=" ">
-                    <h5 class="mb-0">Añadir nuevas claves</h5>
+                    <h5 class="mb-0"><i class="fa-solid fa-diagram-next me-2"></i>Añadir nuevas claves</h5>
                     <hr>
                     <div class="">
                         <form id="customKeyForm" class="mb-4">

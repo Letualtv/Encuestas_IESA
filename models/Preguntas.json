@@ -74,26 +74,11 @@
         "subTitulo": "Marca todos los lenguajes que dominas.",
         "opciones": {
             "1": {
-                "label": "Una universidad espa\u00f1ola:",
-                "subLabel": {
-                    "14": "asdf",
-                    "41": "Universidad Espa\u00f1ola 1",
-                    "42": "Universidad Espa\u00f1ola 2",
-                    "43": "Universidad Espa\u00f1ola 3",
-                    "44": "Otra universidad"
-                }
-            },
-            "6": {
-                "label": "Una universidad espa\u00f1ola:",
-                "subLabel": {
-                    "61": "Universidad Espa\u00f1ola 1",
-                    "62": "Universidad Espa\u00f1ola 2",
-                    "63": "Universidad Espa\u00f1ola 3",
-                    "64": "Otra universidad"
-                }
+                "label": "sagf",
+                "subLabel": []
             }
         },
-        "filtro": [],
+        "filtro": {},
         "cabecera": {
             "texto1": "",
             "lista": "",
@@ -108,22 +93,6 @@
         "subTitulo": "Selecciona tu puesto actual.",
         "opciones": {
             "1": {
-                "label": "Una universidad espa\u00f1ola:",
-                "subLabel": {
-                    "11": "Universidad Espa\u00f1ola 1",
-                    "12": "Universidad Espa\u00f1ola 2",
-                    "13": "Universidad Espa\u00f1ola 3",
-                    "14": "Otra universidad"
-                }
-            },
-            "2": {
-                "label": "asdf",
-                "subLabel": {
-                    "10": "asdf",
-                    "11": "asdf"
-                }
-            },
-            "3": {
                 "label": "asdf",
                 "subLabel": []
             }
@@ -305,7 +274,7 @@
                 }
             }
         },
-        "filtro": {},
+        "filtro": [],
         "cabecera": {
             "texto1": "",
             "lista": "",

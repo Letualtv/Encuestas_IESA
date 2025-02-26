@@ -14,7 +14,7 @@
                 </div>
                 <div class="col-md-4">
                     <label for="tipo" class="form-label">Tipo de pregunta</label>
-                    <select class="form-select shadow-sm" name="tipo" id="tipo" required onchange="ajustarParametros()">
+                    <select class="form-select shadow-sm" name="tipo" id="tipo" required >
                         <option value="checkbox" data-bs-toggle="tooltip" title="Pregunta con multirespuesta">Checkbox</option>
                         <option value="formSelect" data-bs-toggle="tooltip" title="Pregunta de respuesta única con desplegable de opciones">Radio desplegable</option>
                         <option value="numberInput" data-bs-toggle="tooltip" title="Pregunta con entrada numérica con rango personalizable">Entrada numérica</option>

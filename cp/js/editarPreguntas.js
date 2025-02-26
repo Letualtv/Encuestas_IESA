@@ -1,3 +1,21 @@
+
+document.getElementById("tipo").addEventListener("change", () => {
+  const tipoPregunta = document.getElementById("tipo").value;
+
+  // Limpiar opciones previas
+  const opcionesDiv = document.getElementById("opciones");
+  while (opcionesDiv.firstChild) {
+    opcionesDiv.removeChild(opcionesDiv.firstChild);
+  }
+
+  // Reiniciar variables globales
+  ultimaClave = 0;
+  claveAutomaticaMatrix3 = 1;
+
+  // Ajustar parámetros del formulario según el tipo de pregunta
+  ajustarFormulario();
+});
+
 // Función para ajustar los parámetros del formulario según el tipo de pregunta
 function ajustarFormulario() {
   const tipo = document.getElementById("tipo").value;

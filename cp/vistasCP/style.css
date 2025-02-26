@@ -14,8 +14,8 @@
 
 
 
-.listaPreguntas {
-    height: 85vh !important;
+ #preguntasList {
+    height: 70vh !important;
 
     overflow-y: auto !important;
     

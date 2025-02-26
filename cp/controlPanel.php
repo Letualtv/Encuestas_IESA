@@ -9,7 +9,7 @@
                 <h5 class="mb-0"><i class="fa-solid fa-stream me-2"></i>Listado de preguntas</h5>
                 <hr>
                 <!-- Barra de Búsqueda -->
-                <div class="input-group p-3">
+                <div class="input-group p-3 pt-2">
                     <input
                         type="text"
                         class="form-control shadow-sm"
