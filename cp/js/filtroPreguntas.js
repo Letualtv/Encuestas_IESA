@@ -116,7 +116,7 @@ case "rango-cerrado":
     container.innerHTML = `
     <div class="input-group input-group-sm ">
         <input type="text" class="form-control shadow-sm" value="${min}" placeholder="Mínimo (X)" required>
-        <div><i class="fa fa-arrow-right mx-2 fa-lg align-middle" ></i></div>
+       <i class="fa fa-arrow-right mx-2 my-auto fa-lg align-middle" ></i>
         <input type="text" class="form-control shadow-sm" value="${max}" placeholder="Máximo (Y)" required>
     </div>
     `;

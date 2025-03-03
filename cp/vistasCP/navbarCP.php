@@ -1,3 +1,15 @@
+<?php
+session_start();
+
+// Verificar si el usuario ha iniciado sesión
+if (!isset($_SESSION['usuario'])) {
+    header("Location: login.php");
+    exit;
+}
+
+$usuario = $_SESSION['usuario'];
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -17,34 +29,38 @@
     <nav class="navbar navbar-expand navbar-light mb-4  shadow">
         <div class="container-fluid mx-2">
 
-        <div class="collapse navbar-collapse" id="navbarNav">
-    <ul class="nav nav-pills gap-2 w-100">
-        <li class="nav-item">
-            <a class="nav-link" href="controlPanel.php">Modificar encuesta</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="parametrosGenerales.php">Parámetros generales</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="textos.php">Textos</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="poblacion.php">Población</a>
-        </li>
-        <div class="ms-auto d-flex">
-            
-            <div class="d-flex  col align-items-center gap-2 justify-content-center ">
-                            <a class="btn btn-primary d-flex align-items-center justify-content-center " href="usuarios.php" style="width: 40px; height: 40px;">
-                                <i class="fa-solid fa-user fa-lg"></i>
-                            </a>
-                            <a class="btn btn-secondary d-flex align-items-center justify-content-center" href="exportar.php" style="width: 40px; height: 40px;">
-                                <i class="fa-solid fa-file-export fa-lg"></i>
-                            </a>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="nav nav-pills gap-2 w-100">
+                    <li class="nav-item">
+                        <a class="nav-link" href="controlPanel.php">Modificar encuesta</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="parametrosGenerales.php">Parámetros generales</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="textos.php">Textos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="poblacion.php">Población</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="usuarios.php">Usuarios</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="exportar.php">Exportar</a>
+                    </li>
+                    <div class="ms-auto d-flex">
+
+                        <div class="d-flex  col align-items-center gap-2 justify-content-center ">
+                            <div id="infoUsuario" class="d-flex align-items-center">
+                                <!-- Aquí se mostrará el nombre del usuario y su rol -->
+                            </div>
+                            <button id="btnCerrarSesion" class="btn btn-danger">Cerrar Sesión</button>
+
                         </div>
-            </li>
-        </div>
-    </ul>
-</div>
+                    </div>
+                </ul>
+            </div>
 
 
         </div>
@@ -70,7 +86,7 @@
                 }
             });
         });
-    </script>    
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
