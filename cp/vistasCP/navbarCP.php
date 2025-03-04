@@ -51,13 +51,20 @@ $usuario = $_SESSION['usuario'];
                     </li>
                     <div class="ms-auto d-flex">
 
-                        <div class="d-flex  col align-items-center gap-2 justify-content-center ">
-                            <div id="infoUsuario" class="d-flex align-items-center">
-                                <!-- Aquí se mostrará el nombre del usuario y su rol -->
-                            </div>
-                            <button id="btnCerrarSesion" class="btn btn-danger">Cerrar Sesión</button>
+                    <div class="d-flex col align-items-center gap-2 justify-content-end">
+                    <div class="d-flex align-items-center gap-3">
+    <!-- Información del usuario -->
+    <div class="d-flex flex-column text-end">
+        <span id="nombreUsuario" class="fw-bold">Cargando...</span>
+        <span id="rolUsuario" class="badge bg-primary">Cargando...</span>
+    </div>
 
-                        </div>
+    <!-- Botón de cierre de sesión -->
+    <button id="btnCerrarSesion" class="btn btn-danger ">
+        <i class="fas fa-sign-out-alt me-1"></i> Cerrar sesión
+    </button>
+</div>
+</div>
                     </div>
                 </ul>
             </div>
@@ -88,6 +95,7 @@ $usuario = $_SESSION['usuario'];
         });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/usuarioNavbar.js"></script>
 </body>
 
 </html>

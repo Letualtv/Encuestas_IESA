@@ -81,8 +81,8 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
         nuevaVariable.innerHTML = `
-            <button type="button" class="btn btn-outline-danger" onclick="eliminarVariable(this)">
-                <i class="fa-solid fa-trash"></i>
+            <button type="button" class="btn btn-outline-danger col-6 col-md-auto" onclick="eliminarVariable(this)">
+                <i class="fa-solid fa-trash p-1"></i> 
             </button>
             <input type="text" class="form-control clave-input " placeholder="Clave (ej. $nombre)" value="${clave}" readonly>
             <input type="text" class="form-control valor-input " placeholder="Valor disabled" value="${valor}" readonly>

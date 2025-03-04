@@ -193,20 +193,3 @@ function verificarSiEsAdministrador() {
 }
 
 
-function mostrarInfoUsuario() {
-    const usuarioActual = JSON.parse(localStorage.getItem('usuario'));
-
-    // Verificar si el usuario actual existe
-    if (!usuarioActual || !usuarioActual.Rol) {
-        console.error('Datos del usuario no disponibles.');
-        return;
-    }
-
-    const infoUsuarioDiv = document.getElementById('infoUsuario');
-    infoUsuarioDiv.innerHTML = `
-        <span class="me-2">${usuarioActual.Nombre}</span>
-        <span class="badge ${usuarioActual.Rol === 'administrador' ? 'bg-primary' : 'bg-secondary'}">
-            ${usuarioActual.Rol.charAt(0).toUpperCase() + usuarioActual.Rol.slice(1)}
-        </span>
-    `;
-}
