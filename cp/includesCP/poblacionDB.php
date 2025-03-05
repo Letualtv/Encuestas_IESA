@@ -67,7 +67,58 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE' && isset($_GET['action']) && $_G
     }
 }
 
-// Agregar una nueva clave manualmente
+// Eliminar TODAS las filaves
+elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE' && isset($_GET['action']) && $_GET['action'] === 'eliminarClavesSeleccionadas') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $ids = $data['ids'] ?? null;
+
+    if ($ids === "all") {
+        try {
+            $pdo->beginTransaction();
+
+            // Eliminar registros relacionados en la tabla muestra
+            $sqlDeleteMuestra = "DELETE FROM muestra";
+            $stmtDeleteMuestra = $pdo->prepare($sqlDeleteMuestra);
+            $stmtDeleteMuestra->execute();
+
+            // Eliminar todas las claves de la tabla claves
+            $sqlDeleteClaves = "DELETE FROM claves";
+            $stmtDeleteClaves = $pdo->prepare($sqlDeleteClaves);
+            $stmtDeleteClaves->execute();
+
+            $pdo->commit();
+
+            echo json_encode(["success" => true, "message" => "TODAS las claves han sido eliminadas correctamente."]);
+        } catch (PDOException $e) {
+            $pdo->rollBack();
+            echo json_encode(["success" => false, "message" => "Error al eliminar las claves: " . $e->getMessage()]);
+        }
+    } else {
+        echo json_encode(["success" => false, "message" => "ID inválido."]);
+    }
+}
+
+// Marcar TODAS las claves como terminadas/no terminadas
+elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET['action'] === 'editarClave') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $ids = $data['ids'] ?? null;
+    $terminada = $data['terminada'] ?? null;
+
+    if ($ids === "all" && in_array($terminada, [0, 1])) {
+        try {
+            $sql = "UPDATE claves SET terminada = ?";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([$terminada]);
+
+            echo json_encode(["success" => true, "message" => "TODAS las claves han sido actualizadas correctamente."]);
+        } catch (PDOException $e) {
+            echo json_encode(["success" => false, "message" => "Error al actualizar las claves: " . $e->getMessage()]);
+        }
+    } else {
+        echo json_encode(["success" => false, "message" => "Datos inválidos."]);
+    }
+}
+
 // Agregar una nueva clave manualmente
 elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET['action'] === 'agregarClave') {
     $data = json_decode(file_get_contents('php://input'), true);
@@ -101,7 +152,7 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET
         echo json_encode(["success" => false, "message" => "Error al agregar la clave: " . $e->getMessage()]);
     }
 }
-// Generar claves aleatorias
+
 elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET['action'] === 'generarClavesAleatorias') {
     $data = json_decode(file_get_contents('php://input'), true);
     $cantidad = intval($data['cantidad'] ?? 0);

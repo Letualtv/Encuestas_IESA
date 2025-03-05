@@ -30,30 +30,8 @@
 
                 <!-- Botones de paginación y eliminación -->
                 <div class="d-flex justify-content-start mt-2 gap-2">
-                    <button id="selectAllRowsButton" class="btn btn-warning btn-sm"><i class="fa-solid fa-check-double me-2"></i>Seleccionar todas las filas</button>
                     <button id="deleteSelectedButton" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash-alt me-2"></i>Eliminar seleccionadas</button>
                     <button id="editSelectedButton" class="btn btn-primary btn-sm"><i class="fa-solid fa-edit me-2"></i>Marcar / desmarcar terminada</button>
-                    <!-- Botón para seleccionar todas las filas -->
-
-                    <!-- Modal de confirmación para seleccionar todas las filas -->
-                    <div class="modal fade" id="confirmSelectAllModal" tabindex="-1" aria-labelledby="confirmSelectAllModalLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-                                <div class="modal-header bg-warning text-white">
-                                    <h5 class="modal-title" id="confirmSelectAllModalLabel"><i class="fa-solid fa-exclamation-triangle me-2"></i>Confirmación</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    ¿Estás seguro de realizar esta acción?
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fa-solid fa-times me-2"></i>Cancelar</button>
-                                    <button type="button" class="btn btn-warning" id="confirmSelectAllButton"><i class="fa-solid fa-check me-2"></i>Continuar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <button id="loadMoreButton" class="btn btn-outline-secondary ms-auto btn-sm"><i class="fa-solid fa-arrow-down me-2"></i>Cargar más</button>
                 </div>
             </div>
@@ -85,43 +63,27 @@
                     <button type="submit" class="btn btn-primary "><i class="fa-solid fa-random me-2"></i>Generar claves</button>
                 </form>
 
-                <!-- Modal de confirmación para generar claves -->
-                <div class="modal fade" id="confirmGenerateModal" tabindex="-1" aria-labelledby="confirmGenerateModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header bg-primary text-white">
-                                <h5 class="modal-title" id="confirmGenerateModalLabel"><i class="fa-solid fa-exclamation-circle me-2"></i>Confirmación</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                ¿Estás seguro de realizar esta acción?
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fa-solid fa-times me-2"></i>Cancelar</button>
-                                <button type="button" class="btn btn-primary" id="confirmGenerateButton"><i class="fa-solid fa-check me-2"></i>Continuar</button>
-                            </div>
-                        </div>
+                <hr>
+
+                <!-- Zona de Peligro -->
+                <div class="card mt-4 border border-danger p-4">
+                    <h5 class="mb-3 text-danger"><i class="fa-solid fa-triangle-exclamation me-2 fa-lg"></i>Zona de peligro</h5>
+                    <p>Estas acciones afectan a todas las claves en la base de datos.
+                    <p>¡Úsalas con precaución!</p>
+                    </p>
+                    <div class=" d-flex justify-content-between">
+                        <!-- Botón para eliminar todas las filas -->
+                        <button id="deleteAllRowsButton" class="btn btn-outline-danger fw-bold">
+                            Eliminar TODAS las filas
+                        </button>
+
+                        <!-- Botón para marcar todas las claves como terminadas/no terminadas -->
+                        <button id="markAllAsCompletedButton" class="btn btn-outline-danger fw-bold">
+                            Marcar TODAS como <span id="markAllStatus">terminadas</span>
+                        </button>
                     </div>
                 </div>
 
-                <!-- Modal de confirmación final para grandes cantidades -->
-                <div class="modal fade" id="finalConfirmModal" tabindex="-1" aria-labelledby="finalConfirmModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header bg-danger text-white">
-                                <h5 class="modal-title" id="finalConfirmModalLabel"><i class="fa-solid fa-exclamation-triangle me-2"></i>Confirmación adicional</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                ¿Estás completamente seguro de realizar esta acción?
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fa-solid fa-times me-2"></i>Cancelar</button>
-                                <button type="button" class="btn btn-danger" id="finalConfirmButton"><i class="fa-solid fa-check me-2"></i>Confirmar</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -129,8 +91,6 @@
         <div id="message" class="mt-3"></div>
     </div>
 
-    <!-- Modal de confirmación para edición -->
-    <?php include 'vistasCP/modalGuardado.php'; ?>
 
 
     <!-- Toast para notificaciones -->
@@ -144,66 +104,28 @@
         </div>
     </div>
 
-    <!-- Modal de confirmación final para eliminar más de 20 claves -->
-    <div class="modal fade" id="finalConfirmModal" tabindex="-1" aria-labelledby="finalConfirmModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title" id="finalConfirmModalLabel"><i class="fa-solid fa-exclamation-triangle me-2"></i>Confirmación Final</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    ¿Estás completamente seguro de realizar esta acción?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fa-solid fa-times me-2"></i>Cancelar</button>
-                    <button type="button" class="btn btn-danger" id="finalConfirmButton"><i class="fa-solid fa-check me-2"></i>Confirmar</button>
-                </div>
-            </div>
-        </div>
-    </div>
+
     <?php include 'vistasCP/footerCP.php'; ?>
 </section>
 
-<!-- Modal de confirmación para edición -->
-<div class="modal fade" id="confirmEditModal" tabindex="-1" aria-labelledby="confirmEditModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="confirmEditModalLabel"><i class="fa-solid fa-edit me-2"></i>Confirmación</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <!-- Este es el elemento que debe estar presente -->
-                ¿Estás seguro de realizar esta acción?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fa-solid fa-times me-2"></i>Cancelar</button>
-                <button type="button" class="btn btn-primary" id="confirmEditActionButton"><i class="fa-solid fa-check me-2"></i>Continuar</button>
-            </div>
-        </div>
+
+<!-- Modal Genérico -->
+<div class="modal fade" id="customModal" tabindex="-1" aria-labelledby="customModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header" id="customModalHeader">
+        <h5 class="modal-title" id="customModalTitle"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="customModalBody"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="customModalCancelButton">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="customModalConfirmButton">Confirmar</button>
+      </div>
     </div>
+  </div>
 </div>
 
-<!-- Modal de confirmación para eliminación -->
-<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title" id="confirmDeleteModalLabel"><i class="fa-solid fa-trash-alt me-2"></i>Confirmación</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <!-- Este es el elemento que debe estar presente -->
-                ¿Estás seguro de realizar esta acción?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fa-solid fa-times me-2"></i>Cancelar</button>
-                <button type="button" class="btn btn-danger" id="confirmDeleteButton"><i class="fa-solid fa-check me-2"></i>Continuar</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <script src="js/utils.js"></script>
 <script src="js/clavesPoblacion.js"></script>

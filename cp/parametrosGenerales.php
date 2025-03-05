@@ -115,8 +115,8 @@
 <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar Borrado</h5>
+            <div class="modal-header bg-danger text-white modal-dialog-centered">
+                <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar borrado</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -134,7 +134,7 @@
 <div class="modal fade" id="previewImageModal" tabindex="-1" aria-labelledby="previewImageModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header modal-dialog-centered">
                 <h5 class="modal-title" id="previewImageModalLabel">Previsualización</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -148,7 +148,7 @@
 <div class="modal fade" id="editImageNameModal" tabindex="-1" aria-labelledby="editImageNameModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header modal-dialog-centered">
                 <h5 class="modal-title" id="editImageNameModalLabel">Editar nombre de la imagen</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -169,8 +169,8 @@
 <div class="modal fade" id="editVariableModal" tabindex="-1" aria-labelledby="editVariableModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editVariableModalLabel">Editar Variable</h5>
+            <div class="modal-header modal-dialog-centered">
+                <h5 class="modal-title" id="editVariableModalLabel">Editar variable</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">

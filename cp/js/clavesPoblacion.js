@@ -1,7 +1,10 @@
 // Variables globales
 let currentPage = 1; // Página actual de claves
-const pageSize = 20; // Número de claves por página
-document.querySelectorAll("#clavesTable th").forEach((header, index) => {
+const pageSize = 15; // Número de claves por página
+let selectedIds = new Set(); // Almacenar los IDs seleccionados
+
+// Evento para ordenar la tabla al hacer clic en los encabezados
+document.querySelectorAll("#clavesTable th").forEach((header) => {
   header.addEventListener("click", () => {
     const orderBy = header.textContent.trim().toLowerCase(); // Columna seleccionada
     const orderDir = header.dataset.order === "asc" ? "desc" : "asc"; // Alternar dirección
@@ -11,35 +14,20 @@ document.querySelectorAll("#clavesTable th").forEach((header, index) => {
   });
 });
 
-// Modificar la función cargarClaves para aceptar orderBy y orderDir
-function cargarClaves(
-  page = 1,
-  limit = pageSize,
-  orderBy = "id",
-  orderDir = "asc"
-) {
-  fetch(
-    `includesCP/poblacionDB.php?action=obtenerClaves&page=${page}&limit=${limit}&orderBy=${orderBy}&orderDir=${orderDir}`
-  )
+// Función para cargar claves desde el backend
+function cargarClaves(page = 1, limit = pageSize, orderBy = "id", orderDir = "asc") {
+  fetch(`includesCP/poblacionDB.php?action=obtenerClaves&page=${page}&limit=${limit}&orderBy=${orderBy}&orderDir=${orderDir}`)
     .then((response) => {
-      if (!response.ok) {
-        throw new Error(`Error en la solicitud: ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`Error en la solicitud: ${response.status}`);
       return response.json();
     })
     .then((data) => {
       const clavesList = document.getElementById("clavesList");
-      if (page === 1) {
-        clavesList.innerHTML = ""; // Limpiar la lista si es la primera página
-      }
+      if (page === 1) clavesList.innerHTML = ""; // Limpiar la lista si es la primera página
 
-      if (data.error) {
-        throw new Error(data.error);
-      }
-
+      if (data.error) throw new Error(data.error); // Manejar errores específicos del backend
       if (data.length === 0) {
-        clavesList.innerHTML +=
-          "<tr><td colspan='4' class='text-center'>No hay más claves disponibles.</td></tr>";
+        clavesList.innerHTML += " No hay más claves disponibles.";
         document.getElementById("loadMoreButton").disabled = true;
         return;
       }
@@ -47,424 +35,40 @@ function cargarClaves(
       data.forEach((clave) => {
         const row = document.createElement("tr");
         row.innerHTML = `
-                    <td><input type="checkbox" value="${
-                      clave.id
-                    }" class="form-check-input claveCheckbox"></td>
-                    <td>${clave.id}</td>
-                    <td>${clave.clave}</td>
-                    <td>${clave.terminada ? "Sí" : "No"}</td>
-                `;
+          <td><input type="checkbox" class="claveCheckbox" value="${clave.id}"></td>
+          <td>${clave.id}</td>
+          <td>${clave.clave}</td>
+          <td>${clave.terminada ? "Sí" : "No"}</td>
+        `;
         clavesList.appendChild(row);
       });
+
+      // Restaurar el estado de los checkboxes
+      restoreCheckboxState();
     })
     .catch((error) => {
       console.error("Error al cargar las claves:", error);
-      showToast(
-        `Error: ${
-          error.message || "Ocurrió un problema al cargar las claves."
-        }`,
-        "danger"
-      );
+      showToast(`Error: ${error.message || "Ocurrió un problema al cargar las claves."}`, "danger");
     });
 }
 
-// Función para buscar claves
-document.getElementById("searchClaves").addEventListener("input", () => {
-  const searchTerm = document
-    .getElementById("searchClaves")
-    .value.toLowerCase();
-
-  fetch(`includesCP/poblacionDB.php?action=obtenerTodasClaves`)
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`Error en la solicitud: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then((data) => {
-      const clavesList = document.getElementById("clavesList");
-      clavesList.innerHTML = ""; // Limpiar la lista actual
-
-      const filteredData = data.filter(
-        (clave) =>
-          clave.id.toString().includes(searchTerm) ||
-          clave.clave.toLowerCase().includes(searchTerm) ||
-          (clave.terminada ? "sí" : "no").includes(searchTerm)
-      );
-
-      if (filteredData.length === 0) {
-        clavesList.innerHTML =
-          "<tr><td colspan='4' class='text-center'>No se encontraron resultados.</td></tr>";
-        return;
-      }
-
-      filteredData.forEach((clave) => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-                    <td><input type="checkbox" value="${
-                      clave.id
-                    }" class="form-check-input claveCheckbox"></td>
-                    <td>${clave.id}</td>
-                    <td>${clave.clave}</td>
-                    <td>${clave.terminada ? "Sí" : "No"}</td>
-                `;
-        clavesList.appendChild(row);
-      });
-    })
-    .catch((error) => {
-      console.error("Error al buscar claves:", error);
-      showToast("Ocurrió un error al intentar buscar claves.", "danger");
-    });
-});
-
-// Resaltar/desresaltar filas seleccionadas
-document.addEventListener("change", (event) => {
-  if (event.target.classList.contains("claveCheckbox")) {
-    const row = event.target.closest("tr");
-    if (event.target.checked) {
-      row.classList.add("table-active");
-    } else {
-      row.classList.remove("table-active");
-    }
-  }
-});
-
-// Función para seleccionar/deseleccionar todas las filas
-document.getElementById("selectAllCheckboxes").addEventListener("change", function () {
-    const checkboxes = document.querySelectorAll("#clavesList input[type='checkbox']");
-    checkboxes.forEach((checkbox) => {
-        checkbox.checked = this.checked;
-        const row = checkbox.closest("tr");
-        if (this.checked) {
-            row.classList.add("table-active");
-        } else {
-            row.classList.remove("table-active");
-        }
-    });
-});
-
-// Botón para seleccionar TODAS las filas
-document.getElementById("selectAllRowsButton").addEventListener("click", () => {
-    const modalBody = document.querySelector("#confirmSelectAllModal .modal-body");
-    modalBody.textContent = "¿Estás seguro de que deseas seleccionar TODAS las filas?";
-
-    const confirmationModal = new bootstrap.Modal(document.getElementById("confirmSelectAllModal"));
-    confirmationModal.show();
-
-    document.getElementById("confirmSelectAllButton").onclick = () => {
-        confirmationModal.hide(); // Ocultar el modal
-
-        fetch(`includesCP/poblacionDB.php?action=obtenerTodasClaves`)
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error(`Error en la solicitud: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then((data) => {
-                if (data.error) {
-                    throw new Error(data.error);
-                }
-
-                // Marcar todos los checkboxes como seleccionados
-                data.forEach((clave) => {
-                    const checkbox = document.querySelector(`#clavesList input[type='checkbox'][value='${clave.id}']`);
-                    if (checkbox) {
-                        checkbox.checked = true;
-                        checkbox.closest("tr").classList.add("table-active");
-                    }
-                });
-
-                showToast("Todas las filas han sido seleccionadas.", "info");
-            })
-            .catch((error) => {
-                console.error("Error al seleccionar todas las filas:", error);
-                showToast("Ocurrió un error al intentar seleccionar todas las filas.", "danger");
-            });
-    };
-});
-
-// Función para editar claves seleccionadas
-document
-  .getElementById("editSelectedButton")
-  .addEventListener("click", function () {
-    const selectedIds = [];
-    const selectedStates = []; // Almacenar los estados actuales de las claves seleccionadas
-    const checkboxes = document.querySelectorAll(
-      "#clavesList input[type='checkbox']:checked"
-    );
-
-    checkboxes.forEach((checkbox) => {
-      const row = checkbox.closest("tr");
-      const terminadaCell = row
-        .querySelector("td:nth-child(4)")
-        .textContent.trim(); // Estado actual ("Sí" o "No")
-      const terminadaValue = terminadaCell === "Sí" ? 1 : 0; // Convertir a 1 o 0
-      selectedIds.push(checkbox.value);
-      selectedStates.push(terminadaValue);
-    });
-
-    if (selectedIds.length === 0) {
-      showToast(
-        "Por favor, selecciona al menos una clave para editar.",
-        "warning"
-      );
-      return;
-    }
-
-    // Determinar el nuevo estado común para todas las claves seleccionadas
-    const allAreYes = selectedStates.every((state) => state === 1); // ¿Todas están en "Sí"?
-    const newTerminada = allAreYes ? 0 : 1; // Si todas están en "Sí", cambiar a "No". De lo contrario, cambiar a "Sí".
-
-    // Verificar que el modal y el .modal-body existan
-    const modalBody = document.querySelector("#confirmEditModal .modal-body");
-    if (!modalBody) {
-      console.error(
-        "El modal de confirmación o el .modal-body no están presentes en el DOM."
-      );
-      return;
-    }
-
-    modalBody.textContent = `¿Estás seguro de marcar ${
-      selectedIds.length
-    } claves como ${newTerminada ? "SÍ terminada" : "NO terminada"}?`;
-
-    const confirmationModal = new bootstrap.Modal(
-      document.getElementById("confirmEditModal")
-    );
-    confirmationModal.show();
-
-    // Asignar el evento onclick al botón de confirmación
-    const confirmEditButton = document.getElementById(
-      "confirmEditActionButton"
-    );
-    if (!confirmEditButton) {
-      console.error("El botón de confirmación no está presente en el DOM.");
-      return;
-    }
-
-    confirmEditButton.onclick = () => {
-      fetch("includesCP/poblacionDB.php?action=editarClave", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ids: selectedIds, terminada: newTerminada }), // Enviar el nuevo estado
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(`Error en la solicitud: ${response.status}`);
-          }
-          return response.json();
-        })
-        .then((data) => {
-          if (data.success) {
-            showToast("Estado de claves actualizado correctamente.", "success");
-            cargarClaves(currentPage); // Recargar la lista de claves
-          } else {
-            showToast(
-              data.message || "Error al actualizar las claves.",
-              "danger"
-            );
-          }
-        })
-        .catch((error) => {
-          console.error("Error al actualizar las claves:", error);
-          showToast(
-            "Ocurrió un error al intentar actualizar las claves.",
-            "danger"
-          );
-        })
-        .finally(() => {
-          confirmationModal.hide();
-        });
-    };
-  });
-// Función para eliminar claves seleccionadas
-document
-  .getElementById("deleteSelectedButton")
-  .addEventListener("click", function () {
-    const selectedIds = [];
-    const checkboxes = document.querySelectorAll(
-      "#clavesList input[type='checkbox']:checked"
-    );
-    checkboxes.forEach((checkbox) => {
-      selectedIds.push(checkbox.value);
-    });
-
-    if (selectedIds.length === 0) {
-      showToast(
-        "Por favor, selecciona al menos una clave para eliminar.",
-        "warning"
-      );
-      return;
-    }
-
-    // Verificar que el modal y el .modal-body existan
-    const modalBody = document.querySelector("#confirmDeleteModal .modal-body");
-    if (!modalBody) {
-      console.error(
-        "El modal de confirmación o el .modal-body no están presentes en el DOM."
-      );
-      return;
-    }
-
-    modalBody.textContent = `¿Estás seguro de que deseas eliminar ${selectedIds.length} claves seleccionadas?`;
-
-    const confirmationModal = new bootstrap.Modal(
-      document.getElementById("confirmDeleteModal")
-    );
-    confirmationModal.show();
-
-    // Asignar el evento onclick al botón de confirmación
-    const confirmDeleteButton = document.getElementById("confirmDeleteButton");
-    if (!confirmDeleteButton) {
-      console.error("El botón de confirmación no está presente en el DOM.");
-      return;
-    }
-
-    confirmDeleteButton.onclick = () => {
-      fetch("includesCP/poblacionDB.php?action=eliminarClavesSeleccionadas", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ids: selectedIds }),
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(`Error en la solicitud: ${response.status}`);
-          }
-          return response.json();
-        })
-        .then((data) => {
-          if (data.success) {
-            showToast("Claves eliminadas correctamente.", "success");
-            cargarClaves(currentPage);
-          } else {
-            showToast(
-              data.message || "Error al eliminar las claves.",
-              "danger"
-            );
-          }
-        })
-        .catch((error) => {
-          console.error("Error al eliminar las claves:", error);
-          showToast(
-            "Ocurrió un error al intentar eliminar las claves.",
-            "danger"
-          );
-        })
-        .finally(() => {
-          confirmationModal.hide();
-        });
-    };
-  });
-
 // Función para agregar una clave manual
-document
-  .getElementById("customKeyForm")
-  .addEventListener("submit", function (event) {
-    event.preventDefault(); // Evitar el envío del formulario por defecto
+document.getElementById("customKeyForm").addEventListener("submit", function (event) {
+  event.preventDefault(); // Evitar el envío del formulario por defecto
 
-    const customKeyInput = document.getElementById("customKey");
-    const clave = customKeyInput.value.trim();
+  const customKeyInput = document.getElementById("customKey");
+  const clave = customKeyInput.value.trim();
 
-    // Validar que la clave tenga exactamente 5 caracteres alfanuméricos
-    if (!/^[a-zA-Z0-9]{5}$/.test(clave)) {
-      showToast(
-        "La clave debe tener exactamente 5 caracteres alfanuméricos.",
-        "warning"
-      );
-      return;
-    }
+  // Validar que la clave tenga exactamente 5 caracteres alfanuméricos
+  if (!/^[a-zA-Z0-9]{5}$/.test(clave)) {
+    showToast("La clave debe tener exactamente 5 caracteres alfanuméricos.", "warning");
+    return;
+  }
 
-    fetch("includesCP/poblacionDB.php?action=agregarClave", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ clave }), // Enviar solo la clave
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`Error en la solicitud: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        if (data.success) {
-          showToast("Clave agregada correctamente.", "success");
-          cargarClaves(currentPage); // Recargar la lista de claves
-          customKeyInput.value = ""; // Limpiar el campo de entrada
-        } else {
-          showToast(data.message || "Error al agregar la clave.", "danger");
-        }
-      })
-      .catch((error) => {
-        console.error("Error al agregar la clave:", error);
-        showToast("Ocurrió un error al intentar agregar la clave.", "danger");
-      });
-  });
-
-// Función para generar claves aleatorias
-document
-  .getElementById("randomKeyForm")
-  .addEventListener("submit", function (event) {
-    event.preventDefault(); // Evitar el envío del formulario por defecto
-
-    const randomKeyCountInput = document.getElementById("randomKeyCount");
-    const cantidad = parseInt(randomKeyCountInput.value.trim(), 10);
-
-    // Validar que la cantidad sea válida
-    if (isNaN(cantidad) || cantidad <= 0 || cantidad > 10000) {
-      showToast("La cantidad debe estar entre 1 y 10,000.", "warning");
-      return;
-    }
-
-    // Mostrar el primer modal de confirmación
-    const modalBody = document.querySelector(
-      "#confirmGenerateModal .modal-body"
-    );
-    modalBody.textContent = `¿Estás seguro de generar ${cantidad} claves aleatorias?`;
-
-    const confirmationModal = new bootstrap.Modal(
-      document.getElementById("confirmGenerateModal")
-    );
-    confirmationModal.show();
-
-    // Asignar el evento onclick al botón de confirmación
-    const confirmGenerateButton = document.getElementById(
-      "confirmGenerateButton"
-    );
-    confirmGenerateButton.onclick = () => {
-      confirmationModal.hide(); // Ocultar el primer modal
-
-      // Si la cantidad es mayor a 1000, mostrar el segundo modal de confirmación
-      if (cantidad > 1000) {
-        const finalConfirmModal = new bootstrap.Modal(
-          document.getElementById("finalConfirmModal")
-        );
-        const finalConfirmModalBody = document.querySelector(
-          "#finalConfirmModal .modal-body"
-        );
-        finalConfirmModalBody.textContent = `Estás a punto de generar ${cantidad} claves. ¿Estás completamente seguro?`;
-
-        finalConfirmModal.show();
-
-        // Asignar el evento onclick al botón de confirmación final
-        const finalConfirmButton =
-          document.getElementById("finalConfirmButton");
-        finalConfirmButton.onclick = () => {
-          generarClavesAleatorias(cantidad); // Llamar a la función para generar claves
-          finalConfirmModal.hide(); // Ocultar el segundo modal
-        };
-      } else {
-        generarClavesAleatorias(cantidad); // Llamar a la función para generar claves
-      }
-    };
-  });
-
-// Función para generar claves aleatorias
-function generarClavesAleatorias(cantidad) {
-  fetch("includesCP/poblacionDB.php?action=generarClavesAleatorias", {
+  fetch("includesCP/poblacionDB.php?action=agregarClave", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ cantidad }),
+    body: JSON.stringify({ clave }), // Enviar solo la clave
   })
     .then((response) => {
       if (!response.ok) {
@@ -474,18 +78,248 @@ function generarClavesAleatorias(cantidad) {
     })
     .then((data) => {
       if (data.success) {
-        showToast(data.message, "success");
+        showToast("Clave agregada correctamente.", "success");
         cargarClaves(currentPage); // Recargar la lista de claves
+        customKeyInput.value = ""; // Limpiar el campo de entrada
       } else {
-        showToast(data.message || "Error al generar las claves.", "danger");
+        showToast(data.message || "Error al agregar la clave.", "danger");
       }
     })
     .catch((error) => {
-      console.error("Error al generar las claves:", error);
-      showToast("Ocurrió un error al intentar generar las claves.", "danger");
+      console.error("Error al agregar la clave:", error);
+      showToast("Ocurrió un error al intentar agregar la clave.", "danger");
     });
+});
+
+
+
+document.getElementById("randomKeyForm").addEventListener("submit", function (event) {
+  event.preventDefault(); // Evitar el envío del formulario por defecto
+
+  const randomKeyCountInput = document.getElementById("randomKeyCount");
+  const cantidad = parseInt(randomKeyCountInput.value.trim(), 10);
+
+  // Validar que la cantidad sea válida
+  if (isNaN(cantidad) || cantidad < 1 || cantidad > 10000) {
+    showToast("La cantidad debe estar entre 1 y 10,000.", "warning");
+    return;
+  }
+
+  // Mostrar el primer modal de confirmación
+  showModal(
+    "Generar Claves Aleatorias",
+    `¿Estás seguro de generar ${cantidad} claves aleatorias?`,
+    () => {
+      // Si la cantidad es mayor a 1000, mostrar el segundo modal de confirmación
+      if (cantidad > 1000) {
+        showModal(
+          "Confirmación Final",
+          `Estás a punto de generar ${cantidad} claves. ¿Estás completamente seguro?`,
+          () => {
+            generarClavesAleatorias(cantidad); // Llamar a la función para generar claves
+          }
+        );
+      } else {
+        generarClavesAleatorias(cantidad); // Llamar a la función para generar claves
+      }
+    }
+  );
+});
+// Función para generar claves aleatorias
+function generarClavesAleatorias(cantidad) {
+    fetch("includesCP/poblacionDB.php?action=generarClavesAleatorias", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cantidad }),
+    })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(`Error en la solicitud: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then((data) => {
+            if (data.success) {
+                showToast(data.message, "success");
+                cargarClaves(currentPage); // Recargar la lista de claves
+            } else {
+                showToast(data.message || "Error al generar las claves.", "danger");
+            }
+        })
+        .catch((error) => {
+            console.error("Error al generar las claves:", error);
+            showToast("Ocurrió un error al intentar generar las claves.", "danger");
+        });
 }
 
+
+
+// Restaurar el estado de los checkboxes después de cargar la tabla
+function restoreCheckboxState() {
+  document.querySelectorAll("#clavesList input[type='checkbox']").forEach((checkbox) => {
+    if (selectedIds.has(checkbox.value)) {
+      checkbox.checked = true;
+      checkbox.closest("tr").classList.add("table-active");
+    } else {
+      checkbox.checked = false;
+      checkbox.closest("tr").classList.remove("table-active");
+    }
+  });
+}
+
+// Guardar el estado de los checkboxes cuando cambian
+document.addEventListener("change", (event) => {
+  if (event.target.classList.contains("claveCheckbox")) {
+    const id = event.target.value;
+    const row = event.target.closest("tr");
+
+    if (event.target.checked) {
+      selectedIds.add(id);
+      row.classList.add("table-active");
+    } else {
+      selectedIds.delete(id);
+      row.classList.remove("table-active");
+    }
+  }
+});
+
+// Seleccionar/deseleccionar todas las filas
+document.getElementById("selectAllCheckboxes").addEventListener("change", function () {
+  const checkboxes = document.querySelectorAll("#clavesList input[type='checkbox']");
+  checkboxes.forEach((checkbox) => {
+    checkbox.checked = this.checked;
+    const row = checkbox.closest("tr");
+
+    if (this.checked) {
+      selectedIds.add(checkbox.value);
+      row.classList.add("table-active");
+    } else {
+      selectedIds.delete(checkbox.value);
+      row.classList.remove("table-active");
+    }
+  });
+});
+
+// Modal Dinámico
+function showModal(title, bodyText, confirmAction, cancelAction = null, headerClasses = ["bg-primary"]) {
+  const modal = new bootstrap.Modal(document.getElementById("customModal"));
+
+  // Configurar el título
+  document.getElementById("customModalTitle").textContent = title;
+
+  // Configurar el cuerpo del modal
+  document.getElementById("customModalBody").innerHTML = bodyText;
+
+  // Aplicar clases al encabezado
+  const modalHeader = document.getElementById("customModalHeader");
+  modalHeader.className = "modal-header"; // Resetear clases previas
+
+  // Agregar cada clase individualmente
+  headerClasses.forEach(clase => {
+    modalHeader.classList.add(clase);
+  });
+
+  // Configurar botones
+  document.getElementById("customModalConfirmButton").onclick = confirmAction;
+  document.getElementById("customModalCancelButton").onclick = cancelAction || (() => {});
+
+  modal.show();
+}
+
+// Botón para eliminar TODAS las filas
+document.getElementById("deleteAllRowsButton").addEventListener("click", () => {
+  // Primera confirmación: Advertencia inicial
+  showModal(
+    "Eliminar todas las filas",
+    `
+      <div class="text-danger">
+        ¿Estás seguro de que deseas <b> eliminar todas </b> las filas?
+      </div>
+      <p class="mt-2">Esta acción no se puede deshacer.</p>
+    `,
+    () => {
+      // Segunda confirmación: Última advertencia
+      showModal(
+        "Confirmación final",
+        `
+          <div class="text-danger d-flex align-items-center">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>¡ADVERTENCIA!</strong>
+          </div>
+          <p class="mt-2">¿Estás completamente seguro de eliminar <b>todas las filas</b>?</p>
+        `,
+        () => {
+          // Proceder con la eliminación
+          fetch("includesCP/poblacionDB.php?action=eliminarClavesSeleccionadas", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ids: "all" }),
+          })
+            .then((response) => {
+              if (!response.ok) throw new Error(`Error en la solicitud: ${response.status}`);
+              return response.json();
+            })
+            .then((data) => {
+              if (data.success) {
+                showToast("Todas las filas han sido eliminadas correctamente.", "success");
+                cargarClaves(1); // Recargar la lista
+              } else {
+                showToast(data.message || "Error al eliminar las filas.", "danger");
+              }
+            })
+            .catch((error) => {
+              console.error("Error al eliminar las filas:", error);
+              showToast("Ocurrió un error al intentar eliminar las filas.", "danger");
+            });
+        },
+        null,
+        ["bg-danger", "text-white"] // Clases para el segundo modal
+      );
+    },
+    null,
+    ["bg-danger", "text-white"] // Clases para el primer modal
+  );
+});
+
+// Botón para marcar TODAS las claves como terminadas/no terminadas
+let markAllAsCompleted = true; // Estado inicial: "terminadas"
+document.getElementById("markAllAsCompletedButton").addEventListener("click", () => {
+  const newState = markAllAsCompleted ? "terminadas" : "no terminadas";
+  showModal(
+    `Marcar todas las Claves como ${newState}`,
+    `¿Estás seguro de que deseas marcar todas las claves como ${newState}?`,
+    () => {
+      fetch("includesCP/poblacionDB.php?action=editarClave", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: "all", terminada: markAllAsCompleted ? 1 : 0 }),
+      })
+        .then((response) => {
+          if (!response.ok) throw new Error(`Error en la solicitud: ${response.status}`);
+          return response.json();
+        })
+        .then((data) => {
+          if (data.success) {
+            showToast(`Todas las claves han sido marcadas como ${newState}.`, "success");
+            cargarClaves(1); // Recargar la lista de claves
+          } else {
+            showToast(data.message || "Error al actualizar las claves.", "danger");
+          }
+        })
+        .catch((error) => {
+          console.error("Error al actualizar las claves:", error);
+          showToast("Ocurrió un error al intentar actualizar las claves.", "danger");
+        })
+        .finally(() => {
+          markAllAsCompleted = !markAllAsCompleted; // Alternar el estado
+        });
+    }
+  );
+});
+
+
+
+// Botón para cargar más claves
 document.getElementById("loadMoreButton").addEventListener("click", () => {
   currentPage++;
   cargarClaves(currentPage);
