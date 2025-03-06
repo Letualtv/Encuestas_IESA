@@ -20,6 +20,8 @@
                             <th><input type="checkbox" id="selectAllCheckboxes" class="form-check-input"></th>
                             <th>ID</th>
                             <th>Clave</th>
+                            <th>Número de Login</th> <!-- Nueva columna -->
+                            
                             <th>Terminada</th>
                         </tr>
                     </thead>
@@ -66,7 +68,7 @@
                 <hr>
 
                 <!-- Zona de Peligro -->
-                <div class="card mt-4 border border-danger p-4">
+                <div class="card mt-4 border border-danger p-4" id="dangerZone">
                     <h5 class="mb-3 text-danger"><i class="fa-solid fa-triangle-exclamation me-2 fa-lg"></i>Zona de peligro</h5>
                     <p>Estas acciones afectan a todas las claves en la base de datos.
                     <p>¡Úsalas con precaución!</p>
@@ -74,12 +76,12 @@
                     <div class=" d-flex justify-content-between">
                         <!-- Botón para eliminar todas las filas -->
                         <button id="deleteAllRowsButton" class="btn btn-outline-danger fw-bold">
-                            Eliminar TODAS las filas
+                            Eliminar todas las filas
                         </button>
 
                         <!-- Botón para marcar todas las claves como terminadas/no terminadas -->
                         <button id="markAllAsCompletedButton" class="btn btn-outline-danger fw-bold">
-                            Marcar TODAS como <span id="markAllStatus">terminadas</span>
+                            Marcar todas como <span id="markAllStatus">terminadas</span>
                         </button>
                     </div>
                 </div>
@@ -110,20 +112,29 @@
 
 
 <!-- Modal Genérico -->
-<div class="modal fade" id="customModal" tabindex="-1" aria-labelledby="customModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header" id="customModalHeader">
-        <h5 class="modal-title" id="customModalTitle"></h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body" id="customModalBody"></div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="customModalCancelButton">Cancelar</button>
-        <button type="button" class="btn btn-primary" id="customModalConfirmButton">Confirmar</button>
-      </div>
+<div class="modal fade" id="customModal" tabindex="-1" aria-labelledby="customModalLabel">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" id="customModalHeader">
+                <h5 class="modal-title" id="customModalTitle">Modal Title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="customModalBody">
+                <!-- Contenido dinámico -->
+                <p id="modalMessage">Generando claves aleatorias...</p>
+                <!-- Spinner -->
+                <div class="text-center" id="loadingSpinner" style="display: none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="customModalCancelButton">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="customModalConfirmButton">Confirmar</button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 

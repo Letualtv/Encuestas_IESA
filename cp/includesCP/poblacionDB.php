@@ -3,22 +3,48 @@ require '../../config/db.php'; // Archivo de conexión a la base de datos
 
 // Obtener claves paginadas
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'obtenerClaves') {
-    $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
-    $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 30;
-    $offset = ($page - 1) * $limit;
+// Validar y sanitizar las variables de ordenación
+$allowedColumns = ['id', 'clave', 'terminada', 'n_login'];
+$orderBy = in_array($_GET['orderBy'], $allowedColumns) ? $_GET['orderBy'] : 'id';
+$orderDir = strtoupper($_GET['orderDir']) === 'DESC' ? 'DESC' : 'ASC';
 
-    try {
-        $sql = "SELECT id, clave, terminada FROM claves ORDER BY id LIMIT ? OFFSET ?";
-        $stmt = $pdo->prepare($sql);
-        $stmt->bindParam(1, $limit, PDO::PARAM_INT);
-        $stmt->bindParam(2, $offset, PDO::PARAM_INT);
-        $stmt->execute();
-        $claves = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// Validar y sanitizar los valores de paginación
+$limit = isset($_GET['limit']) ? intval($_GET['limit']) : 30;
+$offset = isset($_GET['offset']) ? intval($_GET['offset']) : 0;
 
-        echo json_encode($claves);
-    } catch (PDOException $e) {
-        echo json_encode(["error" => "Error en la consulta: " . $e->getMessage()]);
-    }
+try {
+    // Construir la consulta SQL
+    $sql = "SELECT 
+            claves.id, 
+            claves.clave, 
+            claves.terminada, 
+            muestra.n_login 
+        FROM 
+            claves 
+        LEFT JOIN 
+            muestra 
+        ON 
+            claves.clave = muestra.clave 
+        ORDER BY 
+            $orderBy $orderDir 
+        LIMIT 
+            ? OFFSET ?
+    ";
+
+    // Preparar y ejecutar la consulta
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(1, $limit, PDO::PARAM_INT);
+    $stmt->bindParam(2, $offset, PDO::PARAM_INT);
+    $stmt->execute();
+
+    // Obtener los resultados
+    $claves = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Devolver los resultados como JSON
+    echo json_encode($claves);
+} catch (PDOException $e) {
+    echo json_encode(["error" => "Error en la consulta: " . $e->getMessage()]);
+}
 }
 
 // Eliminar una clave individual
@@ -67,7 +93,7 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE' && isset($_GET['action']) && $_G
     }
 }
 
-// Eliminar TODAS las filaves
+// Eliminar TODAS las claves
 elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE' && isset($_GET['action']) && $_GET['action'] === 'eliminarClavesSeleccionadas') {
     $data = json_decode(file_get_contents('php://input'), true);
     $ids = $data['ids'] ?? null;
@@ -152,8 +178,74 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET
         echo json_encode(["success" => false, "message" => "Error al agregar la clave: " . $e->getMessage()]);
     }
 }
-
+// Agregar claves aleatorias automáticamente
 elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET['action'] === 'generarClavesAleatorias') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $cantidad = intval($data['cantidad'] ?? 0);
+
+    // Validar que la cantidad sea válida
+    if ($cantidad <= 0 || $cantidad > 10000) {
+        echo json_encode(["success" => false, "message" => "La cantidad debe estar entre 1 y 10,000."]);
+        exit;
+    }
+
+    // Lista de patrones prohibidos (palabras o secuencias indeseadas)
+    $blacklistPatterns = [
+        '/pipi/i',
+        '/caca/i',
+        '/kaka/i',
+        '/nazi/i',
+        '/vox/i',
+        '/tonto/i',
+        '/malo/i',
+        '/psoe/i',
+        '/sumar/i',
+        '/milf/i',
+    ];
+
+    try {
+        $clavesGeneradas = [];
+        for ($i = 0; $i < $cantidad; $i++) {
+            // Generar una clave aleatoria de 5 caracteres alfanuméricos
+            $clave = substr(str_shuffle("abcdefghjklmnpqrstuvwxyz"), 0, 5);
+
+            // Verificar si la clave ya existe
+            $sqlCheck = "SELECT COUNT(*) FROM claves WHERE clave = ?";
+            $stmtCheck = $pdo->prepare($sqlCheck);
+            $stmtCheck->execute([$clave]);
+            $exists = $stmtCheck->fetchColumn();
+
+            // Verificar si la clave coincide con alguno de los patrones prohibidos
+            $isBlacklisted = false;
+            foreach ($blacklistPatterns as $pattern) {
+                if (preg_match($pattern, $clave)) {
+                    $isBlacklisted = true;
+                    break;
+                }
+            }
+
+            if (!$exists && !$isBlacklisted) {
+                // Insertar la clave con terminada = 0
+                $sqlInsert = "INSERT INTO claves (clave, terminada) VALUES (?, 0)";
+                $stmtInsert = $pdo->prepare($sqlInsert);
+                $stmtInsert->execute([$clave]);
+
+                $clavesGeneradas[] = $clave;
+            } else {
+                // Si la clave ya existe o está en la lista negra, intentar generar otra
+                $i--;
+            }
+        }
+
+        echo json_encode([
+            "success" => true,
+            "message" => "Se generaron " . count($clavesGeneradas) . " claves correctamente.",
+        ]);
+    } catch (PDOException $e) {
+        echo json_encode(["success" => false, "message" => "Error al generar las claves: " . $e->getMessage()]);
+    }
+}
+/* elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET['action'] === 'generarClavesAleatorias') {
     $data = json_decode(file_get_contents('php://input'), true);
     $cantidad = intval($data['cantidad'] ?? 0);
 
@@ -167,7 +259,7 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET
         $clavesGeneradas = [];
         for ($i = 0; $i < $cantidad; $i++) {
             // Generar una clave aleatoria de 5 caracteres alfanuméricos
-            $clave = substr(str_shuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), 0, 5);
+            $clave = substr(str_shuffle("abcdefghjklmnpqrstuvwxyz"), 0, 5);
 
             // Verificar si la clave ya existe
             $sqlCheck = "SELECT COUNT(*) FROM claves WHERE clave = ?";
@@ -195,7 +287,7 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET
     } catch (PDOException $e) {
         echo json_encode(["success" => false, "message" => "Error al generar las claves: " . $e->getMessage()]);
     }
-}
+} */
 
 // Obtener todas las claves (sin paginación)
 elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'obtenerTodasClaves') {
@@ -287,4 +379,3 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET
         echo json_encode(["success" => false, "message" => "Error al actualizar las claves: " . $e->getMessage()]);
     }
 }
-
