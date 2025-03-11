@@ -1,10 +1,5 @@
-// Variables globales
-
-
-
-
+//! Zona de peligro
 ////////////////////
-
 
 document.addEventListener('DOMContentLoaded', () => {
   const usuarioActualEsAdmin = verificarSiEsAdministrador();
@@ -79,10 +74,7 @@ function configurarEventosAdmin() {
   });
 }
 
-
 ////////////////////////
-
-
 
 
 
@@ -123,8 +115,8 @@ function cargarClaves(page = 1, limit = pageSize, orderBy = "id", orderDir = "as
       });
 
       // Restaurar el estado de los checkboxes
-      restoreCheckboxState();
-    })
+/*       restoreCheckboxState();
+ */    })
     .catch((error) => {
       console.error("Error al cargar las claves:", error);
       showToast(`Error: ${error.message || "Ocurrió un problema al cargar las claves."}`, "danger");
@@ -136,7 +128,7 @@ function cargarClaves(page = 1, limit = pageSize, orderBy = "id", orderDir = "as
 
 
 // Función para restaurar el estado de los checkboxes
-function restoreCheckboxState() {
+/* function restoreCheckboxState() {
   document.querySelectorAll("#clavesList input[type='checkbox']").forEach((checkbox) => {
     if (selectedIds.has(checkbox.value)) {
       checkbox.checked = true;
@@ -146,7 +138,7 @@ function restoreCheckboxState() {
       checkbox.closest("tr").classList.remove("table-active");
     }
   });
-}
+} */
 
 // Ordenar la tabla al hacer clic en los encabezados
 document.querySelectorAll("#clavesTable th").forEach((header) => {
@@ -226,9 +218,10 @@ document.getElementById("deleteSelectedButton").addEventListener("click", () => 
     return;
   }
 
+  // Mostrar el modal de confirmación
   showModal(
-    "Eliminar Claves Seleccionadas",
-    `¿Estás seguro de que deseas eliminar las ${selectedIdsArray.length} claves seleccionadas?`,
+    "Eliminar claves seleccionadas",
+    `¿Estás seguro de que deseas <b>eliminar ${selectedIdsArray.length} claves</b> seleccionadas?`,
     () => {
       fetch("includesCP/poblacionDB.php?action=eliminarClavesSeleccionadas", {
         method: "DELETE",
@@ -251,12 +244,28 @@ document.getElementById("deleteSelectedButton").addEventListener("click", () => 
         .catch((error) => {
           console.error("Error al eliminar las claves:", error);
           showToast("Ocurrió un error al intentar eliminar las claves.", "danger");
+        })
+        .finally(() => {
+          // Cerrar el modal correctamente
+      const modalElement = document.getElementById("customModal");
+      const modalInstance = bootstrap.Modal.getInstance(modalElement);
+
+      if (modalInstance) {
+        modalInstance.hide(); // Ocultar el modal
+      } else {
+        console.error("No se pudo obtener una instancia del modal.");
+      }
+
+      // Mover el foco al body para evitar problemas de accesibilidad
+      document.body.focus();
+
         });
     },
     null,
     ["bg-danger", "text-white"]
   );
 });
+  
 
 
 
@@ -321,7 +330,7 @@ function eliminarTodasLasFilas() {
 
   // Personalizar el encabezado del modal (colores de fondo y texto)
   modalHeader.classList.add("bg-danger", "text-white"); // Fondo rojo y texto blanco
-  modalHeader.textContent = "Eliminar Todas las Filas"; // Cambiar el título
+  modalHeader.textContent = "Eliminar todas las filas"; // Cambiar el título
 
   // Deshabilitar el botón y cambiar su texto
   confirmButton.disabled = true;
@@ -331,7 +340,7 @@ function eliminarTodasLasFilas() {
   // Cambiar el texto del modal
   modalBody.innerHTML = "Eliminando... por favor, espere.";
 
-  fetch("includesCP/poblacionDB.php?action=eliminarClavesSeleccionadas", {
+  fetch("includesCP/poblacionDB.php?action=eliminarTodasLasClaves", {
     method: "DELETE",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ ids: "all" }),
@@ -358,22 +367,26 @@ function eliminarTodasLasFilas() {
       confirmButton.disabled = false; // Habilitar el botón nuevamente
       confirmButton.textContent = "Confirmar"; // Restaurar el texto original del botón
       confirmButton.classList.remove("btn-danger"); // Restaurar el estilo del botón
-
+    
       // Cerrar el modal correctamente
       const modalElement = document.getElementById("customModal");
       const modalInstance = bootstrap.Modal.getInstance(modalElement);
-
+    
       if (modalInstance) {
         modalInstance.hide(); // Ocultar el modal
       } else {
         console.error("No se pudo obtener una instancia del modal.");
+        
       }
-
+    
       // Mover el foco al body para evitar problemas de accesibilidad
       document.body.focus();
+    
 
-      // Recargar la página después de eliminar las filas
-      window.location.reload();
+      // Retrasar la recarga de la página para permitir que el toast se muestre
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500); // Esperar 2 segundos antes de recargar
     });
 }
 
