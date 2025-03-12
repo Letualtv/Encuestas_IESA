@@ -47,49 +47,7 @@ try {
 }
 }
 
-// Eliminar una clave individual
-elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE' && isset($_GET['action']) && $_GET['action'] === 'eliminarClavesSeleccionadas') {
-    $data = json_decode(file_get_contents('php://input'), true);
-    $ids = $data['ids'] ?? [];
 
-    if (empty($ids)) {
-        echo json_encode(["success" => false, "message" => "No se proporcionaron IDs válidos."]);
-        exit;
-    }
-
-    try {
-        // Validar que los IDs sean números enteros
-        $ids = array_map('intval', $ids);
-
-        // Crear placeholders para los IDs
-        $placeholders = implode(',', array_fill(0, count($ids), '?'));
-
-        $pdo->beginTransaction();
-
-        // Eliminar registros relacionados en la tabla muestra (solo si existen)
-        $sqlDeleteMuestra = "DELETE FROM muestra WHERE clave IN ($placeholders)";
-        $stmtDeleteMuestra = $pdo->prepare($sqlDeleteMuestra);
-        $stmtDeleteMuestra->execute($ids);
-
-        // Eliminar las claves de la tabla claves
-        $sqlDeleteClaves = "DELETE FROM claves WHERE id IN ($placeholders)";
-        $stmtDeleteClaves = $pdo->prepare($sqlDeleteClaves);
-        $stmtDeleteClaves->execute($ids);
-
-        // Verificar si se eliminaron registros
-        $rowCountClaves = $stmtDeleteClaves->rowCount();
-        if ($rowCountClaves > 0) {
-            $pdo->commit();
-            echo json_encode(["success" => true, "message" => "Claves eliminadas correctamente."]);
-        } else {
-            $pdo->rollBack();
-            echo json_encode(["success" => false, "message" => "No se encontraron claves para eliminar."]);
-        }
-    } catch (PDOException $e) {
-        $pdo->rollBack();
-        echo json_encode(["success" => false, "message" => "Error al eliminar las claves: " . $e->getMessage()]);
-    }
-}
 
 // Eliminar TODAS las claves
 elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE' && isset($_GET['action']) && $_GET['action'] === 'eliminarTodasLasClaves') {
@@ -123,7 +81,7 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE' && isset($_GET['action']) && $_G
 }
 
 // Marcar TODAS las claves como terminadas/no terminadas
-elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET['action'] === 'editarClave') {
+elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET['action'] === 'editarTodasLasClaves') {
     $data = json_decode(file_get_contents('php://input'), true);
     $ids = $data['ids'] ?? null;
     $terminada = $data['terminada'] ?? null;
@@ -303,52 +261,82 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE' && isset($_GET['action']) && $_G
     }
 }
 
+
+// Eliminar una clave individual
+elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE' && isset($_GET['action']) && $_GET['action'] === 'eliminarClavesSeleccionadas') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $ids = $data['ids'] ?? [];
+
+    if (empty($ids)) {
+        echo json_encode(["success" => false, "message" => "No se proporcionaron IDs válidos."]);
+        exit;
+    }
+
+    try {
+        // Validar que los IDs sean números enteros
+        $ids = array_map('intval', $ids);
+
+        // Crear placeholders para los IDs
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+
+        $pdo->beginTransaction();
+
+        // Eliminar registros relacionados en la tabla muestra (solo si existen)
+        $sqlDeleteMuestra = "DELETE FROM muestra WHERE clave IN ($placeholders)";
+        $stmtDeleteMuestra = $pdo->prepare($sqlDeleteMuestra);
+        $stmtDeleteMuestra->execute($ids);
+
+        // Eliminar las claves de la tabla claves
+        $sqlDeleteClaves = "DELETE FROM claves WHERE id IN ($placeholders)";
+        $stmtDeleteClaves = $pdo->prepare($sqlDeleteClaves);
+        $stmtDeleteClaves->execute($ids);
+
+        // Verificar si se eliminaron registros
+        $rowCountClaves = $stmtDeleteClaves->rowCount();
+        if ($rowCountClaves > 0) {
+            $pdo->commit();
+            echo json_encode(["success" => true, "message" => "Claves eliminadas correctamente."]);
+        } else {
+            $pdo->rollBack();
+            echo json_encode(["success" => false, "message" => "No se encontraron claves para eliminar."]);
+        }
+    } catch (PDOException $e) {
+        $pdo->rollBack();
+        echo json_encode(["success" => false, "message" => "Error al eliminar las claves: " . $e->getMessage()]);
+    }
+}
+
 // Editar el estado "terminada" de varias claves seleccionadas
 elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET['action'] === 'editarClave') {
     $data = json_decode(file_get_contents('php://input'), true);
     $ids = $data['ids'] ?? [];
     $terminada = $data['terminada'] ?? null;
 
-    // Convertir IDs a enteros y filtrar valores inválidos
-    $ids = array_map('intval', $ids);
-    $ids = array_filter($ids); // Eliminar IDs que sean 0
-
-    // Validar que los datos sean correctos
+    // Validar datos
     if (empty($ids) || !in_array($terminada, [0, 1])) {
         echo json_encode(["success" => false, "message" => "Datos incompletos o inválidos."]);
         exit;
     }
 
     try {
-        // Crear placeholders para los IDs
+        // Crear placeholders dinámicos para los IDs
         $placeholders = implode(',', array_fill(0, count($ids), '?'));
 
-        // Verificar que los IDs existen en la tabla
-        $sqlCheckIds = "SELECT id FROM claves WHERE id IN ($placeholders)";
-        $stmtCheckIds = $pdo->prepare($sqlCheckIds);
-        $stmtCheckIds->execute($ids);
-        $validIds = $stmtCheckIds->fetchAll(PDO::FETCH_COLUMN);
-
-        if (empty($validIds)) {
-            echo json_encode(["success" => false, "message" => "No se encontraron claves para actualizar."]);
-            exit;
-        }
-
-        // Actualizar el estado de las claves
+        // Actualizar el estado de las claves seleccionadas
         $sqlUpdate = "UPDATE claves SET terminada = ? WHERE id IN ($placeholders)";
         $stmtUpdate = $pdo->prepare($sqlUpdate);
 
         // Agregar el valor de "terminada" al inicio del array de parámetros
-        $params = array_merge([$terminada], $validIds);
+        $params = array_merge([$terminada], $ids);
         $stmtUpdate->execute($params);
 
+        // Verificar si se actualizaron registros
         if ($stmtUpdate->rowCount() > 0) {
             echo json_encode(["success" => true, "message" => "Estado de claves actualizado correctamente."]);
         } else {
-            echo json_encode(["success" => false, "message" => "No se encontraron claves para actualizar."]);
+            echo json_encode(["success" => false, "message" => "No se actualizaron las claves."]);
         }
     } catch (PDOException $e) {
-        error_log("Error en la consulta SQL: " . $e->getMessage());
-        echo json_encode(["success" => false, "message" => "Ocurrió un error al procesar la solicitud."]);
+        echo json_encode(["success" => false, "message" => "Error al actualizar las claves: " . $e->getMessage()]);
     }
 }

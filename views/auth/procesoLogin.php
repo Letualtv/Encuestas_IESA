@@ -6,7 +6,7 @@ include __DIR__ . '/../../controller/PreguntasController.php';
 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $clave = trim($_POST['clave']);
+    $clave = trim(strtolower($_POST['clave']));
     try {
         // Comprueba si la clave existe en la base de datos
         $query = "SELECT id, clave FROM claves WHERE clave = :clave";

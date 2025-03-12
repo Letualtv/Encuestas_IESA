@@ -17,11 +17,15 @@
                 <table id="clavesTable" class="table table-hover table-bordered align-middle">
                     <thead class="table-light">
                         <tr>
-                            <td><input type="checkbox" id="selectAllCheckboxes" class="form-check-input"></td>
-                            <th>ID</th>
+                        <td class="text-center col-1">
+    <div class="form-check form-switch">
+        <input type="checkbox" id="selectAllCheckboxes" class="form-check-input " role="switch">
+    </div>
+</td>                         
+<th>ID</th>
                             <th>Clave</th>
                             <th>Número de Login</th> <!-- Nueva columna -->
-                            
+
                             <th>Terminada</th>
                         </tr>
                     </thead>
@@ -33,8 +37,15 @@
                 <!-- Botones de paginación y eliminación -->
                 <div class="d-flex justify-content-start mt-2 gap-2">
                     <button id="deleteSelectedButton" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash-alt me-2"></i>Eliminar seleccionadas</button>
-                    <button id="editSelectedButton" class="btn btn-primary btn-sm"><i class="fa-solid fa-edit me-2"></i>Marcar / desmarcar terminada</button>
-                    <button id="loadMoreButton" class="btn btn-outline-secondary ms-auto btn-sm"><i class="fa-solid fa-arrow-down me-2"></i>Cargar más</button>
+                    <!-- Botón para marcar claves seleccionadas como "Sí" -->
+                    <button id="markSelectedAsYesButton" class="btn btn-success btn-sm">
+                        <i class="fa-solid fa-check me-2"></i> Terminada
+                    </button>
+
+                    <!-- Botón para marcar claves seleccionadas como "No" -->
+                    <button id="markSelectedAsNoButton" class="btn btn-success btn-sm">
+                        <i class="fa-solid fa-times me-2"></i> No terminada
+                    </button> <button id="loadMoreButton" class="btn btn-outline-secondary ms-auto btn-sm"><i class="fa-solid fa-arrow-down me-2"></i>Cargar más</button>
                 </div>
             </div>
 
@@ -66,14 +77,20 @@
                 </form>
 
                 <hr>
+                <!-- Mensaje para usuarios no administradores -->
+                <div id="mensajeNoAdmin" class="card mt-4 border border-warning p-4 d-none">
+                    <h5 class="mb-3 text-warning"><i class="fa-solid fa-exclamation-triangle me-2 fa-lg"></i>Acceso restringido</h5>
+                    <p>Estas acciones no están disponibles.</p>
+                    <p>Si necesta utilizar alguna de ellas, por favor, contacte con su administrador.</p>
+                    
+                </div>
 
-                <!-- Zona de Peligro -->
+                <!-- Zona de Peligro (visible solo para administradores) -->
                 <div class="card mt-4 border border-danger p-4" id="botonesAdmin">
                     <h5 class="mb-3 text-danger"><i class="fa-solid fa-triangle-exclamation me-2 fa-lg"></i>Zona de peligro</h5>
-                    <p>Estas acciones afectan a todas las claves en la base de datos.
+                    <p>Estas acciones afectan a todas las claves en la base de datos.</p>
                     <p>¡Úsalas con precaución!</p>
-                    </p>
-                    <div class=" d-flex justify-content-between">
+                    <div class="d-flex justify-content-between">
                         <!-- Botón para eliminar todas las filas -->
                         <button id="deleteAllRowsButton" class="btn btn-outline-danger fw-bold">
                             Eliminar todas las filas

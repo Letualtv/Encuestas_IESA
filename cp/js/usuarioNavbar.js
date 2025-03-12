@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Limpiar los datos del usuario y redirigir al inicio de sesión
             localStorage.removeItem('usuario');
-            window.location.href = 'login.html';
+            window.location.href = 'login.php';
         } catch (error) {
             console.error('Error:', error);
             showToast('Hubo un problema al cerrar sesión.', 'danger'); // Usar la función showToast de utils.js

@@ -51,3 +51,5 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('El formulario de inicio de sesión no existe en esta página.');
     }
 });
+
+

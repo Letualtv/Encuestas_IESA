@@ -47,7 +47,7 @@ $usuario = $_SESSION['usuario'];
                         <a class="nav-link" href="usuarios.php">Usuarios</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="exportar.php">Exportar</a>
+                        <a class="nav-link" href="resultados.php">Resultados</a>
                     </li>
                     <div class="ms-auto d-flex">
 
