@@ -4,10 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const summaryChart = document.getElementById('summaryChart').getContext('2d');
     const totalSurveys = document.getElementById('totalSurveys');
     const completedSurveys = document.getElementById('completedSurveys');
-    const averageResponses = document.getElementById('averageResponses');
     const searchInput = document.getElementById('searchResults');
-    const filterCompleted = document.getElementById('filterCompleted');
-    const applyFiltersButton = document.getElementById('applyFiltersButton');
     const searchClave = document.getElementById('searchClave');
     const claveResponses = document.getElementById('claveResponses');
 
@@ -31,7 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
             // Actualizar estadísticas generales
             totalSurveys.textContent = data.estadisticas.totalEncuestas || 0;
             completedSurveys.textContent = data.estadisticas.encuestasCompletadas || 0;
-            averageResponses.textContent = data.estadisticas.promedioRespuestas || 0;
 
             // Limpiar tabla
             resultsTableBody.innerHTML = '';
@@ -136,11 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     }
 
-    // Aplicar filtros
-    applyFiltersButton.addEventListener('click', () => {
-        const completed = filterCompleted.value;
-        loadResults({ completed });
-    });
+    
 
     // Buscar clave específica
     searchClave.addEventListener('input', async () => {

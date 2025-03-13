@@ -15,8 +15,8 @@ $_SESSION['LAST_ACTIVITY'] = time(); // Inicializar la hora de la última activi
 setcookie('PHPSESSID', session_id(), time() + 1800, '/'); 
 
 
-// Asegúrate de que el `clave_id` esté disponible en la sesión
-if (!isset($_SESSION['clave'])) {
+// Asegúrate de que el `reg_m_id` esté disponible en la sesión
+if (!isset($_SESSION['reg_m'])) {
     header('Location: sesionExpirada');
     exit;
 }
@@ -29,8 +29,8 @@ $variables = include_once  __DIR__ . '/../../models/variables.php';
 $controller = new PreguntasController();
 $resultado = $controller->mostrarPreguntasPorPagina($_GET['n_pag'] ?? 1);
 
-// Mover la recuperación de respuestas dentro de la verificación de `clave_id`
-$respuestas = $controller->recuperarRespuestasDeBD($_SESSION['clave'] ?? '');
+// Mover la recuperación de respuestas dentro de la verificación de `reg_m_id`
+$respuestas = $controller->recuperarRespuestasDeBD($_SESSION['reg_m'] ?? '');
 
 if (!isset($_SESSION['respuestas'])) {
     $_SESSION['respuestas'] = [];

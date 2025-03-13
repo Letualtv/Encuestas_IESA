@@ -4,96 +4,83 @@ include_once __DIR__ . '/../config/db.php';
 
 class PreguntasController
 {
-    public function mostrarPreguntasPorPagina(int $n_pag): array
-    {
-        // Verificar si la encuesta ya ha sido finalizada
-        $claveId = $_SESSION['clave_id'];
-        if ($this->verificarEncuestaFinalizada($claveId)) {
-            header('Location: encuestafinalizada');
-            exit;
-        }
-
-        // Recuperar respuestas de la base de datos y cargarlas en la sesión
-        $respuestas = $this->recuperarRespuestasDeBD($claveId);
-
-
-        
-        // Redirigir al usuario a la última página completada si no se especifica una página
-        if (!isset($_GET['n_pag'])) {
-            $currentPag = $this->calcularPaginaActual($respuestas);
-            header("Location: ?n_pag=$currentPag");
-            exit;
-        }
-
-        // Obtener las preguntas y filtrar por página actual
-        $preguntas = $this->obtenerPreguntas();
-        $preguntasEnPagina = array_filter($preguntas, fn($p) => $p['n_pag'] === $n_pag);
-
-        // Si no hay preguntas para esta página, devolver un error
-        if (empty($preguntasEnPagina)) {
-            return [
-                'error' => true,
-                'view' => __DIR__ . '/../views/errors/errorPregunta.php',
-            ];
-        }
-
-        // Procesar respuestas si se envió el formulario
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->guardarRespuestas($_POST);
-            $this->guardarRespuestasEnBD($claveId);
-
-            // Calcular la paginación
-            $paginacion = $this->calcularPaginacion($preguntas, $n_pag);
-
-            // Si no hay más páginas, marcar la encuesta como finalizada
-            if (is_null($paginacion['nextPag'])) {
-                $this->marcarEncuestaComoFinalizada($claveId);
-                header('Location: gracias');
-                exit;
-            }
-
-            // Redirigir al usuario a la siguiente página
-            header("Location: ?n_pag={$paginacion['nextPag']}");
-            exit;
-        }
-
-        // Calcular el progreso
-        $totalPaginas = max(array_column($preguntas, 'n_pag'));
-        $progreso = round(($n_pag / $totalPaginas) * 100);
-        $_SESSION['current_page'] = $n_pag;
-
-        // Calcular la paginación
-        $paginacion = $this->calcularPaginacion($preguntas, $n_pag);
-
+   public function mostrarPreguntasPorPagina(int $n_pag): array
+{
+    // Usar reg_m en lugar de clave_id
+    $reg_m = $_SESSION['reg_m'];
+    if ($this->verificarEncuestaFinalizada($reg_m)) {
+        header('Location: encuestafinalizada');
+        exit;
+    }
+    // Recuperar respuestas de la base de datos y cargarlas en la sesión
+    $respuestas = $this->recuperarRespuestasDeBD($reg_m);
+    // Redirigir al usuario a la última página completada si no se especifica una página
+    if (!isset($_GET['n_pag'])) {
+        $currentPag = $this->calcularPaginaActual($respuestas);
+        header("Location: ?n_pag=$currentPag");
+        exit;
+    }
+    // Obtener las preguntas y filtrar por página actual
+    $preguntas = $this->obtenerPreguntas();
+    $preguntasEnPagina = array_filter($preguntas, fn($p) => $p['n_pag'] === $n_pag);
+    // Si no hay preguntas para esta página, devolver un error
+    if (empty($preguntasEnPagina)) {
         return [
-            'error' => false,
-            'data' => [
-                'preguntasEnPagina' => $preguntasEnPagina,
-                'prevPag' => $paginacion['prevPag'],
-                'nextPag' => $paginacion['nextPag'],
-                'progreso' => $progreso,
-            ],
-            'view' => __DIR__ . '/../views/survey/cuestionario.php',
+            'error' => true,
+            'view' => __DIR__ . '/../views/errors/errorPregunta.php',
         ];
     }
-
-    private function verificarEncuestaFinalizada(int $claveId): bool
-    {
-        global $pdo;
-        $stmt = $pdo->prepare("SELECT terminada FROM claves WHERE id = ?");
-        $stmt->bindParam(1, $claveId, PDO::PARAM_INT);
-        $stmt->execute();
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result && $result['terminada'] == 1;
+    // Procesar respuestas si se envió el formulario
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $this->guardarRespuestas($_POST);
+        $this->guardarRespuestasEnBD($reg_m);
+        // Calcular la paginación
+        $paginacion = $this->calcularPaginacion($preguntas, $n_pag);
+        // Si no hay más páginas, marcar la encuesta como finalizada
+        if (is_null($paginacion['nextPag'])) {
+            $this->marcarEncuestaComoFinalizada($reg_m);
+            header('Location: gracias');
+            exit;
+        }
+        // Redirigir al usuario a la siguiente página
+        header("Location: ?n_pag={$paginacion['nextPag']}");
+        exit;
     }
+    // Calcular el progreso
+    $totalPaginas = max(array_column($preguntas, 'n_pag'));
+    $progreso = round(($n_pag / $totalPaginas) * 100);
+    $_SESSION['current_page'] = $n_pag;
+    // Calcular la paginación
+    $paginacion = $this->calcularPaginacion($preguntas, $n_pag);
+    return [
+        'error' => false,
+        'data' => [
+            'preguntasEnPagina' => $preguntasEnPagina,
+            'prevPag' => $paginacion['prevPag'],
+            'nextPag' => $paginacion['nextPag'],
+            'progreso' => $progreso,
+        ],
+        'view' => __DIR__ . '/../views/survey/cuestionario.php',
+    ];
+}
 
-    private function marcarEncuestaComoFinalizada(int $claveId): void
-    {
-        global $pdo;
-        $stmt = $pdo->prepare("UPDATE claves SET terminada = 1 WHERE id = ?");
-        $stmt->bindParam(1, $claveId, PDO::PARAM_INT);
-        $stmt->execute();
-    }
+private function verificarEncuestaFinalizada(int $reg_m): bool
+{
+    global $pdo;
+    $stmt = $pdo->prepare("SELECT terminada FROM muestra WHERE reg_m = ?");
+    $stmt->bindParam(1, $reg_m, PDO::PARAM_INT);
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $result && $result['terminada'] == 1;
+}
+
+private function marcarEncuestaComoFinalizada(int $reg_m): void
+{
+    global $pdo;
+    $stmt = $pdo->prepare("UPDATE muestra SET terminada = 1 WHERE reg_m = ?");
+    $stmt->bindParam(1, $reg_m, PDO::PARAM_INT);
+    $stmt->execute();
+}
 
    public function obtenerPreguntas(): array
 {
@@ -256,13 +243,15 @@ class PreguntasController
         }
     }
 
-    public function recuperarRespuestasDeBD($clave): array
+
+
+    public function recuperarRespuestasDeBD($reg_m): array
     {
         global $pdo;
 
         // Consulta para obtener las respuestas del usuario basándose en la clave
-        $stmt = $pdo->prepare("SELECT * FROM cuestionario WHERE clave = ?");
-        $stmt->bindParam(1, $clave, PDO::PARAM_STR);
+        $stmt = $pdo->prepare("SELECT * FROM cuestionario WHERE reg_m = ?");
+        $stmt->bindParam(1, $reg_m, PDO::PARAM_STR);
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -276,11 +265,15 @@ class PreguntasController
                 }
             }
         } else {
-            error_log("No se encontraron respuestas en la base de datos para la clave $clave");
+            error_log("No se encontraron respuestas en la base de datos para la clave $reg_m");
         }
 
         return $respuestas;
     }
+
+
+ 
+
     public function calcularPaginaActual(array $respuestas): int
     {
         $preguntas = $this->obtenerPreguntas();
@@ -308,56 +301,48 @@ class PreguntasController
         error_log("Última página calculada: {$ultimaPagina}");
         return $ultimaPagina; // Retornar la página correspondiente a la última pregunta respondida
     }
-
     public function guardarRespuestasEnBD(): void
-    {
-        global $pdo;
-
-        // Verificar que haya respuestas para guardar
-        if (empty($_SESSION['respuestas'])) {
-            return;
-        }
-
-        try {
-            // Obtener la clave de usuario y fecha actual
-            $clave = $_SESSION['clave'] ?? null;
-            if (!$clave) {
-                throw new Exception("Error: La clave de usuario no está definida.");
-            }
-            $fecha = date('Y-m-d H:i:s');
-
-            // Construir la consulta SQL dinámicamente
-            $columns = ['clave', 'date'];
-            $values = [':clave' => $clave, ':date' => $fecha];
-            $updates = ['date = VALUES(date)'];
-
-            foreach ($_SESSION['respuestas'] as $preguntaId => $respuesta) {
-                $columna = "r$preguntaId";
-                $columns[] = $columna;
-                $values[":$columna"] = $respuesta;
-                $updates[] = "$columna = VALUES($columna)";
-            }
-
-            $columnsSQL = implode(', ', $columns);
-            $placeholdersSQL = implode(', ', array_keys($values));
-            $updatesSQL = implode(', ', $updates);
-
-            $query = "
-                INSERT INTO cuestionario ($columnsSQL)
-                VALUES ($placeholdersSQL)
-                ON DUPLICATE KEY UPDATE $updatesSQL
-            ";
-
-            // Ejecutar la consulta
-            $stmt = $pdo->prepare($query);
-            $stmt->execute($values);
-
-            // Mostrar mensaje de éxito para depuración
-            error_log("Respuestas guardadas correctamente en la base de datos.");
-        } catch (Exception $e) {
-            // Registrar el error en el log del servidor
-            error_log("Error al guardar las respuestas en la base de datos: " . $e->getMessage());
-        }
+{
+    global $pdo;
+    if (empty($_SESSION['respuestas'])) {
+        return;
     }
+    try {
+        // Obtener reg_m y clave de la sesión
+        $reg_m = $_SESSION['reg_m'] ?? null;
+        $clave = $_SESSION['clave'] ?? null;
+        if (!$reg_m || !$clave) {
+            throw new Exception("Error: El identificador de usuario (reg_m o clave) no está definido.");
+        }
+        $fecha = date('Y-m-d H:i:s');
+        // Construir la consulta SQL dinámicamente
+        $columns = ['reg_m', 'clave', 'date'];
+        $values = [':reg_m' => $reg_m, ':clave' => $clave, ':date' => $fecha];
+        $updates = ['date = VALUES(date)', 'clave = VALUES(clave)'];
+        foreach ($_SESSION['respuestas'] as $preguntaId => $respuesta) {
+            $columna = "r$preguntaId";
+            $columns[] = $columna;
+            $values[":$columna"] = $respuesta;
+            $updates[] = "$columna = VALUES($columna)";
+        }
+        $columnsSQL = implode(', ', $columns);
+        $placeholdersSQL = implode(', ', array_keys($values));
+        $updatesSQL = implode(', ', $updates);
+        $query = "
+            INSERT INTO cuestionario ($columnsSQL)
+            VALUES ($placeholdersSQL)
+            ON DUPLICATE KEY UPDATE $updatesSQL
+        ";
+        $stmt = $pdo->prepare($query);
+        $stmt->execute($values);
+        error_log("Respuestas guardadas correctamente en la base de datos.");
+    } catch (Exception $e) {
+        error_log("Error al guardar las respuestas en la base de datos: " . $e->getMessage());
+    }
+}
+
+
+
+
 }
 ?>

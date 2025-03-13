@@ -14,27 +14,32 @@ try {
     $stmt->execute();
     $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    // COnsulta para obtener la columna Terminada de la tabla Claves
+    $queryClavesTerminadas = "SELECT COUNT(*) as completadas FROM muestra WHERE terminada = 1";
+    $stmtClavesTerminadas = $pdo->prepare($queryClavesTerminadas);
+    $stmtClavesTerminadas->execute();
+    // Calcular estadísticas generales
+    $promedioRespuestas = 0;
+    $encuestasCompletadas = $stmtClavesTerminadas->fetch(PDO::FETCH_ASSOC)['completadas'];
+
+
     // Procesar los resultados para contar cuántas claves han respondido cada rX
     $respuestasPorPregunta = [];
     foreach ($resultados as $fila) {
-        for ($i = 1; $i <= 16; $i++) { // Iterar sobre las columnas r1 a r16
-            $pregunta = "r$i";
-            if (!empty($fila[$pregunta])) {
+        foreach ($fila as $pregunta => $valor) {
+            if (strpos($pregunta, 'r') === 0 && !empty($valor)) { // Procesar solo las columnas que empiecen con "r"
                 if (!isset($respuestasPorPregunta[$pregunta])) {
                     $respuestasPorPregunta[$pregunta] = [];
                 }
-                $respuesta = $fila[$pregunta];
-                if (!isset($respuestasPorPregunta[$pregunta][$respuesta])) {
-                    $respuestasPorPregunta[$pregunta][$respuesta] = 0;
+                if (!isset($respuestasPorPregunta[$pregunta][$valor])) {
+                    $respuestasPorPregunta[$pregunta][$valor] = 0;
                 }
-                $respuestasPorPregunta[$pregunta][$respuesta]++;
+                $respuestasPorPregunta[$pregunta][$valor]++;
             }
         }
     }
 
-    // Calcular estadísticas generales
-    $encuestasCompletadas = array_reduce($resultados, fn($carry, $fila) => $carry + ($fila['terminada'] == 1 ? 1 : 0), 0);
-    $promedioRespuestas = 0;
+
 
     foreach ($resultados as $fila) {
         $promedioRespuestas += count(array_filter($fila, fn($value) => !empty($value) && strpos($value, 'r') === 0));
@@ -56,4 +61,3 @@ try {
     http_response_code(500);
     echo json_encode(['error' => 'Ocurrió un error interno del servidor']);
 }
-?>
