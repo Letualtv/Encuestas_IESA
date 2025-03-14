@@ -191,7 +191,7 @@ function cargarClaves(page = 1, limit = pageSize, orderBy = "id", orderDir = "as
 
       if (data.error) throw new Error(data.error); // Manejar errores específicos del backend
       if (data.length === 0) {
-        clavesList.innerHTML += "No hay más claves disponibles.";
+        clavesList.innerHTML += "<tr><td colspan='5'>No hay más claves disponibles.</td></tr>";
         document.getElementById("loadMoreButton").disabled = true;
         return;
       }
@@ -199,18 +199,17 @@ function cargarClaves(page = 1, limit = pageSize, orderBy = "id", orderDir = "as
       data.forEach((clave) => {
         const row = document.createElement("tr");
         row.innerHTML = `
-          <td class=""><input type="checkbox" class="claveCheckbox form-check-input  " value="${clave.id}"></td>
+          <td class=""><input type="checkbox" class="claveCheckbox form-check-input" value="${clave.id}"></td>
           <td>${clave.id}</td>
-          <td>${clave.clave}</td>
+          <td>${clave.clave || "No disponible"}</td>
           <td>${clave.n_login || "No disponible"}</td> <!-- Nueva columna -->
-          
-          <td>${clave.terminada ? "Sí" : "No"}</td>
+          <td>${clave.terminada !== null && clave.terminada !== undefined ? (clave.terminada ? "Sí" : "No") : "Clave no usada"}</td>
         `;
         clavesList.appendChild(row);
       });
 
       // Restaurar el estado de los checkboxes
-   })
+    })
     .catch((error) => {
       console.error("Error al cargar las claves:", error);
       showToast(`Error: ${error.message || "Ocurrió un problema al cargar las claves."}`, "danger");

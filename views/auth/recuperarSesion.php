@@ -2,8 +2,8 @@
 session_start();
 
 // Verificar si hay una cookie de sesión disponible
-if (isset($_COOKIE['PHPSESSID'])) {
-    session_id($_COOKIE['PHPSESSID']);
+if (isset($_COOKIE['reg_m'])) {
+    session_id($_COOKIE['reg_m']);
     session_start();
     $_SESSION['LAST_ACTIVITY'] = time(); // Actualizar la hora de la última actividad
 

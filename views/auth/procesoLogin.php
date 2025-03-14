@@ -1,11 +1,12 @@
 <?php
+session_start(); // Asegúrate de iniciar la sesión al principio
 include __DIR__ . '/../../config/db.php';
 include __DIR__ . '/../../controller/PreguntasController.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $clave = trim(strtolower($_POST['clave']));
     try {
-        // Comprueba si la clave existe en la base de datos
+        // Comprobar si la clave existe en la base de datos
         $query = "SELECT id, clave FROM claves WHERE clave = :clave";
         $stmt = $pdo->prepare($query);
         $stmt->bindParam(':clave', $clave, PDO::PARAM_STR);
@@ -16,14 +17,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
             $claveId = $result['id'];
 
-            // La clave es válida, ahora verificamos si ya existe un registro en la tabla muestra
+            // Verificar si ya existe un registro en la tabla muestra para esta clave
             $checkQuery = "SELECT reg_m FROM muestra WHERE clave = :clave";
             $checkStmt = $pdo->prepare($checkQuery);
             $checkStmt->bindParam(':clave', $clave, PDO::PARAM_STR);
             $checkStmt->execute();
 
             if ($checkStmt->rowCount() === 0) {
-                // Si no existe un registro con esa clave, se inserta
+                // Si no existe un registro con esa clave, insertar un nuevo registro
                 $browser = $_SERVER['HTTP_USER_AGENT'] ?? 'Desconocido';
                 $lang = $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? 'Desconocido';
                 $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
@@ -44,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $reg_m = $checkStmt->fetch(PDO::FETCH_ASSOC)['reg_m'];
             }
 
-            // Incrementar el contador de n_login si el registro ya existía
+            // Incrementar el contador de n_login
             $updateQuery = "UPDATE muestra SET n_login = n_login + 1 WHERE reg_m = :reg_m";
             $updateStmt = $pdo->prepare($updateQuery);
             $updateStmt->bindParam(':reg_m', $reg_m, PDO::PARAM_INT);
@@ -56,9 +57,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['reg_m'] = $reg_m;
 
             // Recuperar las respuestas de la base de datos para calcular la última página completada
-            $respuestasQuery = "SELECT * FROM cuestionario WHERE clave = :clave";
+            $respuestasQuery = "SELECT * FROM cuestionario WHERE reg_m = :reg_m"; // Usar reg_m en lugar de clave
             $respuestasStmt = $pdo->prepare($respuestasQuery);
-            $respuestasStmt->bindParam(':clave', $clave, PDO::PARAM_STR);
+            $respuestasStmt->bindParam(':reg_m', $reg_m, PDO::PARAM_INT); // Usar reg_m
             $respuestasStmt->execute();
             $respuestasResult = $respuestasStmt->fetch(PDO::FETCH_ASSOC);
 
@@ -92,8 +93,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit;
         } else {
             $errorMessage = "Clave incorrecta. Por favor, intenta nuevamente.";
+            error_log($errorMessage);
         }
     } catch (PDOException $e) {
         $errorMessage = "Error de conexión con la base de datos: " . $e->getMessage();
+        error_log($errorMessage);
     }
 }
+?>

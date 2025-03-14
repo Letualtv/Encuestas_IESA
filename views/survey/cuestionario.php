@@ -12,7 +12,7 @@ $_SESSION['user_id'] = $user_id; // Guardar el ID del usuario en la sesión
 $_SESSION['LAST_ACTIVITY'] = time(); // Inicializar la hora de la última actividad
 
 // Configurar la cookie de sesión
-setcookie('PHPSESSID', session_id(), time() + 1800, '/'); 
+setcookie('reg_m', session_id(), time() + 1800, '/'); 
 
 
 // Asegúrate de que el `reg_m_id` esté disponible en la sesión
@@ -49,11 +49,13 @@ if ($resultado['error']) {
 
 <body class="d-flex flex-column min-vh-100">
     <?php include __DIR__ . '/../../includes/navigationPregunta.php'; ?>
-    <div class="container my-4 col-12 col-lg-10">
-        <form class="card" action="?n_pag=<?= htmlspecialchars($_GET['n_pag'] ?? 1) ?>" method="POST" style="min-height: 75vh;">
+    <div class="container my-4 col-12 col-lg-10  ">
+        <form class="card " action="?n_pag=<?= htmlspecialchars($_GET['n_pag'] ?? 1) ?>" method="POST" style="min-height: 50vh;">
             <?php include __DIR__ . '/vistaCuestionario.php'; ?>
         </form>
     </div>
+    <div class="mt-auto">
     <?php include __DIR__ . '/../../includes/footerPregunta.php'; ?>
+</div>
 </body>
 </html>

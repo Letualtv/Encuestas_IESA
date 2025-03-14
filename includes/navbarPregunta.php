@@ -16,9 +16,9 @@ echo $variables['$textoCabeceraEncuesta'];
                 <div class="badge text-bg-success align-middle fs-6">Encuesta terminada</div>
             </div>
         <?php else: ?>
-            <div class="badge text-bg-secondary align-middle px-3 py-2 d-none d-md-inline"><?php echo $progreso . '%'; ?> Completado</div>
+            <div class="badge text-bg-secondary align-middle  px-3 py-2 d-none d-md-inline"><?php echo $progreso . '%'; ?> Completado</div>
             <div class="text-bg-secondary d-flex d-md-none p-2 mx-auto">
-                <div class="badge text-bg-secondary align-middle fs-6"><?php echo $progreso . '%'; ?> Completado</div>
+                <div class="badge text-bg-secondary align-middle  mx-auto mx-md-0 fs-6"><?php echo $progreso . '%'; ?> Completado</div>
             </div>
         <?php endif; ?>
     </div>

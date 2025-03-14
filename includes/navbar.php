@@ -59,7 +59,7 @@
             </button>
 
             <a class="navbar-brand d-lg-none" href="inicio">
-                <img src="assets/img/2.png" alt="Logo" height="40">
+                <img src="assets/img/2-IESA.png" alt="Logo" height="40">
             </a>
 
             <div class="collapse navbar-collapse" id="navbarNav">

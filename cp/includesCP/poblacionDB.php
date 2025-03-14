@@ -17,7 +17,7 @@ try {
     $sql = "SELECT 
             claves.id, 
             claves.clave, 
-            claves.terminada, 
+            muestra.terminada, 
             muestra.n_login 
         FROM 
             claves 
@@ -88,7 +88,7 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET
 
     if ($ids === "all" && in_array($terminada, [0, 1])) {
         try {
-            $sql = "UPDATE claves SET terminada = ?";
+            $sql = "UPDATE muestra SET terminada = ?";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([$terminada]);
 
@@ -125,7 +125,7 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET
         }
 
         // Insertar la nueva clave con terminada = 0
-        $sqlInsert = "INSERT INTO claves (clave, terminada) VALUES (?, 0)";
+        $sqlInsert = "INSERT INTO claves (clave) VALUES (?)";
         $stmtInsert = $pdo->prepare($sqlInsert);
         $stmtInsert->execute([$clave]);
 
@@ -182,7 +182,7 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET
 
             if (!$exists && !$isBlacklisted) {
                 // Insertar la clave con terminada = 0
-                $sqlInsert = "INSERT INTO claves (clave, terminada) VALUES (?, 0)";
+                $sqlInsert = "INSERT INTO claves (clave) VALUES (?)";
                 $stmtInsert = $pdo->prepare($sqlInsert);
                 $stmtInsert->execute([$clave]);
 
@@ -205,7 +205,7 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET
 // Obtener todas las claves (sin paginación)
 elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'obtenerTodasClaves') {
     try {
-        $sql = "SELECT id, clave, terminada FROM claves ORDER BY id";
+        $sql = "SELECT id, clave FROM claves ORDER BY id";
         $stmt = $pdo->prepare($sql);
         $stmt->execute();
         $claves = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -309,32 +309,32 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE' && isset($_GET['action']) && $_G
 // Editar el estado "terminada" de varias claves seleccionadas
 elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET['action'] === 'editarClave') {
     $data = json_decode(file_get_contents('php://input'), true);
-    $ids = $data['ids'] ?? [];
+    $claves = $data['ids'] ?? []; // Cambio: ahora son claves, no IDs
     $terminada = $data['terminada'] ?? null;
 
     // Validar datos
-    if (empty($ids) || !in_array($terminada, [0, 1])) {
+    if (empty($claves) || !in_array($terminada, [0, 1])) {
         echo json_encode(["success" => false, "message" => "Datos incompletos o inválidos."]);
         exit;
     }
 
     try {
-        // Crear placeholders dinámicos para los IDs
-        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        // Crear placeholders dinámicos para las claves
+        $placeholders = implode(',', array_fill(0, count($claves), '?'));
 
-        // Actualizar el estado de las claves seleccionadas
-        $sqlUpdate = "UPDATE claves SET terminada = ? WHERE id IN ($placeholders)";
+        // Actualizar el estado "terminada" en la tabla muestra
+        $sqlUpdate = "UPDATE muestra SET terminada = ? WHERE clave IN ($placeholders)";
         $stmtUpdate = $pdo->prepare($sqlUpdate);
 
         // Agregar el valor de "terminada" al inicio del array de parámetros
-        $params = array_merge([$terminada], $ids);
+        $params = array_merge([$terminada], $claves);
         $stmtUpdate->execute($params);
 
         // Verificar si se actualizaron registros
         if ($stmtUpdate->rowCount() > 0) {
             echo json_encode(["success" => true, "message" => "Estado de claves actualizado correctamente."]);
         } else {
-            echo json_encode(["success" => false, "message" => "No se actualizaron las claves."]);
+            echo json_encode(["success" => false, "message" => "No se encontraron claves para actualizar."]);
         }
     } catch (PDOException $e) {
         echo json_encode(["success" => false, "message" => "Error al actualizar las claves: " . $e->getMessage()]);
