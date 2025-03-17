@@ -413,37 +413,46 @@ function showModal(title, bodyText, confirmAction, cancelAction = null, headerCl
 }
 
 // Función para generar claves aleatorias
-function generarClavesAleatorias(cantidad) {
-  const spinner = document.getElementById("loadingSpinner"); // Spinner dentro del modal
-  const modalBody = document.getElementById("customModalBody"); // Cuerpo del modal
-  const originalText = modalBody.innerHTML; // Guardar el texto original del modal
+function generarClavesAleatorias() {
+  const cantidadClaves = parseInt(document.getElementById("randomKeyCount").value);
+  const tipoGeneracion = document.querySelector('input[name="tipoGeneracion"]:checked').value;
+  let idBase = null;
 
-  // Obtener el botón del modal
-  const confirmButton = document.getElementById("customModalConfirmButton");
+  if (tipoGeneracion === "especifico") {
+      idBase = parseInt(document.getElementById("idBase").value);
+      if (!idBase || idBase <= 0) {
+          showToast("Por favor, ingresa un ID base válido.", "warning");
+          return;
+      }
+  }
 
-  // Cambiar el texto del modal, deshabilitar el botón y mostrar el spinner
-  modalBody.innerHTML = "Generando... por favor, espere.";
-  confirmButton.disabled = true;
-  confirmButton.textContent = "Generando...";
-  spinner.style.display = "block"; // Mostrar el spinner
+  // Validar la cantidad de claves
+  if (!cantidadClaves || cantidadClaves <= 0 || cantidadClaves > 10000) {
+      showToast("La cantidad de claves debe estar entre 1 y 10,000.", "warning");
+      return;
+  }
 
+  // Deshabilitar el botón mientras se genera
+  const generateKeysButton = document.getElementById("generateKeysButton");
+  generateKeysButton.disabled = true;
+  generateKeysButton.textContent = "Generando...";
+
+  // Enviar la solicitud al backend
   fetch("includesCP/poblacionDB.php?action=generarClavesAleatorias", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ cantidad }),
+      body: JSON.stringify({ cantidad: cantidadClaves, tipoGeneracion, idBase }),
   })
       .then((response) => {
-          if (!response.ok) {
-              throw new Error(`Error en la solicitud: ${response.status}`);
-          }
+          if (!response.ok) throw new Error(`Error en la solicitud: ${response.status}`);
           return response.json();
       })
       .then((data) => {
           if (data.success) {
-              showToast(data.message, "success");
-              cargarClaves(currentPage); // Recargar la lista de claves
+              showToast("Claves generadas correctamente.", "success");
+              cargarClaves(); // Recargar la lista de claves
           } else {
-              showToast(data.message || "Error al generar las claves.", "danger");
+              showToast(data.message || "Ocurrió un error al generar las claves.", "danger");
           }
       })
       .catch((error) => {
@@ -451,18 +460,10 @@ function generarClavesAleatorias(cantidad) {
           showToast("Ocurrió un error al intentar generar las claves.", "danger");
       })
       .finally(() => {
-          spinner.style.display = "none"; // Ocultar el spinner
-          modalBody.innerHTML = originalText; // Restaurar el texto original del modal
-          confirmButton.disabled = false; // Habilitar el botón nuevamente
-          confirmButton.textContent = "Confirmar"; // Restaurar el texto original del botón
-
-          const modal = bootstrap.Modal.getInstance(document.getElementById("customModal"));
-          modal.hide(); // Cerrar el modal
-          document.body.focus(); // Mover el foco al body para evitar problemas de accesibilidad
-          closeModal("customModal");
+          generateKeysButton.disabled = false;
+          generateKeysButton.textContent = "Generar";
       });
 }
-
 // Evento para el formulario de generación de claves aleatorias
 document.getElementById("randomKeyForm").addEventListener("submit", function (event) {
   event.preventDefault(); // Evitar el envío del formulario por defecto
@@ -478,19 +479,19 @@ document.getElementById("randomKeyForm").addEventListener("submit", function (ev
 
   // Mostrar el primer modal de confirmación
   showModal(
-      "Generar claves aleatorias",
-      `¿Estás seguro de generar <b>${cantidad} claves</b> aleatorias?`,
+      "Generar Claves Aleatorias",
+      `¿Estás seguro de generar <b>${cantidad}</b> claves aleatorias?`,
       () => {
           // Si la cantidad es mayor a 1000, mostrar el segundo modal de confirmación
           if (cantidad > 1000) {
               showModal(
-                  "Confirmación adicional",
-                  `Está a punto de generar <b>${cantidad} claves</b>. ¿Es correcto?`,
+                  "Confirmación Final",
+                  `Está a punto de generar <b>${cantidad}</b> claves. ¿Está completamente seguro?`,
                   () => {
                       generarClavesAleatorias(cantidad); // Llamar a la función para generar claves
                   },
                   null,
-                  ["bg-primary", "text-white"]
+                  ["bg-danger", "text-white"]
               );
           } else {
               generarClavesAleatorias(cantidad); // Llamar a la función para generar claves

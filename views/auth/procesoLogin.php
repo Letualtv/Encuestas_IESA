@@ -46,10 +46,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
 
             // Incrementar el contador de n_login
-            $updateQuery = "UPDATE muestra SET n_login = n_login + 1 WHERE reg_m = :reg_m";
-            $updateStmt = $pdo->prepare($updateQuery);
-            $updateStmt->bindParam(':reg_m', $reg_m, PDO::PARAM_INT);
-            $updateStmt->execute();
+            $updateQuery = "UPDATE muestra 
+            SET n_login = CASE 
+                WHEN n_login = 0 THEN 1 
+                ELSE n_login + 1 
+            END 
+            WHERE reg_m = :reg_m
+        ";
+        $updateStmt = $pdo->prepare($updateQuery);
+        $updateStmt->bindParam(':reg_m', $reg_m, PDO::PARAM_INT);
+        $updateStmt->execute();
 
             // Guardar la clave, clave_id y reg_m en la sesión
             $_SESSION['clave'] = $clave;

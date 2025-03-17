@@ -161,41 +161,54 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET
 
     try {
         $clavesGeneradas = [];
-        for ($i = 0; $i < $cantidad; $i++) {
-            // Generar una clave aleatoria de 5 caracteres alfanuméricos
-            $clave = substr(str_shuffle("abcdefghjklmnpqrstuvwxyz"), 0, 5);
+        $maxAttempts = 100; // Límite de intentos por clave
 
-            // Verificar si la clave ya existe
-            $sqlCheck = "SELECT COUNT(*) FROM claves WHERE clave = ?";
-            $stmtCheck = $pdo->prepare($sqlCheck);
-            $stmtCheck->execute([$clave]);
-            $exists = $stmtCheck->fetchColumn();
+        for ($i = 0; $i < $cantidad;) {
+            $attempts = 0;
 
-            // Verificar si la clave coincide con alguno de los patrones prohibidos
-            $isBlacklisted = false;
-            foreach ($blacklistPatterns as $pattern) {
-                if (preg_match($pattern, $clave)) {
-                    $isBlacklisted = true;
+            while ($attempts < $maxAttempts) {
+                // Generar una clave aleatoria de 5 caracteres
+                $clave = substr(str_shuffle("abcdefghjklmnpqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789"), 0, 5);
+
+                // Verificar si la clave ya existe
+                $sqlCheck = "SELECT COUNT(*) FROM claves WHERE clave = ?";
+                $stmtCheck = $pdo->prepare($sqlCheck);
+                $stmtCheck->execute([$clave]);
+                $exists = $stmtCheck->fetchColumn();
+
+                // Verificar si la clave coincide con alguno de los patrones prohibidos
+                $isBlacklisted = false;
+                foreach ($blacklistPatterns as $pattern) {
+                    if (preg_match($pattern, $clave)) {
+                        $isBlacklisted = true;
+                        break;
+                    }
+                }
+
+                if (!$exists && !$isBlacklisted) {
+                    // Insertar la clave
+                    $sqlInsert = "INSERT INTO claves (clave) VALUES (?)";
+                    $stmtInsert = $pdo->prepare($sqlInsert);
+                    $stmtInsert->execute([$clave]);
+
+                    $clavesGeneradas[] = $clave;
+                    $i++;
                     break;
                 }
+
+                $attempts++;
             }
 
-            if (!$exists && !$isBlacklisted) {
-                // Insertar la clave con terminada = 0
-                $sqlInsert = "INSERT INTO claves (clave) VALUES (?)";
-                $stmtInsert = $pdo->prepare($sqlInsert);
-                $stmtInsert->execute([$clave]);
-
-                $clavesGeneradas[] = $clave;
-            } else {
-                // Si la clave ya existe o está en la lista negra, intentar generar otra
-                $i--;
+            if ($attempts >= $maxAttempts) {
+                echo json_encode(["success" => false, "message" => "No se pudieron generar todas las claves debido a demasiados intentos fallidos."]);
+                exit;
             }
         }
 
         echo json_encode([
             "success" => true,
             "message" => "Se generaron " . count($clavesGeneradas) . " claves correctamente.",
+            "claves" => $clavesGeneradas,
         ]);
     } catch (PDOException $e) {
         echo json_encode(["success" => false, "message" => "Error al generar las claves: " . $e->getMessage()]);

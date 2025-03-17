@@ -17,12 +17,12 @@
                 <table id="clavesTable" class="table table-hover table-bordered align-middle">
                     <thead class="table-light">
                         <tr>
-                        <td class="text-center col-1">
-    <div class="form-check form-switch">
-        <input type="checkbox" id="selectAllCheckboxes" class="form-check-input " role="switch">
-    </div>
-</td>                         
-<th>ID</th>
+                            <td class="text-center col-1">
+                                <div class="form-check form-switch">
+                                    <input type="checkbox" id="selectAllCheckboxes" class="form-check-input " role="switch">
+                                </div>
+                            </td>
+                            <th>ID</th>
                             <th>Clave</th>
                             <th>Número de Login</th> <!-- Nueva columna -->
 
@@ -54,6 +54,7 @@
                 <h5 class="mb-3"><i class="fa-solid fa-plus me-2"></i>Añadir nuevas claves</h5>
                 <hr>
 
+
                 <!-- Formulario para agregar clave personalizada -->
                 <form id="customKeyForm" class="mb-4">
                     <h6 class="mb-2">Agregar clave personalizada</h6>
@@ -61,7 +62,7 @@
                         <input type="text" class="form-control" id="customKey" maxlength="5" required placeholder="ABCDE">
                         <label for="customKey">Clave (exactamente 5 caracteres alfanuméricos)</label>
                     </div>
-                    <button type="submit" class="btn btn-primary "><i class="fa-solid fa-plus me-2"></i>Agregar clave</button>
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus me-2"></i>Agregar clave</button>
                 </form>
 
                 <hr>
@@ -69,11 +70,35 @@
                 <!-- Formulario para generar claves aleatorias -->
                 <form id="randomKeyForm" class="mb-4">
                     <h6 class="mb-2">Generar claves aleatorias</h6>
+
+                    <!-- Cantidad de claves -->
                     <div class="mb-3 form-floating">
                         <input type="number" class="form-control" id="randomKeyCount" min="1" max="10000" required placeholder="">
                         <label for="randomKeyCount" class="form-label">Cantidad de claves (máximo 10,000):</label>
                     </div>
-                    <button type="submit" class="btn btn-primary "><i class="fa-solid fa-random me-2"></i>Generar claves</button>
+
+                    <!-- Tipo de generación -->
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de generación:</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="tipoGeneracion" id="generacionAutomatica" value="automatico" checked>
+                            <label class="form-check-label" for="generacionAutomatica">Automático</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="tipoGeneracion" id="generacionEspecifica" value="especifico">
+                            <label class="form-check-label" for="generacionEspecifica">Específico</label>
+                        </div>
+                    </div>
+
+                    <!-- Campo para el ID base (solo visible si es generación específica) -->
+                    <div class="mb-3" id="idBaseContainer" style="display: none;">
+                        <label for="idBase" class="form-label">ID Base:</label>
+                        <input type="number" class="form-control" id="idBase" name="idBase" min="1" required>
+                    </div>
+
+                    <button type="button" class="btn btn-primary" id="generateKeysButton" onclick="generarClavesAleatorias()">
+                        <i class="fa-solid fa-random me-2"></i>Generar claves
+                    </button>
                 </form>
 
                 <hr>
@@ -82,7 +107,7 @@
                     <h5 class="mb-3 text-warning"><i class="fa-solid fa-exclamation-triangle me-2 fa-lg"></i>Acceso restringido</h5>
                     <p>Estas acciones no están disponibles.</p>
                     <p>Si necesta utilizar alguna de ellas, por favor, contacte con su administrador.</p>
-                    
+
                 </div>
 
                 <!-- Zona de Peligro (visible solo para administradores) -->
@@ -157,3 +182,59 @@
 
 <script src="js/utils.js"></script>
 <script src="js/clavesPoblacion.js"></script>
+
+
+<!-- 
+// Función para generar claves aleatorias
+function generarClavesAleatorias() {
+  const cantidadClaves = parseInt(document.getElementById("randomKeyCount").value);
+  const tipoGeneracion = document.querySelector('input[name="tipoGeneracion"]:checked').value;
+  let idBase = null;
+
+  if (tipoGeneracion === "especifico") {
+      idBase = parseInt(document.getElementById("idBase").value);
+      if (!idBase || idBase <= 0) {
+          showToast("Por favor, ingresa un ID base válido.", "warning");
+          return;
+      }
+  }
+
+  // Validar la cantidad de claves
+  if (!cantidadClaves || cantidadClaves <= 0 || cantidadClaves > 10000) {
+      showToast("La cantidad de claves debe estar entre 1 y 10,000.", "warning");
+      return;
+  }
+
+  // Deshabilitar el botón mientras se genera
+  const generateKeysButton = document.getElementById("generateKeysButton");
+  generateKeysButton.disabled = true;
+  generateKeysButton.textContent = "Generando...";
+
+  // Enviar la solicitud al backend
+  fetch("includesCP/poblacionDB.php?action=generarClavesAleatorias", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ cantidad: cantidadClaves, tipoGeneracion, idBase }),
+  })
+      .then((response) => {
+          if (!response.ok) throw new Error(`Error en la solicitud: ${response.status}`);
+          return response.json();
+      })
+      .then((data) => {
+          if (data.success) {
+              showToast("Claves generadas correctamente.", "success");
+              cargarClaves(); // Recargar la lista de claves
+          } else {
+              showToast(data.message || "Ocurrió un error al generar las claves.", "danger");
+          }
+      })
+      .catch((error) => {
+          console.error("Error al generar las claves:", error);
+          showToast("Ocurrió un error al intentar generar las claves.", "danger");
+      })
+      .finally(() => {
+          generateKeysButton.disabled = false;
+          generateKeysButton.textContent = "Generar";
+      });
+}
+ -->
