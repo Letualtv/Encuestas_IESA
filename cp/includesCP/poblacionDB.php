@@ -105,6 +105,7 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET
 elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET['action'] === 'agregarClave') {
     $data = json_decode(file_get_contents('php://input'), true);
     $clave = trim($data['clave'] ?? '');
+    $idBase = intval($data['idBase'] ?? 0);
 
     // Validar que la clave tenga exactamente 5 caracteres y sea alfanumérica
     if (!preg_match('/^[a-zA-Z0-9]{5}$/', $clave)) {
@@ -124,10 +125,20 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET
             exit;
         }
 
-        // Insertar la nueva clave con terminada = 0
-        $sqlInsert = "INSERT INTO claves (clave) VALUES (?)";
+        // Obtener el último ID registrado
+        $sqlGetLastId = "SELECT MAX(id) AS last_id FROM claves";
+        $stmtGetLastId = $pdo->prepare($sqlGetLastId);
+        $stmtGetLastId->execute();
+        $lastId = $stmtGetLastId->fetchColumn();
+        $nextId = ($lastId === null) ? 1 : $lastId + 1;
+
+        // Determinar el ID a usar
+        $id = ($idBase > 0) ? $idBase : $nextId;
+
+        // Insertar la nueva clave con el ID determinado
+        $sqlInsert = "INSERT INTO claves (id, clave) VALUES (?, ?)";
         $stmtInsert = $pdo->prepare($sqlInsert);
-        $stmtInsert->execute([$clave]);
+        $stmtInsert->execute([$id, $clave]);
 
         echo json_encode(["success" => true, "message" => "Clave agregada correctamente."]);
     } catch (PDOException $e) {
@@ -138,10 +149,18 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET
 elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET['action'] === 'generarClavesAleatorias') {
     $data = json_decode(file_get_contents('php://input'), true);
     $cantidad = intval($data['cantidad'] ?? 0);
+    $tipoGeneracion = $data['tipoGeneracion'] ?? 'aleatorio';
+    $idBase = intval($data['idBase'] ?? 0);
 
     // Validar que la cantidad sea válida
     if ($cantidad <= 0 || $cantidad > 10000) {
         echo json_encode(["success" => false, "message" => "La cantidad debe estar entre 1 y 10,000."]);
+        exit;
+    }
+
+    // Si es generación específica, validar que se proporcione un ID base
+    if ($tipoGeneracion === 'especifico' && $idBase <= 0) {
+        echo json_encode(["success" => false, "message" => "Debe proporcionar un ID base para la generación específica."]);
         exit;
     }
 
@@ -160,10 +179,17 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET
     ];
 
     try {
+        // Obtener el último ID registrado
+        $sqlGetLastId = "SELECT MAX(id) AS last_id FROM claves";
+        $stmtGetLastId = $pdo->prepare($sqlGetLastId);
+        $stmtGetLastId->execute();
+        $lastId = $stmtGetLastId->fetchColumn();
+        $nextId = ($lastId === null) ? 1 : $lastId + 1;
+
         $clavesGeneradas = [];
         $maxAttempts = 100; // Límite de intentos por clave
 
-        for ($i = 0; $i < $cantidad;) {
+        for ($i = 0; $i < $cantidad; $i++) {
             $attempts = 0;
 
             while ($attempts < $maxAttempts) {
@@ -186,13 +212,19 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET
                 }
 
                 if (!$exists && !$isBlacklisted) {
-                    // Insertar la clave
-                    $sqlInsert = "INSERT INTO claves (clave) VALUES (?)";
+                    // Asignar el ID correspondiente
+                    if ($tipoGeneracion === 'especifico') {
+                        $id = $idBase; // Usar el ID base proporcionado
+                    } else {
+                        $id = $nextId++; // Asignar un ID único consecutivo
+                    }
+
+                    // Insertar la clave con el ID generado
+                    $sqlInsert = "INSERT INTO claves (id, clave) VALUES (?, ?)";
                     $stmtInsert = $pdo->prepare($sqlInsert);
-                    $stmtInsert->execute([$clave]);
+                    $stmtInsert->execute([$id, $clave]);
 
                     $clavesGeneradas[] = $clave;
-                    $i++;
                     break;
                 }
 
@@ -200,7 +232,10 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET
             }
 
             if ($attempts >= $maxAttempts) {
-                echo json_encode(["success" => false, "message" => "No se pudieron generar todas las claves debido a demasiados intentos fallidos."]);
+                echo json_encode([
+                    "success" => false,
+                    "message" => "No se pudieron generar todas las claves debido a demasiados intentos fallidos."
+                ]);
                 exit;
             }
         }

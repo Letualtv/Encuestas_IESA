@@ -7,12 +7,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('searchResults');
     const searchClave = document.getElementById('searchClave');
     const claveResponses = document.getElementById('claveResponses');
+    const loadingSpinner = document.getElementById('loadingSpinner');
 
     let selectedQuestion = null;
 
     // Función para cargar datos desde el backend
     async function loadResults(filters = {}) {
         try {
+            // Mostrar spinner
+            loadingSpinner.style.display = 'block';
+
             // Construir la URL con los filtros aplicados
             let url = 'includesCP/resultadosDB.php';
             if (Object.keys(filters).length > 0) {
@@ -82,9 +86,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.summaryChartInstance.data.labels = Object.keys(respuestas);
                 window.summaryChartInstance.data.datasets[0].data = Object.values(respuestas);
                 window.summaryChartInstance.update();
+            } else {
+                window.summaryChartInstance.data.labels = ['Sin datos'];
+                window.summaryChartInstance.data.datasets[0].data = [0];
+                window.summaryChartInstance.update();
             }
         } catch (error) {
             console.error('Error al cargar los resultados:', error);
+            alert('Ocurrió un error al cargar los datos. Por favor, inténtalo de nuevo.');
+        } finally {
+            // Ocultar spinner
+            loadingSpinner.style.display = 'none';
         }
     }
 
@@ -92,11 +104,18 @@ document.addEventListener('DOMContentLoaded', () => {
     searchInput.addEventListener('input', (event) => {
         const searchTerm = event.target.value.toLowerCase();
         const rows = resultsTableBody.querySelectorAll('tr');
+        let found = false;
 
         rows.forEach(row => {
             const text = row.textContent.toLowerCase();
-            row.style.display = text.includes(searchTerm) ? '' : 'none';
+            const match = text.includes(searchTerm);
+            row.style.display = match ? '' : 'none';
+            if (match) found = true;
         });
+
+        if (!found && searchTerm.trim()) {
+            alert('No se encontraron resultados para la búsqueda.');
+        }
     });
 
     // Seleccionar pregunta para el gráfico
@@ -120,59 +139,61 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!selectedQuestion || !data.respuestasPorPregunta[selectedQuestion]) return;
 
                 const respuestas = data.respuestasPorPregunta[selectedQuestion];
-                const labels = Object.keys(respuestas);
-                const counts = Object.values(respuestas);
-
-                window.summaryChartInstance.data.labels = labels;
-                window.summaryChartInstance.data.datasets[0].data = counts;
+                window.summaryChartInstance.data.labels = Object.keys(respuestas);
+                window.summaryChartInstance.data.datasets[0].data = Object.values(respuestas);
                 window.summaryChartInstance.update();
             })
             .catch(error => {
                 console.error('Error al actualizar el gráfico:', error);
+                alert('Ocurrió un error al actualizar el gráfico. Por favor, inténtalo de nuevo.');
             });
     }
 
-    
+  // Buscar clave específica
+// Buscar clave específica
+searchClave.addEventListener('input', async () => {
+    const clave = searchClave.value.trim();
+    if (!clave) {
+        claveResponses.innerHTML = '';
+        return;
+    }
 
-    // Buscar clave específica
-    searchClave.addEventListener('input', async () => {
-        const clave = searchClave.value.trim();
-        if (!clave) {
-            claveResponses.innerHTML = '';
+    try {
+        const response = await fetch(`includesCP/resultadosDB.php?clave=${encodeURIComponent(clave)}`);
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
+        }
+        const data = await response.json();
+
+        // Mostrar respuestas de la clave
+        claveResponses.innerHTML = '';
+        if (data.respuestasClave && data.respuestasClave.length === 0) {
+            claveResponses.innerHTML = '<p class="text-muted small">No se encontraron respuestas para esta clave.</p>';
             return;
         }
 
-        try {
-            const response = await fetch(`includesCP/resultadosDB.php?clave=${encodeURIComponent(clave)}`);
-            if (!response.ok) {
-                throw new Error(`Error HTTP: ${response.status}`);
-            }
-            const data = await response.json();
+        // Construir el contenido HTML dinámicamente
+        data.respuestasClave.forEach((fila, index) => {
+            const div = document.createElement('div');
+            div.className = 'mb-3 p-3 border rounded bg-light'; // Estilo de tarjeta
 
-            // Mostrar respuestas de la clave
-            claveResponses.innerHTML = '';
-            if (data.respuestasClave && data.respuestasClave.length === 0) {
-                claveResponses.textContent = 'No se encontraron respuestas para esta clave.';
-                return;
-            }
+            let contenidoHTML = `<h6 class="mb-2">Encuesta ${index + 1}</h6>`;
+            contenidoHTML += '<ul class="list-unstyled small">';
 
-            data.respuestasClave.forEach((fila, index) => {
-                const div = document.createElement('div');
-                div.className = 'mb-2 small';
-                div.innerHTML = `
-                    <strong>Encuesta ${index + 1}:</strong><br>
-                    ${Object.entries(fila)
-                        .filter(([key]) => key.startsWith('r'))
-                        .map(([key, value]) => `<span>${key}: ${value}</span><br>`)
-                        .join('')}
-                `;
-                claveResponses.appendChild(div);
+            Object.entries(fila).forEach(([key, value]) => {
+                contenidoHTML += `<li><strong>${key}:</strong> ${value}</li>`;
             });
-        } catch (error) {
-            console.error('Error al buscar clave:', error);
-            claveResponses.textContent = 'Ocurrió un error al buscar la clave.';
-        }
-    });
+
+            contenidoHTML += '</ul>';
+            div.innerHTML = contenidoHTML;
+
+            claveResponses.appendChild(div);
+        });
+    } catch (error) {
+        console.error('Error al buscar clave:', error);
+        claveResponses.innerHTML = '<p class="text-danger small">Ocurrió un error al buscar la clave. Por favor, inténtalo de nuevo.</p>';
+    }
+});
 
     // Cargar resultados iniciales
     loadResults();

@@ -412,36 +412,103 @@ function showModal(title, bodyText, confirmAction, cancelAction = null, headerCl
   modal.show();
 }
 
-// Función para generar claves aleatorias
-function generarClavesAleatorias() {
-  const cantidadClaves = parseInt(document.getElementById("randomKeyCount").value);
+document.querySelectorAll('input[name="tipoGeneracion"]').forEach((radio) => {
+  radio.addEventListener("change", () => {
+      const idBaseContainer = document.getElementById("idBaseContainer");
+      const idBaseInput = document.getElementById("idBase");
+
+      if (document.querySelector('input[name="tipoGeneracion"]:checked').value === "especifico") {
+          idBaseContainer.classList.remove("d-none"); // Mostrar el campo ID Base
+          idBaseInput.setAttribute("required", "");
+      } else {
+          idBaseContainer.classList.add("d-none"); // Ocultar el campo ID Base
+          idBaseInput.removeAttribute("required");
+      }
+  });
+});
+
+document.getElementById("randomKeyForm").addEventListener("submit", function (event) {
+  event.preventDefault(); // Evitar el envío del formulario por defecto
+
+  const randomKeyCountInput = document.getElementById("randomKeyCount");
+  const cantidad = parseInt(randomKeyCountInput.value.trim(), 10);
   const tipoGeneracion = document.querySelector('input[name="tipoGeneracion"]:checked').value;
+  const idBaseInput = document.getElementById("idBase");
   let idBase = null;
 
+  // Validar que la cantidad sea válida
+  if (isNaN(cantidad) || cantidad < 1 || cantidad > 10000) {
+      showToast("La cantidad debe estar entre 1 y 10,000.", "warning");
+      return;
+  }
+
+  // Si es generación específica, validar el ID base
   if (tipoGeneracion === "especifico") {
-      idBase = parseInt(document.getElementById("idBase").value);
+      idBase = parseInt(idBaseInput.value.trim(), 10);
       if (!idBase || idBase <= 0) {
           showToast("Por favor, ingresa un ID base válido.", "warning");
           return;
       }
   }
 
-  // Validar la cantidad de claves
-  if (!cantidadClaves || cantidadClaves <= 0 || cantidadClaves > 10000) {
-      showToast("La cantidad de claves debe estar entre 1 y 10,000.", "warning");
-      return;
-  }
+  // Mostrar el primer modal de confirmación
+  showModal(
+      "Generar claves aleatorias",
+      `¿Estás seguro de generar <b>${cantidad}</b> claves aleatorias?`,
+      () => {
+          // Deshabilitar el botón de confirmación del primer modal
+          const firstConfirmButton = document.getElementById("customModalConfirmButton");
+          firstConfirmButton.disabled = true;
 
-  // Deshabilitar el botón mientras se genera
+          // Si la cantidad es mayor a 1000, mostrar el segundo modal de confirmación
+          if (cantidad > 1000) {
+              showModal(
+                  "Confirmación final",
+                  `<p class="text-danger fw-bold">¡ADVERTENCIA!</p> <p>Vas a <b>generar ${cantidad} claves</b>. ¿Estás completamente seguro?</p>`,
+                  () => {
+                      // Deshabilitar el botón de confirmación del segundo modal
+                      const secondConfirmButton = document.getElementById("customModalConfirmButton");
+                      secondConfirmButton.disabled = true;
+
+                      generarClavesAleatorias(cantidad, tipoGeneracion, idBase); // Llamar a la función para generar claves
+                  },
+                  null,
+                  ["bg-danger", "text-white"]
+              );
+          } else {
+              generarClavesAleatorias(cantidad, tipoGeneracion, idBase); // Llamar a la función para generar claves
+          }
+
+          // Habilitar el botón de confirmación del primer modal después de cerrar el modal
+          setTimeout(() => {
+              firstConfirmButton.disabled = false;
+          }, 100);
+      },
+      null,
+      ["bg-warning", "text-dark"]
+  );
+});
+
+function generarClavesAleatorias(cantidad, tipoGeneracion, idBase) {
+  // Mostrar el modal de carga
+  showModal(
+      "Generando claves",
+      "Generando claves... por favor, espere.",
+      null, // No hay acción de confirmación aquí
+      null,
+      ["bg-primary", "text-white"],
+      true // Mostrar el spinner
+  );
+
+  // Deshabilitar el botón principal mientras se genera
   const generateKeysButton = document.getElementById("generateKeysButton");
   generateKeysButton.disabled = true;
-  generateKeysButton.textContent = "Generando...";
 
   // Enviar la solicitud al backend
   fetch("includesCP/poblacionDB.php?action=generarClavesAleatorias", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ cantidad: cantidadClaves, tipoGeneracion, idBase }),
+      body: JSON.stringify({ cantidad, tipoGeneracion, idBase }),
   })
       .then((response) => {
           if (!response.ok) throw new Error(`Error en la solicitud: ${response.status}`);
@@ -460,86 +527,74 @@ function generarClavesAleatorias() {
           showToast("Ocurrió un error al intentar generar las claves.", "danger");
       })
       .finally(() => {
-          generateKeysButton.disabled = false;
-          generateKeysButton.textContent = "Generar";
+          generateKeysButton.disabled = false; // Habilitar el botón principal nuevamente
+
+          // Cerrar el modal de carga después de completar la operación
+          const modalInstance = bootstrap.Modal.getInstance(document.getElementById("customModal"));
+          if (modalInstance) {
+              modalInstance.hide();
+          }
+
+          // Recargar la página después de cerrar el modal
+          setTimeout(() => {
+              window.location.reload();
+          }, 1500); // Esperar 1.5 segundos antes de recargar
       });
 }
-// Evento para el formulario de generación de claves aleatorias
-document.getElementById("randomKeyForm").addEventListener("submit", function (event) {
-  event.preventDefault(); // Evitar el envío del formulario por defecto
 
-  const randomKeyCountInput = document.getElementById("randomKeyCount");
-  const cantidad = parseInt(randomKeyCountInput.value.trim(), 10);
 
-  // Validar que la cantidad sea válida
-  if (isNaN(cantidad) || cantidad < 1 || cantidad > 10000) {
-      showToast("La cantidad debe estar entre 1 y 10,000.", "warning");
-      return;
-  }
 
-  // Mostrar el primer modal de confirmación
-  showModal(
-      "Generar Claves Aleatorias",
-      `¿Estás seguro de generar <b>${cantidad}</b> claves aleatorias?`,
-      () => {
-          // Si la cantidad es mayor a 1000, mostrar el segundo modal de confirmación
-          if (cantidad > 1000) {
-              showModal(
-                  "Confirmación Final",
-                  `Está a punto de generar <b>${cantidad}</b> claves. ¿Está completamente seguro?`,
-                  () => {
-                      generarClavesAleatorias(cantidad); // Llamar a la función para generar claves
-                  },
-                  null,
-                  ["bg-danger", "text-white"]
-              );
-          } else {
-              generarClavesAleatorias(cantidad); // Llamar a la función para generar claves
-          }
-      },
-      null,
-      ["bg-primary", "text-white"]
-  );
-});
 
-// Función para agregar una clave manual
+
 document.getElementById("customKeyForm").addEventListener("submit", function (event) {
   event.preventDefault(); // Evitar el envío del formulario por defecto
 
   const customKeyInput = document.getElementById("customKey");
+  const customKeyIdInput = document.getElementById("customKeyId");
   const clave = customKeyInput.value.trim();
+  const idBase = parseInt(customKeyIdInput.value.trim(), 10) || null;
 
   // Validar que la clave tenga exactamente 5 caracteres alfanuméricos
   if (!/^[a-zA-Z0-9]{5}$/.test(clave)) {
-    showToast("La clave debe tener exactamente 5 caracteres alfanuméricos.", "warning");
-    return;
+      showToast("La clave debe tener exactamente 5 caracteres alfanuméricos.", "warning");
+      return;
   }
 
+  // Validar que el ID base sea un número positivo (si se proporciona)
+  if (idBase !== null && (isNaN(idBase) || idBase <= 0)) {
+      showToast("El ID base debe ser un número positivo.", "warning");
+      return;
+  }
+
+  // Enviar la clave y el ID base al backend
   fetch("includesCP/poblacionDB.php?action=agregarClave", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ clave }), // Enviar solo la clave
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ clave, idBase }), // Enviar clave e ID base
   })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`Error en la solicitud: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then((data) => {
-      if (data.success) {
-        showToast("Clave agregada correctamente.", "success");
-        cargarClaves(currentPage); // Recargar la lista de claves
-        customKeyInput.value = ""; // Limpiar el campo de entrada
-      } else {
-        showToast(data.message || "Error al agregar la clave.", "danger");
-      }
-    })
-    .catch((error) => {
-      console.error("Error al agregar la clave:", error);
-      showToast("Ocurrió un error al intentar agregar la clave.", "danger");
-    });
+      .then((response) => {
+          if (!response.ok) throw new Error(`Error en la solicitud: ${response.status}`);
+          return response.json();
+      })
+      .then((data) => {
+          if (data.success) {
+              showToast("Clave agregada correctamente.", "success");
+              cargarClaves(currentPage); // Recargar la lista de claves
+              customKeyInput.value = ""; // Limpiar el campo de entrada
+              customKeyIdInput.value = ""; // Limpiar el campo de ID base
+          } else {
+              showToast(data.message || "Error al agregar la clave.", "danger");
+          }
+      })
+      .catch((error) => {
+          console.error("Error al agregar la clave:", error);
+          showToast("Ocurrió un error al intentar agregar la clave.", "danger");
+      });
 });
+
+
+
+
 
 // Función para cerrar el modal y eliminar el backdrop manualmente
 function closeModal(modalId) {

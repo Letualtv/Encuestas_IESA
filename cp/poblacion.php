@@ -56,50 +56,54 @@
 
 
                 <!-- Formulario para agregar clave personalizada -->
-                <form id="customKeyForm" class="mb-4">
-                    <h6 class="mb-2">Agregar clave personalizada</h6>
-                    <div class="mb-3 form-floating">
-                        <input type="text" class="form-control" id="customKey" maxlength="5" required placeholder="ABCDE">
-                        <label for="customKey">Clave (exactamente 5 caracteres alfanuméricos)</label>
-                    </div>
-                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus me-2"></i>Agregar clave</button>
-                </form>
+               <!-- Formulario para agregar clave personalizada -->
+<form id="customKeyForm" class="mb-4">
+    <h6 class="mb-2">Agregar clave personalizada</h6>
+    <div class="mb-3 input-group">
+        <input type="number" class="form-control " id="customKeyId" min="1" placeholder="ID Base">
+        <input type="text" class="form-control w-50" id="customKey" maxlength="5" required placeholder="Clave (5 caracteres alfanuméricos)">
+    </div>
 
-                <hr>
+    <!-- Campo para el ID base (opcional) -->
+    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus me-2"></i>Agregar clave</button>
+</form>
 
-                <!-- Formulario para generar claves aleatorias -->
-                <form id="randomKeyForm" class="mb-4">
-                    <h6 class="mb-2">Generar claves aleatorias</h6>
+<hr>
 
-                    <!-- Cantidad de claves -->
-                    <div class="mb-3 form-floating">
-                        <input type="number" class="form-control" id="randomKeyCount" min="1" max="10000" required placeholder="">
-                        <label for="randomKeyCount" class="form-label">Cantidad de claves (máximo 10,000):</label>
-                    </div>
+<!-- Formulario para generar claves aleatorias -->
+<form id="randomKeyForm" class="mb-4">
+    <h6 class="mb-2">Generar claves aleatorias</h6>
 
-                    <!-- Tipo de generación -->
-                    <div class="mb-3">
-                        <label class="form-label">Tipo de generación:</label>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="tipoGeneracion" id="generacionAutomatica" value="automatico" checked>
-                            <label class="form-check-label" for="generacionAutomatica">Automático</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="tipoGeneracion" id="generacionEspecifica" value="especifico">
-                            <label class="form-check-label" for="generacionEspecifica">Específico</label>
-                        </div>
-                    </div>
+    <!-- Cantidad de claves -->
+    <div class="mb-3 form-floating">
+        <input type="number" class="form-control" id="randomKeyCount" min="1" max="10000" required placeholder="">
+        <label for="randomKeyCount" class="form-label">Cantidad de claves (máximo 10,000):</label>
+        <small class="form-text text-muted">Ingresa un número entre 1 y 10,000.</small>
+    </div>
 
-                    <!-- Campo para el ID base (solo visible si es generación específica) -->
-                    <div class="mb-3" id="idBaseContainer" style="display: none;">
-                        <label for="idBase" class="form-label">ID Base:</label>
-                        <input type="number" class="form-control" id="idBase" name="idBase" min="1" required>
-                    </div>
+    <!-- Tipo de generación -->
+    <div class="mb-3">
+        <label class="form-label">Tipo de generación:</label>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="tipoGeneracion" id="generacionAutomatica" value="automatico" checked>
+            <label class="form-check-label" for="generacionAutomatica">Automático</label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="tipoGeneracion" id="generacionEspecifica" value="especifico">
+            <label class="form-check-label" for="generacionEspecifica">Específico</label>
+        </div>
+    </div>
 
-                    <button type="button" class="btn btn-primary" id="generateKeysButton" onclick="generarClavesAleatorias()">
-                        <i class="fa-solid fa-random me-2"></i>Generar claves
-                    </button>
-                </form>
+    <!-- Campo para el ID base (solo visible si es generación específica) -->
+    <div class="mb-3 d-none" id="idBaseContainer">
+        <label for="idBase" class="form-label">ID Base:</label>
+        <input type="number" class="form-control" id="idBase" name="idBase" min="1">
+    </div>
+
+    <button type="submit" class="btn btn-primary" id="generateKeysButton">
+        <i class="fa-solid fa-random me-2"></i>Generar claves
+    </button>
+</form>
 
                 <hr>
                 <!-- Mensaje para usuarios no administradores -->
