@@ -52,6 +52,7 @@ function crearTablaPreguntas(data) {
     const tipoMap = {
         radio: "Radio",
         numberInput: "Entrada numérica",
+        cajaTexto: "Caja de texto",
         checkbox: "Checkbox",
         formSelect: "Radio desplegable",
         matrix1: "Matriz con rango",

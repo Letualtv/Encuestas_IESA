@@ -27,7 +27,12 @@ function agregarOpcion(clave = "", opcion = "", subLabels = {}) {
   
       claveAutomaticaMatrix3++;
  
-  } else if 
+  }
+  else if (tipoPregunta === "cajaTexto") {
+    // No agregar opciones para "cajaTexto"
+    return;
+  }
+  else if 
   (tipoPregunta === "formSelect") {
       // Usar la clave autoincremental específica para matrix3
       const claveAutomatica2 = opcionesDiv.children.length + 1;
@@ -166,7 +171,17 @@ function agregarSubLabel(container, clave = "", valor = "") {
       </button>
       <input type="text" class="form-control w-75 shadow-sm sublabel-principal" name="subValores[]" placeholder="SubLabel" value="${valor}" required>
     `;
-  } else if (tipoPregunta === "matrix3") {
+  }
+ else if (tipoPregunta === "cajaTexto") {
+  // Para el tipo "cajaTexto", solo permitir modificar el placeholder
+  nuevaOpcion.innerHTML = `
+    <div class="input-group-text shadow-sm fw-bold">Placeholder</div>
+    <input type="text" class="form-control shadow-sm" name="placeholder[]" placeholder="Escribe el texto del placeholder" value="${opcion}" required>
+    <button type="button" class="btn btn-outline-danger btn-sm" onclick="eliminarOpcion(this)">
+      <i class="fa-solid fa-trash"></i>
+    </button>
+  `; 
+}else if (tipoPregunta === "matrix3") {
     // Lógica para matrix3 (sin cambios)
     const todosLosSublabels = Array.from(
       document.querySelectorAll(".sublabels-container .input-group")

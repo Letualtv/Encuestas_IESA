@@ -19,6 +19,7 @@
                         <option value="formSelect" data-bs-toggle="tooltip" title="Pregunta de respuesta única con desplegable de opciones">Radio desplegable</option>
                         <option value="numberInput" data-bs-toggle="tooltip" title="Pregunta con entrada numérica con rango personalizable">Entrada numérica</option>
                         <option value="radio" data-bs-toggle="tooltip" title="Pregunta de respuesta única">Radio</option>
+                        <option value="cajaTexto" data-bs-toggle="tooltip" title="Caja de texto de entrada personalizada">Caja de texto</option>
                         <option value="matrix1" data-bs-toggle="tooltip" title="Matriz de respuestas con rango">Matriz con rango</option>
                         <option value="matrix2" data-bs-toggle="tooltip" title="Matriz de respuestas simple">Matriz simple</option>
                         <option value="matrix3" data-bs-toggle="tooltip" title="Matriz doble de respuestas simples ">Matriz doble</option>
@@ -98,6 +99,13 @@
                     <input type="text" id="tres" name="tres" class="form-control form-control-sm" placeholder="Información adicional">
                 </div>
             </div>
+
+            <div id="cajaTextoFields" style="display: none;">
+  <div class="input-group mb-3">
+    <span class="input-group-text">Placeholder</span>
+    <input type="text" id="placeholder" name="placeholder" class="form-control" placeholder="Escribe el texto del placeholder">
+  </div>
+</div>
 
             <div id="valores" class="mt-3">
                 <div id="numberInputFields" class="bg-light p-2 rounded" style="display: none;">

@@ -194,7 +194,7 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET
 
             while ($attempts < $maxAttempts) {
                 // Generar una clave aleatoria de 5 caracteres
-                $clave = substr(str_shuffle("abcdefghjklmnpqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789"), 0, 5);
+                $clave = substr(str_shuffle("abcdefghjklmnpqrstuvwxyz"), 0, 5);
 
                 // Verificar si la clave ya existe
                 $sqlCheck = "SELECT COUNT(*) FROM claves WHERE clave = ?";

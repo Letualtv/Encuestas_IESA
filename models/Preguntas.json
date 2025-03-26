@@ -2,22 +2,17 @@
     {
         "id": "1",
         "n_pag": 1,
-        "tipo": "radio",
-        "titulo": "Pregunta de tipo radio",
-        "subTitulo": "",
-        "opciones": {
-            "1": "No, trabajo actualmente en esta instituci\u00f3n",
-            "2": "He trabajado, pero estoy jubilado o no activo",
-            "3": "He trabajado, pero ahora trabajo en otro lugar",
-            "4": "S\u00ed trabajo aqu\u00ed",
-            "5": "Que te parece $estudio"
-        },
+        "tipo": "cajaTexto",
+        "titulo": "\u00bfQu\u00e9 opinas sobre este servicio?",
+        "subTitulo": "Por favor, escribe tus comentarios abajo.",
+        "opciones": [],
         "filtro": [],
         "cabecera": {
-            "texto1": "",
-            "lista": "",
-            "texto2": ""
-        }
+            "texto1": "afasdf",
+            "lista": "asdfaf",
+            "texto2": "asdfasf"
+        },
+        "placeholder": "Escriba aqui algo"
     },
     {
         "id": "2",
@@ -30,9 +25,7 @@
             "88": "No sabe",
             "99": "No contesta"
         },
-        "filtro": {
-            "1": "2"
-        },
+        "filtro": [],
         "cabecera": {
             "texto1": "",
             "lista": "",
@@ -70,11 +63,87 @@
                 "label": "Desplegable 3",
                 "subLabel": {
                     "30": "Respuesta 6",
-                    "31": "Respuesta 7"
+                    "31": "Respuesta 7",
+                    "32": "Respuesta 8"
                 }
             }
         },
         "filtro": [],
+        "cabecera": {
+            "texto1": "",
+            "lista": "",
+            "texto2": ""
+        }
+    },
+    {
+        "id": "4",
+        "n_pag": 5,
+        "tipo": "matrix2",
+        "titulo": "Radio",
+        "subTitulo": "",
+        "opciones": {
+            "4": "65",
+            "5": "516",
+            "6": "6946"
+        },
+        "filtro": [],
+        "cabecera": {
+            "texto1": "",
+            "lista": "",
+            "texto2": ""
+        }
+    },
+    {
+        "id": "5",
+        "n_pag": 5,
+        "tipo": "numberInput",
+        "titulo": "Entrada num\u00e9rica",
+        "subTitulo": "Hola",
+        "opciones": {
+            "1": "Valor",
+            "2": "Valor2",
+            "3": "Valor3"
+        },
+        "filtro": [],
+        "cabecera": {
+            "texto1": "",
+            "lista": "",
+            "texto2": ""
+        },
+        "valores": {
+            "min": 2000,
+            "max": 2050,
+            "placeholder": "AAAA"
+        }
+    },
+    {
+        "id": "6",
+        "n_pag": 6,
+        "tipo": "checkbox",
+        "titulo": "asdf",
+        "subTitulo": "",
+        "opciones": {
+            "1": "16165"
+        },
+        "filtro": [],
+        "cabecera": {
+            "texto1": "",
+            "lista": "",
+            "texto2": ""
+        }
+    },
+    {
+        "id": "10",
+        "n_pag": 5,
+        "tipo": "matrix2",
+        "titulo": "Radio",
+        "subTitulo": "",
+        "opciones": {
+            "4": "65",
+            "5": "516",
+            "6": "6946"
+        },
+        "filtro": {},
         "cabecera": {
             "texto1": "",
             "lista": "",

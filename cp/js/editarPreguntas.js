@@ -1,4 +1,3 @@
-
 document.getElementById("tipo").addEventListener("change", () => {
   const tipoPregunta = document.getElementById("tipo").value;
 
@@ -24,9 +23,16 @@ function ajustarFormulario() {
   const numberInputFields = document.getElementById("numberInputFields");
   numberInputFields.style.display = tipo === "numberInput" ? "block" : "none";
 
+  
   // Ajustar campos de encabezado para "matrix2" y "matrix3"
   const encabezadoFields = document.getElementById("encabezadoFields");
-  encabezadoFields.style.display = ["matrix2", "matrix3"].includes(tipo) ? "block" : "none";
+  encabezadoFields.style.display = ["matrix2", "matrix3"].includes(tipo)
+    ? "block"
+    : "none";
+
+  // Ajustar campos para "cajaTexto"
+  const cajaTextoFields = document.getElementById("cajaTextoFields");
+  cajaTextoFields.style.display = tipo === "cajaTexto" ? "block" : "none";
 }
 
 // Función para eliminar una opción dinámicamente
@@ -37,6 +43,13 @@ function eliminarOpcion(button) {
 // Función para agregar una nueva opción dinámicamente
 let ultimaClave = 0;
 function agregarOpcion(clave = null, label = "", subLabels = {}) {
+  const tipoPregunta = document.getElementById("tipo").value;
+
+  if (tipoPregunta === "cajaTexto") {
+    // No agregar opciones para "cajaTexto"
+    return;
+  }
+
   const opcionesContainer = document.getElementById("opciones");
 
   // Generar una clave única si no se proporciona
@@ -115,6 +128,11 @@ function editarPregunta(id) {
           const subLabels = opcion.subLabel || {};
           agregarOpcion(clavePrincipal, label, subLabels);
         });
+      }
+      // Rellenar valores específicos para "cajaTexto"
+else if (pregunta.tipo === "cajaTexto") {
+  document.getElementById("placeholder").value = pregunta.placeholder || "";
+
       } else if (pregunta.tipo === "matrix1") {
         const opciones = pregunta.opciones || {};
         Object.keys(opciones).forEach((clave) => {
@@ -133,12 +151,14 @@ function editarPregunta(id) {
       if (pregunta.tipo === "numberInput") {
         document.getElementById("min").value = pregunta.valores?.min || "";
         document.getElementById("max").value = pregunta.valores?.max || "";
-        document.getElementById("placeholder").value = pregunta.valores?.placeholder || "";
+        document.getElementById("placeholder").value =
+          pregunta.valores?.placeholder || "";
       }
 
       // Rellenar encabezados si existen
       if (pregunta.encabezado) {
-        document.getElementById("label").value = pregunta.encabezado.label || "";
+        document.getElementById("label").value =
+          pregunta.encabezado.label || "";
         const unoClave = Object.keys(pregunta.encabezado.uno)[0];
         const unoValor = pregunta.encabezado.uno[unoClave];
         document.getElementById("unoClave").value = unoClave || "";
@@ -154,13 +174,20 @@ function editarPregunta(id) {
 
       // Recuperar y mostrar la descripción (si existe)
       const descripcion = pregunta.cabecera || null;
-      const mostrarDescripcionCheckbox = document.getElementById("mostrar-descripcion");
-      const descripcionContainer = document.getElementById("descripcionContainer");
+      const mostrarDescripcionCheckbox = document.getElementById(
+        "mostrar-descripcion"
+      );
+      const descripcionContainer = document.getElementById(
+        "descripcionContainer"
+      );
 
       if (descripcion) {
-        const texto1Vacio = !descripcion.texto1 || descripcion.texto1.trim() === "";
-        const listaVacia = !descripcion.lista || descripcion.lista.trim() === "";
-        const texto2Vacio = !descripcion.texto2 || descripcion.texto2.trim() === "";
+        const texto1Vacio =
+          !descripcion.texto1 || descripcion.texto1.trim() === "";
+        const listaVacia =
+          !descripcion.lista || descripcion.lista.trim() === "";
+        const texto2Vacio =
+          !descripcion.texto2 || descripcion.texto2.trim() === "";
 
         if (texto1Vacio && listaVacia && texto2Vacio) {
           mostrarDescripcionCheckbox.checked = false;
@@ -168,9 +195,12 @@ function editarPregunta(id) {
         } else {
           mostrarDescripcionCheckbox.checked = true;
           descripcionContainer.style.display = "block";
-          document.querySelector("#descripcionRule .texto1").value = descripcion.texto1 || "";
-          document.querySelector("#descripcionRule .lista").value = descripcion.lista || "";
-          document.querySelector("#descripcionRule .texto2").value = descripcion.texto2 || "";
+          document.querySelector("#descripcionRule .texto1").value =
+            descripcion.texto1 || "";
+          document.querySelector("#descripcionRule .lista").value =
+            descripcion.lista || "";
+          document.querySelector("#descripcionRule .texto2").value =
+            descripcion.texto2 || "";
         }
       } else {
         mostrarDescripcionCheckbox.checked = false;
@@ -184,7 +214,9 @@ function editarPregunta(id) {
       cargarFiltro(pregunta.filtro || {});
 
       // Mostrar las reglas de filtro (si existen)
-      document.getElementById("mostrar-filtro").checked = !!Object.keys(pregunta.filtro || {}).length;
+      document.getElementById("mostrar-filtro").checked = !!Object.keys(
+        pregunta.filtro || {}
+      ).length;
       mostrarFiltro();
 
       // Indicar que se está editando una pregunta
@@ -212,6 +244,7 @@ function inicializarFormulario() {
   document.getElementById("n_pag").value = 1;
   document.getElementById("tipo").value = "radio"; // Valor predeterminado
   document.getElementById("subTitulo").value = "";
+  document.getElementById("placeholder").value = "";
 
   const opcionesDiv = document.getElementById("opciones");
   while (opcionesDiv.firstChild) {
@@ -232,7 +265,9 @@ function inicializarFormulario() {
   document.getElementById("tres").value = "";
 
   // Limpiar descripción
-  const mostrarDescripcionCheckbox = document.getElementById("mostrar-descripcion");
+  const mostrarDescripcionCheckbox = document.getElementById(
+    "mostrar-descripcion"
+  );
   const descripcionContainer = document.getElementById("descripcionContainer");
   mostrarDescripcionCheckbox.checked = false;
   descripcionContainer.style.display = "none";

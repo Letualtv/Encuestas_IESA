@@ -34,6 +34,9 @@ if (isset($pregunta['encabezado'])) {
             case 'radio':
                 include_once __DIR__ . '/tipo_de_pregunta/radio.php';
                 break;
+            case 'cajaTexto':
+                include_once __DIR__ . '/tipo_de_pregunta/cajaTexto.php';
+                break;
             case 'checkbox':
                 include_once  __DIR__ . '/tipo_de_pregunta/checkbox.php';
                 break;

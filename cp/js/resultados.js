@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Elementos del DOM
     const resultsTableBody = document.getElementById('resultsList');
-    const summaryChart = document.getElementById('summaryChart').getContext('2d');
+    const summaryChartCtx = document.getElementById('summaryChart').getContext('2d');
     const totalSurveys = document.getElementById('totalSurveys');
     const completedSurveys = document.getElementById('completedSurveys');
     const searchInput = document.getElementById('searchResults');
@@ -10,107 +10,141 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadingSpinner = document.getElementById('loadingSpinner');
 
     let selectedQuestion = null;
+    let chartInstance = null;
 
-    // Función para cargar datos desde el backend
+    // Cargar resultados iniciales
+    loadResults();
+
+    // Función principal para cargar datos desde el backend
     async function loadResults(filters = {}) {
         try {
-            // Mostrar spinner
-            loadingSpinner.style.display = 'block';
+            showSpinner();
+            const data = await fetchData(filters);
 
-            // Construir la URL con los filtros aplicados
-            let url = 'includesCP/resultadosDB.php';
-            if (Object.keys(filters).length > 0) {
-                url += '?' + new URLSearchParams(filters).toString();
-            }
+            updateStatistics(data.estadisticas);
+            populateResultsTable(data.respuestasPorPregunta);
+            initializeChartIfNotExists();
+            updateChartWithInitialData(data.respuestasPorPregunta);
+        } catch (error) {
+            handleError(error, 'Ocurrió un error al cargar los datos.');
+        } finally {
+            hideSpinner();
+        }
+    }
 
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`Error HTTP: ${response.status}`);
-            }
-            const data = await response.json();
+    // Mostrar/ocultar spinner
+    function showSpinner() {
+        loadingSpinner.style.display = 'block';
+    }
 
-            // Actualizar estadísticas generales
-            totalSurveys.textContent = data.estadisticas.totalEncuestas || 0;
-            completedSurveys.textContent = data.estadisticas.encuestasCompletadas || 0;
+    function hideSpinner() {
+        loadingSpinner.style.display = 'none';
+    }
 
-            // Limpiar tabla
-            resultsTableBody.innerHTML = '';
+    // Obtener datos del backend
+    async function fetchData(filters = {}) {
+        const url = Object.keys(filters).length > 0
+            ? `includesCP/resultadosDB.php?${new URLSearchParams(filters).toString()}`
+            : 'includesCP/resultadosDB.php';
 
-            // Rellenar tabla con resultados
-            Object.entries(data.respuestasPorPregunta || {}).forEach(([pregunta, respuestas]) => {
-                const totalRespuestas = Object.values(respuestas).reduce((sum, count) => sum + count, 0);
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>
-                        <div class="form-check">
-                            <input type="radio" class="form-check-input question-radio" name="question" data-question="${pregunta}">
-                        </div>
-                    </td>
-                    <td>${pregunta}</td>
-                    <td>${totalRespuestas}</td>
-                `;
-                resultsTableBody.appendChild(row);
-            });
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
+        }
+        return await response.json();
+    }
 
-            // Crear gráfico si no existe
-            if (!window.summaryChartInstance) {
-                window.summaryChartInstance = new Chart(summaryChart, {
-                    type: 'bar',
-                    data: {
-                        labels: [],
-                        datasets: [{
-                            label: 'Distribución de Respuestas',
-                            data: [],
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                stepSize: 1
-                            }
+    // Actualizar estadísticas generales
+    function updateStatistics(estadisticas) {
+        totalSurveys.textContent = estadisticas.totalEncuestas || 0;
+        completedSurveys.textContent = estadisticas.encuestasCompletadas || 0;
+    }
+
+    // Rellenar la tabla con resultados ordenados por nombre de pregunta
+    function populateResultsTable(respuestasPorPregunta) {
+        resultsTableBody.innerHTML = '';
+        const preguntasOrdenadas = sortQuestionsAlphabetically(respuestasPorPregunta);
+
+        preguntasOrdenadas.forEach(([pregunta, respuestas]) => {
+            const totalRespuestas = calculateTotalResponses(respuestas);
+            resultsTableBody.appendChild(createTableRow(pregunta, totalRespuestas));
+        });
+    }
+
+    // Ordenar preguntas alfabéticamente
+    function sortQuestionsAlphabetically(respuestasPorPregunta) {
+        return Object.entries(respuestasPorPregunta || {}).sort(([a], [b]) => a.localeCompare(b));
+    }
+
+    // Calcular el total de respuestas
+    function calculateTotalResponses(respuestas) {
+        return Object.values(respuestas).reduce((sum, count) => sum + count, 0);
+    }
+
+    // Crear una fila para la tabla
+    function createTableRow(pregunta, totalRespuestas) {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>
+                <div class="form-check">
+                    <input type="radio" class="form-check-input question-radio" name="question" data-question="${pregunta}">
+                </div>
+            </td>
+            <td>${pregunta}</td>
+            <td>${totalRespuestas}</td>
+        `;
+        return row;
+    }
+
+    // Inicializar el gráfico si no existe
+    function initializeChartIfNotExists() {
+        if (!chartInstance) {
+            chartInstance = new Chart(summaryChartCtx, {
+                type: 'bar',
+                data: { labels: [], datasets: [{ label: 'Distribución de Respuestas', data: [] }] },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            stepSize: 1,
+                            ticks: { precision: 0 }
                         }
                     }
-                });
-            }
-
-            // Actualizar gráfico con datos iniciales
-            const firstPregunta = Object.keys(data.respuestasPorPregunta || {})[0];
-            if (firstPregunta) {
-                const respuestas = data.respuestasPorPregunta[firstPregunta];
-                window.summaryChartInstance.data.labels = Object.keys(respuestas);
-                window.summaryChartInstance.data.datasets[0].data = Object.values(respuestas);
-                window.summaryChartInstance.update();
-            } else {
-                window.summaryChartInstance.data.labels = ['Sin datos'];
-                window.summaryChartInstance.data.datasets[0].data = [0];
-                window.summaryChartInstance.update();
-            }
-        } catch (error) {
-            console.error('Error al cargar los resultados:', error);
-            alert('Ocurrió un error al cargar los datos. Por favor, inténtalo de nuevo.');
-        } finally {
-            // Ocultar spinner
-            loadingSpinner.style.display = 'none';
+                }
+            });
         }
+    }
+
+    // Actualizar el gráfico con datos iniciales
+    function updateChartWithInitialData(respuestasPorPregunta) {
+        const preguntasOrdenadas = sortQuestionsAlphabetically(respuestasPorPregunta);
+        const firstPregunta = preguntasOrdenadas[0]?.[0];
+
+        if (firstPregunta) {
+            const respuestas = respuestasPorPregunta[firstPregunta];
+            updateChartData(Object.keys(respuestas), Object.values(respuestas));
+        } else {
+            updateChartData(['Sin datos'], [0]);
+        }
+    }
+
+    // Actualizar datos del gráfico
+    function updateChartData(labels, data) {
+        chartInstance.data.labels = labels;
+        chartInstance.data.datasets[0].data = data.map(Math.floor); // Asegurar valores enteros
+        chartInstance.update();
     }
 
     // Búsqueda dinámica en la tabla
     searchInput.addEventListener('input', (event) => {
         const searchTerm = event.target.value.toLowerCase();
         const rows = resultsTableBody.querySelectorAll('tr');
-        let found = false;
-
-        rows.forEach(row => {
-            const text = row.textContent.toLowerCase();
-            const match = text.includes(searchTerm);
+        const found = Array.from(rows).some(row => {
+            const match = row.textContent.toLowerCase().includes(searchTerm);
             row.style.display = match ? '' : 'none';
-            if (match) found = true;
+            return match;
         });
 
         if (!found && searchTerm.trim()) {
@@ -119,82 +153,85 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Seleccionar pregunta para el gráfico
-    resultsTableBody.addEventListener('change', (event) => {
+    resultsTableBody.addEventListener('change', async (event) => {
         if (event.target.classList.contains('question-radio')) {
             selectedQuestion = event.target.dataset.question;
-            updateChart();
+            await updateChart();
         }
     });
 
     // Actualizar gráfico dinámico
-    function updateChart() {
-        fetch('includesCP/resultadosDB.php')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Error HTTP: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (!selectedQuestion || !data.respuestasPorPregunta[selectedQuestion]) return;
+    async function updateChart() {
+        try {
+            const data = await fetchData();
+            if (!selectedQuestion || !data.respuestasPorPregunta[selectedQuestion]) return;
 
-                const respuestas = data.respuestasPorPregunta[selectedQuestion];
-                window.summaryChartInstance.data.labels = Object.keys(respuestas);
-                window.summaryChartInstance.data.datasets[0].data = Object.values(respuestas);
-                window.summaryChartInstance.update();
-            })
-            .catch(error => {
-                console.error('Error al actualizar el gráfico:', error);
-                alert('Ocurrió un error al actualizar el gráfico. Por favor, inténtalo de nuevo.');
-            });
-    }
-
-  // Buscar clave específica
-// Buscar clave específica
-searchClave.addEventListener('input', async () => {
-    const clave = searchClave.value.trim();
-    if (!clave) {
-        claveResponses.innerHTML = '';
-        return;
-    }
-
-    try {
-        const response = await fetch(`includesCP/resultadosDB.php?clave=${encodeURIComponent(clave)}`);
-        if (!response.ok) {
-            throw new Error(`Error HTTP: ${response.status}`);
+            const respuestas = data.respuestasPorPregunta[selectedQuestion];
+            updateChartData(Object.keys(respuestas), Object.values(respuestas));
+        } catch (error) {
+            handleError(error, 'Ocurrió un error al actualizar el gráfico.');
         }
-        const data = await response.json();
+    }
 
-        // Mostrar respuestas de la clave
-        claveResponses.innerHTML = '';
-        if (data.respuestasClave && data.respuestasClave.length === 0) {
-            claveResponses.innerHTML = '<p class="text-muted small">No se encontraron respuestas para esta clave.</p>';
+    // Buscar clave específica
+    searchClave.addEventListener('input', async () => {
+        const clave = searchClave.value.trim();
+        if (!clave) {
+            claveResponses.innerHTML = '';
             return;
         }
 
-        // Construir el contenido HTML dinámicamente
-        data.respuestasClave.forEach((fila, index) => {
-            const div = document.createElement('div');
-            div.className = 'mb-3 p-3 border rounded bg-light'; // Estilo de tarjeta
+        try {
+            const data = await fetchData({ clave });
+            displayClaveResponses(data.respuestasClave);
+        } catch (error) {
+            handleError(error, 'Ocurrió un error al buscar la clave.');
+        }
+    });
 
-            let contenidoHTML = `<h6 class="mb-2">Encuesta ${index + 1}</h6>`;
-            contenidoHTML += '<ul class="list-unstyled small">';
+    // Mostrar respuestas de la clave
+    function displayClaveResponses(respuestasClave) {
+        claveResponses.innerHTML = '';
+        if (!respuestasClave || respuestasClave.length === 0) {
+            claveResponses.innerHTML = '<p class="text-muted">No se encontraron respuestas para esta clave.</p>';
+            return;
+        }
 
-            Object.entries(fila).forEach(([key, value]) => {
-                contenidoHTML += `<li><strong>${key}:</strong> ${value}</li>`;
-            });
-
-            contenidoHTML += '</ul>';
-            div.innerHTML = contenidoHTML;
-
-            claveResponses.appendChild(div);
+        respuestasClave.forEach((fila, index) => {
+            claveResponses.appendChild(createClaveResponseCard(index + 1, fila));
         });
-    } catch (error) {
-        console.error('Error al buscar clave:', error);
-        claveResponses.innerHTML = '<p class="text-danger small">Ocurrió un error al buscar la clave. Por favor, inténtalo de nuevo.</p>';
     }
-});
 
-    // Cargar resultados iniciales
-    loadResults();
+// Crear tarjeta para mostrar respuestas de la clave
+function createClaveResponseCard(encuestaNumber, fila) {
+    const div = document.createElement('div');
+    div.className = 'mb-3 p-3 border rounded bg-light';
+
+    // Extraer el Registro de Muestra (si existe)
+    const registroMuestra = fila['Registro Muestra'] || 'No disponible';
+    delete fila['Registro Muestra']; // Eliminarlo del objeto para no mostrarlo en la tabla
+
+    // Crear el contenido HTML
+    let contenidoHTML = `<h6 class="mb-3"><strong>Registro de Muestra:</strong> ${registroMuestra}</h6>`;
+    contenidoHTML += '<table class="table table-bordered table-striped">';
+    contenidoHTML += '<thead>';
+    contenidoHTML += '<tr><th>Pregunta</th><th>Respuesta</th></tr>';
+    contenidoHTML += '</thead>';
+    contenidoHTML += '<tbody>';
+
+    // Rellenar la tabla con preguntas y respuestas
+    Object.entries(fila).forEach(([key, value]) => {
+        contenidoHTML += `<tr><td><strong>${key}</strong></td><td>${value}</td></tr>`;
+    });
+
+    contenidoHTML += '</tbody></table>';
+    div.innerHTML = contenidoHTML;
+
+    return div;
+}
+    // Manejo centralizado de errores
+    function handleError(error, message) {
+        console.error(message, error);
+        alert(message);
+    }
 });
