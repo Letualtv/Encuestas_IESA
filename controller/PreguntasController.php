@@ -316,9 +316,9 @@ private function marcarEncuestaComoFinalizada(int $reg_m): void
         }
         $fecha = date('Y-m-d H:i:s');
         // Construir la consulta SQL dinámicamente
-        $columns = ['reg_m', 'clave', 'date'];
-        $values = [':reg_m' => $reg_m, ':clave' => $clave, ':date' => $fecha];
-        $updates = ['date = VALUES(date)', 'clave = VALUES(clave)'];
+        $columns = ['reg_m', 'clave', 'date_logout'];
+        $values = [':reg_m' => $reg_m, ':clave' => $clave, ':date_logout' => $fecha];
+        $updates = ['date_logout = VALUES(date_logout)', 'clave = VALUES(clave)'];
         foreach ($_SESSION['respuestas'] as $preguntaId => $respuesta) {
             $columna = "r$preguntaId";
             $columns[] = $columna;

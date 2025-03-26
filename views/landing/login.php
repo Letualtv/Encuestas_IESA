@@ -33,7 +33,7 @@ $comenzarEncuesta = $content['comenzarEncuesta'];
             </div>
 
             <!-- Contenido oculto que se muestra cuando se marca el checkbox -->
-            <div id="contpriv" style="display: none;">
+            <div id="contpriv" >
                 <div class="mb-4 col-10 col-md-5 mx-auto text-center">
                     <p class="fw-bold ">
                         <?php echo $comenzarEncuesta[2]['answer']; ?>
@@ -54,7 +54,7 @@ $comenzarEncuesta = $content['comenzarEncuesta'];
     </form>
 </div>
 
-<script>
+<!-- <script>
     // Función para mostrar/ocultar el contenido del formulario
     function showContent() {
         var element = document.getElementById("contpriv");
@@ -65,7 +65,7 @@ $comenzarEncuesta = $content['comenzarEncuesta'];
             element.style.display = 'none';
         }
     }
-</script>
+</script> -->
 
 <?php include __DIR__ . '/../../includes/footer.php'; ?>
 

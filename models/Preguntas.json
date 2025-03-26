@@ -7,11 +7,6 @@
         "subTitulo": "Por favor, escribe tus comentarios abajo.",
         "opciones": [],
         "filtro": [],
-        "cabecera": {
-            "texto1": "afasdf",
-            "lista": "asdfaf",
-            "texto2": "asdfasf"
-        },
         "placeholder": "Escriba aqui algo"
     },
     {
@@ -35,119 +30,6 @@
             "min": 1950,
             "max": 2025,
             "placeholder": "AAAA"
-        }
-    },
-    {
-        "id": "3",
-        "n_pag": 3,
-        "tipo": "formSelect",
-        "titulo": "Pregunta de tipo radio desplegable",
-        "subTitulo": "Subtitulo predefinido",
-        "opciones": {
-            "1": {
-                "label": "Desplegable 1",
-                "subLabel": {
-                    "10": "Respuesta 1",
-                    "11": "Respuesta 2",
-                    "12": "Respuesta 3"
-                }
-            },
-            "2": {
-                "label": "Desplegable 2",
-                "subLabel": {
-                    "20": "Respuesta 4",
-                    "21": "Respuesta 5"
-                }
-            },
-            "3": {
-                "label": "Desplegable 3",
-                "subLabel": {
-                    "30": "Respuesta 6",
-                    "31": "Respuesta 7",
-                    "32": "Respuesta 8"
-                }
-            }
-        },
-        "filtro": [],
-        "cabecera": {
-            "texto1": "",
-            "lista": "",
-            "texto2": ""
-        }
-    },
-    {
-        "id": "4",
-        "n_pag": 5,
-        "tipo": "matrix2",
-        "titulo": "Radio",
-        "subTitulo": "",
-        "opciones": {
-            "4": "65",
-            "5": "516",
-            "6": "6946"
-        },
-        "filtro": [],
-        "cabecera": {
-            "texto1": "",
-            "lista": "",
-            "texto2": ""
-        }
-    },
-    {
-        "id": "5",
-        "n_pag": 5,
-        "tipo": "numberInput",
-        "titulo": "Entrada num\u00e9rica",
-        "subTitulo": "Hola",
-        "opciones": {
-            "1": "Valor",
-            "2": "Valor2",
-            "3": "Valor3"
-        },
-        "filtro": [],
-        "cabecera": {
-            "texto1": "",
-            "lista": "",
-            "texto2": ""
-        },
-        "valores": {
-            "min": 2000,
-            "max": 2050,
-            "placeholder": "AAAA"
-        }
-    },
-    {
-        "id": "6",
-        "n_pag": 6,
-        "tipo": "checkbox",
-        "titulo": "asdf",
-        "subTitulo": "",
-        "opciones": {
-            "1": "16165"
-        },
-        "filtro": [],
-        "cabecera": {
-            "texto1": "",
-            "lista": "",
-            "texto2": ""
-        }
-    },
-    {
-        "id": "10",
-        "n_pag": 5,
-        "tipo": "matrix2",
-        "titulo": "Radio",
-        "subTitulo": "",
-        "opciones": {
-            "4": "65",
-            "5": "516",
-            "6": "6946"
-        },
-        "filtro": {},
-        "cabecera": {
-            "texto1": "",
-            "lista": "",
-            "texto2": ""
         }
     }
 ]
