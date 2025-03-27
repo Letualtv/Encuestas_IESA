@@ -46,147 +46,298 @@ function cargarClaves(page = 1, limit = pageSize, orderBy = "IDGrupo", orderDir 
         });
 }
 
-// Función para mostrar mensajes toast
-function showToast(message, type = "info") {
-    const toastContainer = document.getElementById("toastContainer");
 
-    if (!toastContainer) {
-        console.error("El contenedor de toasts no existe en el DOM.");
-        return;
+document.addEventListener("DOMContentLoaded", () => {
+    const deleteAllRowsButton = document.getElementById("deleteAllRowsButton");
+
+    if (deleteAllRowsButton) {
+        deleteAllRowsButton.addEventListener("click", () => {
+            showModal(
+                "Eliminar TODAS las filas",
+                `<div class="text-danger d-flex align-items-center">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>¡ADVERTENCIA!</strong>
+                </div>
+                <p class="mt-2">¿Estás seguro de eliminar <b>todas las filas</b>?</p>
+                <p class="mt-2">Esta acción no se puede deshacer.</p>`,
+                () => {
+                    // Segunda confirmación: Última advertencia
+                    showModal(
+                        "Confirmación Final",
+                        `<div class="text-danger d-flex align-items-center">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>¡ADVERTENCIA FINAL!</strong>
+                        </div>
+                        <p class="mt-2">¿Estás completamente seguro de eliminar <b>todas las filas</b>?</p>`,
+                        async () => {
+                            try {
+                                // Deshabilitar el botón mientras se elimina
+                                deleteAllRowsButton.disabled = true;
+                                deleteAllRowsButton.textContent = "Eliminando...";
+
+                                // Enviar solicitud al backend
+                                const response = await fetch("includesCP/poblacionDB.php?action=eliminarClavesSeleccionadas", {
+                                    method: "DELETE",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ ids: "all" }),
+                                });
+
+                                if (!response.ok) {
+                                    throw new Error(`Error en la solicitud: ${response.status}`);
+                                }
+
+                                const data = await response.json();
+
+                                if (data.success) {
+                                    showToast("TODAS las claves han sido eliminadas correctamente.", "success");
+                                    setTimeout(() => {
+                                        window.location.reload();
+                                    }, 1000); // Espera 1 segundo antes de recargar
+                                } else {
+                                    showToast(data.message || "Error al eliminar las claves.", "danger");
+                                }
+                            } catch (error) {
+                                console.error("Error al eliminar las claves:", error);
+                                showToast("Ocurrió un error al intentar eliminar las claves.", "danger");
+                            } finally {
+                                // Restaurar el estado del botón
+                                deleteAllRowsButton.disabled = false;
+                                deleteAllRowsButton.textContent = "Eliminar TODAS las filas";
+                            }
+                        }
+                    );
+                }
+            );
+        });
     }
+});
 
-    const toast = document.createElement("div");
-    toast.className = `toast align-items-center text-white bg-${type} border-0`;
-    toast.setAttribute("role", "alert");
-    toast.setAttribute("aria-live", "assertive");
-    toast.setAttribute("aria-atomic", "true");
-
-    toast.innerHTML = `
-        <div class="d-flex">
-            <div class="toast-body">${message}</div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+// Función para mostrar modales de confirmación
+function showModal(title, message, onConfirm) {
+    const modal = document.createElement("div");
+    modal.className = "modal fade";
+    modal.innerHTML = `
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">${title}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">${message}</div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="confirmButton">Confirmar</button>
+                </div>
+            </div>
         </div>
     `;
 
-    toastContainer.appendChild(toast);
+    document.body.appendChild(modal);
 
-    const bsToast = new bootstrap.Toast(toast, { delay: 3000 });
-    bsToast.show();
+    const bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
 
-    setTimeout(() => {
-        toast.remove();
-    }, 3500);
+    const confirmButton = modal.querySelector("#confirmButton");
+    confirmButton.addEventListener("click", () => {
+        onConfirm();
+        bsModal.hide();
+        modal.remove();
+    });
+
+    modal.addEventListener("hidden.bs.modal", () => {
+        modal.remove();
+    });
 }
-// Generar claves específicas
-document.getElementById("customKeyForm").addEventListener("submit", function (event) {
-  event.preventDefault(); // Evitar el envío del formulario por defecto
 
-  const customKeyIdInput = document.getElementById("customKeyId");
-  const customKeyInput = document.getElementById("customKey");
 
-  const idBase = customKeyIdInput.value.trim();
-  const clave = customKeyInput.value.trim();
 
-  // Validar que la clave tenga exactamente 5 caracteres alfanuméricos
-  if (!/^[a-zA-Z0-9]{5}$/.test(clave)) {
-      showToast("La clave debe tener exactamente 5 caracteres alfanuméricos.", "warning");
-      return;
-  }
 
-  // Validar que el ID base sea un número positivo
-  if (idBase && !/^\d+$/.test(idBase)) {
-      showToast("El ID Base debe ser un número positivo.", "warning");
-      return;
-  }
-
-  // Enviar la solicitud al backend
-  fetch("includesCP/poblacionDB.php?action=agregarClave", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ clave, idBase }), // Enviar clave e ID base
-  })
-      .then((response) => {
-          if (!response.ok) throw new Error(`Error en la solicitud: ${response.status}`);
-          return response.json();
-      })
-      .then((data) => {
-          if (data.success) {
-              showToast("Clave agregada correctamente.", "success");
-              cargarClaves(currentPage); // Recargar la lista de claves
-              customKeyIdInput.value = ""; // Limpiar el campo de ID base
-              customKeyInput.value = ""; // Limpiar el campo de clave
-          } else {
-              showToast(data.message || "Error al agregar la clave.", "danger");
-          }
-      })
-      .catch((error) => {
-          console.error("Error al agregar la clave:", error);
-          showToast("Ocurrió un error al intentar agregar la clave.", "danger");
-      });
-});
-// Generar claves aleatorias
+// Generar claves
 document.addEventListener("DOMContentLoaded", () => {
     const randomKeyForm = document.getElementById("randomKeyForm");
-    if (!randomKeyForm) {
-        console.error("El formulario de generación de claves aleatorias no está presente en el DOM.");
-        return;
-    }
+    const customKeyForm = document.getElementById("customKeyForm");
 
-    randomKeyForm.addEventListener("submit", async function (event) {
-        event.preventDefault(); // Evitar el envío del formulario por defecto
+    // Elementos relacionados con el ID Base
+    const idBaseInput = document.getElementById("idBase");
+    const useCustomIdGroupCheckbox = document.getElementById("useCustomIdGroupCheckbox");
 
-        const idBaseInput = document.getElementById("idBase");
-        const randomKeyCountInput = document.getElementById("randomKeyCount");
+    // Establecer el valor predeterminado del campo ID Base
+    idBaseInput.value = "1"; // Valor predeterminado
+    idBaseInput.style.display = "none"; // Ocultar el campo por defecto
 
-        const idBase = idBaseInput.value.trim();
-        const cantidadClaves = parseInt(randomKeyCountInput.value.trim(), 10);
-
-        // Validar que el ID Base sea un número positivo
-        if (!/^\d+$/.test(idBase) || parseInt(idBase, 10) <= 0) {
-            showToast("El ID Base debe ser un número positivo.", "warning");
-            return;
-        }
-
-        // Validar que la cantidad de claves sea válida
-        if (isNaN(cantidadClaves) || cantidadClaves <= 0 || cantidadClaves > 10000) {
-            showToast("La cantidad de claves debe estar entre 1 y 10,000.", "warning");
-            return;
-        }
-
-        // Deshabilitar el botón mientras se genera
-        const generateKeysButton = randomKeyForm.querySelector("button[type='submit']");
-        generateKeysButton.disabled = true;
-        generateKeysButton.textContent = "Generando...";
-
-        try {
-            // Enviar la solicitud al backend
-            const response = await fetch("includesCP/poblacionDB.php?action=generarClavesAleatorias", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ cantidad: cantidadClaves, idBase }),
-            });
-
-            if (!response.ok) {
-                throw new Error(`Error en la solicitud: ${response.status}`);
-            }
-
-            const data = await response.json();
-
-            if (data.success) {
-                showToast(data.message, "success");
-                cargarClaves(currentPage); // Recargar la lista de claves
-            } else {
-                showToast(data.message || "Error al generar las claves.", "danger");
-            }
-        } catch (error) {
-            console.error("Error al generar las claves:", error);
-            showToast("Ocurrió un error al intentar generar las claves.", "danger");
-        } finally {
-            // Restaurar el estado del botón
-            generateKeysButton.disabled = false;
-            generateKeysButton.textContent = "Generar claves";
+    // Mostrar/ocultar el campo de ID Base según el estado del checkbox
+    useCustomIdGroupCheckbox.addEventListener("change", function () {
+        if (this.checked) {
+            idBaseInput.style.display = "block";
+        } else {
+            idBaseInput.style.display = "none";
+            idBaseInput.value = "1"; // Restablecer al valor predeterminado
         }
     });
+
+    if (randomKeyForm) {
+        randomKeyForm.addEventListener("submit", async function (event) {
+            event.preventDefault(); // Evitar el envío del formulario por defecto
+
+            const randomKeyCountInput = document.getElementById("randomKeyCount");
+
+            let idBase = parseInt(idBaseInput.value.trim(), 10) || 1; // Valor predeterminado: 1
+            const cantidadClaves = parseInt(randomKeyCountInput.value.trim(), 10);
+
+            // Validar que el ID Base sea un número positivo
+            if (isNaN(idBase) || idBase <= 0) {
+                showToast("El ID Base debe ser un número positivo.", "warning");
+                return;
+            }
+
+            // Validar que la cantidad de claves sea válida
+            if (isNaN(cantidadClaves) || cantidadClaves <= 0 || cantidadClaves > 10000) {
+                showToast("La cantidad de claves debe estar entre 1 y 10,000.", "warning");
+                return;
+            }
+
+            // Mostrar el primer modal de confirmación
+            showModal(
+                "Confirmación",
+                `¿Estás seguro de generar ${cantidadClaves} claves aleatorias?`,
+                async () => {
+                    // Si la cantidad es mayor a 1000, mostrar el segundo modal de confirmación
+                    if (cantidadClaves > 1000) {
+                        showModal(
+                            "Confirmación Final",
+                            `<p class="text-danger fw-bold">¡ADVERTENCIA!</p> <p>Vas a <b>generar ${cantidadClaves} claves</b>. ¿Estás completamente seguro?</p>`,
+                            async () => {
+                                // Deshabilitar el botón mientras se genera
+                                const generateKeysButton = randomKeyForm.querySelector("button[type='submit']");
+                                generateKeysButton.disabled = true;
+                                generateKeysButton.textContent = "Generando...";
+
+                                try {
+                                    // Enviar la solicitud al backend
+                                    const response = await fetch("includesCP/poblacionDB.php?action=generarClavesAleatorias", {
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify({ cantidad: cantidadClaves, idBase }),
+                                    });
+
+                                    if (!response.ok) {
+                                        throw new Error(`Error en la solicitud: ${response.status}`);
+                                    }
+
+                                    const data = await response.json();
+
+                                    if (data.success) {
+                                        showToast(data.message, "success");
+                                        cargarClaves(currentPage); // Recargar la lista de claves
+                                    } else {
+                                        showToast(data.message || "Error al generar las claves.", "danger");
+                                    }
+                                } catch (error) {
+                                    console.error("Error al generar las claves:", error);
+                                    showToast("Ocurrió un error al intentar generar las claves.", "danger");
+                                } finally {
+                                    // Restaurar el estado del botón
+                                    generateKeysButton.disabled = false;
+                                    generateKeysButton.textContent = "Generar claves";
+                                }
+                            },
+                            null,
+                            "Aceptar",
+                            "Cancelar"
+                        );
+                    } else {
+                        // Si la cantidad es menor o igual a 1000, proceder directamente
+                        const generateKeysButton = randomKeyForm.querySelector("button[type='submit']");
+                        generateKeysButton.disabled = true;
+                        generateKeysButton.textContent = "Generando...";
+
+                        try {
+                            // Enviar la solicitud al backend
+                            const response = await fetch("includesCP/poblacionDB.php?action=generarClavesAleatorias", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ cantidad: cantidadClaves, idBase }),
+                            });
+
+                            if (!response.ok) {
+                                throw new Error(`Error en la solicitud: ${response.status}`);
+                            }
+
+                            const data = await response.json();
+
+                            if (data.success) {
+                                showToast(data.message, "success");
+                                cargarClaves(currentPage); // Recargar la lista de claves
+                            } else {
+                                showToast(data.message || "Error al generar las claves.", "danger");
+                            }
+                        } catch (error) {
+                            console.error("Error al generar las claves:", error);
+                            showToast("Ocurrió un error al intentar generar las claves.", "danger");
+                        } finally {
+                            // Restaurar el estado del botón
+                            generateKeysButton.disabled = false;
+                            generateKeysButton.textContent = "Generar claves";
+                        }
+                    }
+                },
+                null,
+                "Aceptar",
+                "Cancelar"
+            );
+        });
+    }
+
+    if (customKeyForm) {
+        customKeyForm.addEventListener("submit", async function (event) {
+            event.preventDefault(); // Evitar el envío del formulario por defecto
+
+            const customKeyIdInput = document.getElementById("customKeyId");
+            const customKeyInput = document.getElementById("customKey");
+
+            let idBase = parseInt(customKeyIdInput.value.trim(), 10) || 1; // Valor predeterminado: 1
+            const clave = customKeyInput.value.trim();
+
+            // Validar que la clave tenga exactamente 5 caracteres alfanuméricos
+            if (!/^[a-zA-Z0-9]{5}$/.test(clave)) {
+                showToast("La clave debe tener exactamente 5 caracteres alfanuméricos.", "warning");
+                return;
+            }
+
+            // Validar que el ID base sea un número positivo
+            if (isNaN(idBase) || idBase <= 0) {
+                showToast("El ID Base debe ser un número positivo.", "warning");
+                return;
+            }
+
+            // Enviar la solicitud al backend
+            try {
+                const response = await fetch("includesCP/poblacionDB.php?action=agregarClave", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ clave, idBase }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error en la solicitud: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showToast("Clave agregada correctamente.", "success");
+                    cargarClaves(currentPage); // Recargar la lista de claves
+                    customKeyIdInput.value = ""; // Limpiar el campo de ID base
+                    customKeyInput.value = ""; // Limpiar el campo de clave
+                } else {
+                    showToast(data.message || "Error al agregar la clave.", "danger");
+                }
+            } catch (error) {
+                console.error("Error al agregar la clave:", error);
+                showToast("Ocurrió un error al intentar agregar la clave.", "danger");
+            }
+        });
+    }
 
     // Cargar las claves iniciales
     cargarClaves();

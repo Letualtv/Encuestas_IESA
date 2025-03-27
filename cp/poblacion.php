@@ -55,32 +55,36 @@
                 <hr>
 
 
-               <!-- Formulario para agregar clave personalizada -->
-<form id="customKeyForm" class="mb-4">
-    <h6 class="mb-2">Agregar clave personalizada</h6>
-    <div class="mb-3 input-group">
-        <input type="number" class="form-control " id="customKeyId" min="1" placeholder="ID Grupo">
-        <input type="text" class="form-control w-50" id="customKey" maxlength="5" required placeholder="Clave (5 caracteres alfanuméricos)">
-    </div>
+                <!-- Formulario para agregar una clave específica -->
+                <form id="customKeyForm" class="mb-4">
+                    <h6 class="mb-2">Agregar clave específica</h6>
+                    <div class="mb-3 input-group">
+                        <input type="number" class="form-control" id="customKeyId" min="1" value="1" placeholder="ID Grupo">
+                        <input type="text" class="form-control w-50" id="customKey" maxlength="5" placeholder="Clave (5 caracteres)" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-plus me-2"></i>Agregar clave
+                    </button>
+                </form>
 
-    <!-- Campo para el ID base (opcional) -->
-    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus me-2"></i>Agregar clave</button>
-</form>
+                <hr>
 
-<hr>
-
-<!-- Formulario para generar claves aleatorias -->
-<form id="randomKeyForm" class="mb-4">
-    <h6 class="mb-2">Generar claves aleatorias</h6>
-    <div class="mb-3 input-group">
-        <input type="number" class="form-control" id="idBase" min="1" placeholder="ID Base" required>
-        <input type="number" class="form-control w-50" id="randomKeyCount" min="1" max="10000" required placeholder="Cantidad de claves">
-    </div>
-    <button type="submit" class="btn btn-primary">
-        <i class="fa-solid fa-random me-2"></i>Generar claves
-    </button>
-</form>
-<hr>
+                <!-- Formulario para generar claves aleatorias -->
+                <form id="randomKeyForm" class="mb-4">
+                    <h6 class="mb-2">Generar claves aleatorias</h6>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="useCustomIdGroupCheckbox">
+                        <label class="form-check-label" for="useCustomIdGroupCheckbox">Usar un ID de grupo personalizado</label>
+                    </div>
+                    <div class="mb-3 input-group">
+                        <input type="number" class="form-control" id="idBase" min="1" placeholder="ID de grupo" style="display: none;">
+                        <input type="number" class="form-control w-50" id="randomKeyCount" min="1" max="10000" required placeholder="Cantidad de claves">
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-random me-2"></i>Generar claves
+                    </button>
+                </form>
+                <hr>
 
                 <!-- Mensaje para usuarios no administradores -->
                 <div id="mensajeNoAdmin" class="card mt-4 border border-warning p-4 d-none">
@@ -162,4 +166,3 @@
 
 <script src="js/utils.js"></script>
 <script src="js/clavesPoblacion.js"></script>
-
