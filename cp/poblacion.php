@@ -137,31 +137,6 @@
 </section>
 
 
-<!-- Modal Genérico -->
-<div class="modal fade" id="customModal" tabindex="-1" aria-labelledby="customModalLabel">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header" id="customModalHeader">
-                <h5 class="modal-title" id="customModalTitle">Modal Title</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" id="customModalBody">
-                <!-- Contenido dinámico -->
-                <p id="modalMessage">Generando claves aleatorias...</p>
-                <!-- Spinner -->
-                <div class="text-center" id="loadingSpinner" style="display: none;">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Cargando...</span>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="customModalCancelButton">Cancelar</button>
-                <button type="button" class="btn btn-primary" id="customModalConfirmButton">Confirmar</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 
 <script src="js/utils.js"></script>

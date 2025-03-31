@@ -16,22 +16,62 @@ switch ($action) {
         agregarClave($pdo);
         break;
 
-    case 'eliminarClavesSeleccionadas':
+    case 'eliminarTodasLasClaves':
         eliminarTodasLasClaves($pdo);
         break;
 
     case 'editarTodasLasClaves':
         editarTodasLasClaves($pdo);
         break;
+    case 'eliminarClavesSeleccionadas':
+        eliminarClavesSeleccionadas($pdo);
+        break;
 
     case 'generarClavesAleatorias':
         generarClavesAleatorias($pdo);
+        break;
+    case 'marcarClavesSeleccionadas':
+        marcarClavesSeleccionadas($pdo);
         break;
 
     default:
         echo json_encode(["success" => false, "message" => "Acción no válida."]);
         break;
 }
+
+
+
+
+
+    // Función para marcar claves seleccionadas como terminadas o no terminadas
+    function marcarClavesSeleccionadas($pdo)
+    {
+        $data = json_decode(file_get_contents('php://input'), true);
+        $claves = $data['ids'] ?? [];
+        $terminada = intval($data['terminada'] ?? null);
+
+        if (empty($claves)) {
+            echo json_encode(["success" => false, "message" => "No se proporcionaron claves para modificar."]);
+            return;
+        }
+
+        if (!in_array($terminada, [0, 1])) {
+            echo json_encode(["success" => false, "message" => "Estado inválido."]);
+            return;
+        }
+
+        try {
+            $placeholders = implode(',', array_fill(0, count($claves), '?'));
+            $sqlUpdate = "UPDATE muestra SET terminada = ? WHERE clave IN ($placeholders)";
+            $stmtUpdate = $pdo->prepare($sqlUpdate);
+            $stmtUpdate->execute(array_merge([$terminada], $claves));
+
+            echo json_encode(["success" => true, "message" => "Las claves seleccionadas han sido actualizadas correctamente."]);
+        } catch (PDOException $e) {
+            echo json_encode(["success" => false, "message" => "Error al modificar las claves seleccionadas: " . $e->getMessage()]);
+        }
+    }
+
 
 // Función para obtener claves
 function obtenerClaves($pdo)
@@ -42,7 +82,11 @@ function obtenerClaves($pdo)
     $orderDir = ($_GET['orderDir'] ?? 'asc') === 'asc' ? 'ASC' : 'DESC';
 
     try {
-        $sql = "SELECT IDGrupo, clave FROM claves ORDER BY $orderBy $orderDir LIMIT :limit OFFSET :offset";
+        $sql = "SELECT claves.IDGrupo, claves.clave, muestra.terminada, muestra.n_login 
+            FROM claves 
+            LEFT JOIN muestra ON claves.clave = muestra.clave 
+            ORDER BY $orderBy $orderDir 
+            LIMIT :limit OFFSET :offset";
         $stmt = $pdo->prepare($sql);
         $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
         $stmt->bindValue(':offset', ($page - 1) * $limit, PDO::PARAM_INT);
@@ -55,6 +99,43 @@ function obtenerClaves($pdo)
     }
 }
 
+// Función para eliminar claves seleccionadas
+function eliminarClavesSeleccionadas($pdo)
+{
+    $data = json_decode(file_get_contents('php://input'), true);
+    $claves = $data['ids'] ?? [];
+
+    if (empty($claves)) {
+        echo json_encode(["success" => false, "message" => "No se proporcionaron claves para eliminar."]);
+        return;
+    }
+
+    try {
+        $pdo->beginTransaction();
+
+        // Paso 1: Eliminar registros relacionados en la tabla cuestionario
+        $placeholders = implode(',', array_fill(0, count($claves), '?'));
+        $sqlDeleteCuestionario = "DELETE FROM cuestionario WHERE clave IN ($placeholders)";
+        $stmtDeleteCuestionario = $pdo->prepare($sqlDeleteCuestionario);
+        $stmtDeleteCuestionario->execute($claves);
+
+        // Paso 2: Eliminar registros relacionados en la tabla muestra
+        $sqlDeleteMuestra = "DELETE FROM muestra WHERE clave IN ($placeholders)";
+        $stmtDeleteMuestra = $pdo->prepare($sqlDeleteMuestra);
+        $stmtDeleteMuestra->execute($claves);
+
+        // Paso 3: Eliminar las claves seleccionadas de la tabla claves
+        $sqlDeleteClaves = "DELETE FROM claves WHERE clave IN ($placeholders)";
+        $stmtDeleteClaves = $pdo->prepare($sqlDeleteClaves);
+        $stmtDeleteClaves->execute($claves);
+
+        $pdo->commit();
+        echo json_encode(["success" => true, "message" => "Las claves seleccionadas han sido eliminadas correctamente."]);
+    } catch (PDOException $e) {
+        $pdo->rollBack();
+        echo json_encode(["success" => false, "message" => "Error al eliminar las claves seleccionadas: " . $e->getMessage()]);
+    }
+}
 // Función para agregar una clave
 function agregarClave($pdo)
 {
@@ -198,7 +279,7 @@ function generarClavesAleatorias($pdo)
 
             while ($attempts < $maxAttempts) {
                 // Generar una clave aleatoria de 5 caracteres alfanuméricos
-                $clave = substr(str_shuffle("abcdefghjklmnpqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789"), 0, 5);
+                $clave = substr(str_shuffle("abcdefghjklmnpqrstuvwxyz"), 0, 5);
 
                 // Verificar si la clave ya existe
                 $sqlCheck = "SELECT COUNT(*) FROM claves WHERE clave = ?";
