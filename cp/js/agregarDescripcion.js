@@ -28,29 +28,23 @@ function recopilarDescripcion() {
   }
 
   // Validar que los campos de descripción existan
-  const texto1Input = document.querySelector("#descripcionRule .texto1");
-  const listaInput = document.querySelector("#descripcionRule .lista");
-  const texto2Input = document.querySelector("#descripcionRule .texto2");
+  const textoInput = document.querySelector("#descripcionRule ");
 
-  if (!texto1Input || !listaInput || !texto2Input) {
+  if (!textoInput) {
     console.error("Error: Alguno de los campos de descripción no existe.");
     return null;
   }
 
   // Recopilar los valores de los campos
-  const texto1 = texto1Input.value.trim() || "";
-  const lista = listaInput.value.trim() || "";
-  const texto2 = texto2Input.value.trim() || "";
+  const texto = textoInput.value.trim() || "";
 
   // Validar que al menos un campo tenga contenido
-  if (!texto1 && !lista && !texto2) {
+  if (!texto) {
     return null; // No hay descripción válida
   }
 
   // Devolver la descripción en el formato deseado
   return {
-    texto1: texto1,
-    lista: lista, // Guardar la lista tal como está (sin convertirla a HTML)
-    texto2: texto2,
+    texto: texto,
   };
 }

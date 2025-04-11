@@ -1,6 +1,6 @@
 <?php
 session_start();
-include_once __DIR__ . '/../config/db.php';
+include_once 'config/db.php';
 
 class PreguntasController
 {
@@ -85,8 +85,8 @@ private function marcarEncuestaComoFinalizada(int $reg_m): void
    public function obtenerPreguntas(): array
 {
     // Ruta al archivo de preguntas
-    $archivo = __DIR__ . '/../models/Preguntas.json';
 
+    $archivo = __DIR__ . '/../models/Preguntas.json';
     // Verificar si el archivo existe
     if (!file_exists($archivo)) {
         error_log("El archivo de preguntas no existe.");
@@ -112,6 +112,8 @@ private function marcarEncuestaComoFinalizada(int $reg_m): void
     foreach ($variables as $key => $value) {
         $json = str_replace('$' . $key, $value, $json);
     }
+
+
 
     // Decodificar el JSON a un array asociativo
     $preguntas = json_decode($json, true);

@@ -1,6 +1,11 @@
 <?php
 session_start(); // Asegúrate de iniciar la sesión
 
+if (isset($_GET['id'])) {
+    $preguntaId = $_GET['id'];
+    // Aquí puedes cargar los datos de la pregunta desde la base de datos usando $preguntaId
+}
+
 if (isset($pregunta['opciones']) && is_array($pregunta['opciones'])) {
     $opciones = $pregunta['opciones'];
     $questionId = $pregunta['id'];

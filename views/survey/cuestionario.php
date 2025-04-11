@@ -11,6 +11,8 @@ session_start();
 $_SESSION['user_id'] = $user_id; // Guardar el ID del usuario en la sesión
 $_SESSION['LAST_ACTIVITY'] = time(); // Inicializar la hora de la última actividad
 
+
+
 // Configurar la cookie de sesión
 setcookie('reg_m', session_id(), time() + 1800, '/'); 
 
@@ -22,7 +24,6 @@ if (!isset($_SESSION['reg_m'])) {
 }
 include __DIR__ . '/../../controller/PreguntasController.php';
 include_once  __DIR__ . '/../../config/db.php';
-$variables = include_once  __DIR__ . '/../../models/variables.php';
 
 
 // Recupera las respuestas del controlador
@@ -57,5 +58,7 @@ if ($resultado['error']) {
     <div class="mt-auto">
     <?php include __DIR__ . '/../../includes/footerPregunta.php'; ?>
 </div>
+
+
 </body>
 </html>

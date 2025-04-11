@@ -1,5 +1,10 @@
-
 <?php
+if (isset($_GET['id'])) {
+    $preguntaId = $_GET['id'];
+    // Aquí puedes cargar los datos de la pregunta desde la base de datos o un array
+    // Por ejemplo: $pregunta = obtenerPreguntaPorId($preguntaId);
+}
+
 if (isset($pregunta['opciones']) && is_array($pregunta['opciones'])) {
     foreach ($pregunta['opciones'] as $clave => $opcion) {
         $checked = '';  // Inicializa la variable para verificar si la opción debe estar marcada

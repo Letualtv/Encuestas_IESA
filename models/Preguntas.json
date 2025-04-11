@@ -2,34 +2,29 @@
     {
         "id": "1",
         "n_pag": 1,
-        "tipo": "cajaTexto",
-        "titulo": "\u00bfQu\u00e9 opinas sobre este servicio?",
-        "subTitulo": "Por favor, escribe tus comentarios abajo.",
-        "opciones": [],
-        "filtro": [],
-        "placeholder": "Escriba aqui algo"
-    },
-    {
-        "id": "2",
-        "n_pag": 2,
-        "tipo": "numberInput",
-        "titulo": "Pregunta de tipo entrada num\u00e9rica",
-        "subTitulo": "Un subt\u00edtulo predefinido",
+        "tipo": "checkbox",
+        "titulo": "asdfasdf",
+        "subTitulo": "",
         "opciones": {
-            "1": "\u00bfEn que a\u00f1o...?",
-            "88": "No sabe",
-            "99": "No contesta"
+            "1": "asdf"
         },
         "filtro": [],
         "cabecera": {
-            "texto1": "",
-            "lista": "",
-            "texto2": ""
+            "texto": "<p><strong>HOla que tal  me llamo pepito<\/strong><\/p>"
+        }
+    },
+    {
+        "id": "2",
+        "n_pag": 1,
+        "tipo": "checkbox",
+        "titulo": "asdf",
+        "subTitulo": "",
+        "opciones": {
+            "1": "asdf <b>hola <b>"
         },
-        "valores": {
-            "min": 1950,
-            "max": 2025,
-            "placeholder": "AAAA"
+        "filtro": {},
+        "cabecera": {
+            "texto": "<ol><li data-list=\"ordered\"><span class=\"ql-ui\" contenteditable=\"false\"><\/span><br><\/li><li data-list=\"ordered\"><span class=\"ql-ui\" contenteditable=\"false\"><\/span><strong>fasdf<\/strong><\/li><\/ol>"
         }
     }
 ]

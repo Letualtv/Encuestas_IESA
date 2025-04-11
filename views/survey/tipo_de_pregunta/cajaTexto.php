@@ -1,4 +1,10 @@
 <?php
+if (isset($_GET['id'])) {
+    $preguntaId = $_GET['id'];
+    // Aquí puedes cargar los datos de la pregunta desde la base de datos o un array
+    // Por ejemplo: $pregunta = obtenerPreguntaPorId($preguntaId);
+}
+
 // Verifica si los datos básicos están presentes
 if (isset($pregunta['id'])) {
     // Obtiene el valor guardado previamente para esta pregunta, si existe

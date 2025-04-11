@@ -11,14 +11,8 @@
     <div class="card-body p-4">
     <?php if (isset($pregunta['cabecera'])): ?>
     <div class="pb-2">
-        <?php if (isset($pregunta['cabecera']['texto1'])): ?>
-            <p><?= $pregunta['cabecera']['texto1'] ?></p>
-        <?php endif; ?>
-        <?php if (isset($pregunta['cabecera']['lista'])): ?>
-            <p><?= $pregunta['cabecera']['lista'] ?></p>
-        <?php endif; ?>
-        <?php if (isset($pregunta['cabecera']['texto2'])): ?>
-            <p><?= $pregunta['cabecera']['texto2'] ?></p>
+        <?php if (isset($pregunta['cabecera']['texto'])): ?>
+            <p><?= $pregunta['cabecera']['texto'] ?></p>
         <?php endif; ?>
     </div>
 <?php endif; ?>
@@ -89,3 +83,4 @@ if (isset($pregunta['encabezado'])) {
         </div>
     </div>
 </div>
+

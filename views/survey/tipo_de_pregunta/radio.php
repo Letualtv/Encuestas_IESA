@@ -1,3 +1,10 @@
+<?php
+if (isset($_GET['id'])) {
+    $preguntaId = $_GET['id'];
+    // Aquí puedes cargar los datos de la pregunta desde la base de datos o un array
+    // Por ejemplo: $pregunta = obtenerPreguntaPorId($preguntaId);
+}
+?>
 
 <?php if (isset($pregunta['opciones']) && is_array($pregunta['opciones'])): ?>
     <?php foreach ($pregunta['opciones'] as $clave => $opcion): ?>

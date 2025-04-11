@@ -18,9 +18,9 @@
                 }
             }
 
-            // Asumimos que las keys siempre existen y están definidas.
-            $keyUno = array_key_first($encabezado['uno']);
-            $keyDos = array_key_first($encabezado['dos']);
+            // Asumimos que las keys siempre existen y están definidas, si no, usamos valores por defecto.
+            $keyUno = isset($encabezado['uno']) ? array_key_first($encabezado['uno']) : 1;
+            $keyDos = isset($encabezado['dos']) ? array_key_first($encabezado['dos']) : 7;
 
             mostrarElemento2($keyUno, $encabezado['uno'][$keyUno], 'text-wrap col-lg-5 ps-lg-3'); // Alineación a la izquierda para el key uno
             if (!empty($encabezado['uno'][$keyUno]) && !empty($encabezado['dos'][$keyDos])) {
@@ -37,3 +37,22 @@
         <?php endif; ?>
     </div>
 </div>
+
+<script>
+function cargarVistaPregunta(preguntaId, tipoPregunta) {
+    const contenedor = document.getElementById('contenedor-demo');
+    contenedor.innerHTML = 'Cargando...';
+
+    fetch(`tipo_de_pregunta/${tipoPregunta}.php?id=${preguntaId}`)
+        .then(response => response.text())
+        .then(html => {
+            contenedor.innerHTML = html;
+        })
+        .catch(error => {
+            console.error('Error al cargar la vista:', error);
+            contenedor.innerHTML = 'Error al cargar la vista.';
+        });
+}
+</script>
+
+<div id="contenedor-demo" class="mt-4"></div>

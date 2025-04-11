@@ -21,9 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Procesar cabecera
         $cabecera = [
-            'texto1' => $descripcion && isset($descripcion['texto1']) && !empty($descripcion['texto1']) ? $descripcion['texto1'] : '',
-            'lista' => $descripcion && isset($descripcion['lista']) && !empty($descripcion['lista']) ? $descripcion['lista'] : '',
-            'texto2' => $descripcion && isset($descripcion['texto2']) && !empty($descripcion['texto2']) ? $descripcion['texto2'] : '',
+            'texto' => $descripcion && isset($descripcion['texto']) && !empty($descripcion['texto']) ? $descripcion['texto'] : '',
         ];
 
         // Procesar encabezado para matrix2 y matrix3

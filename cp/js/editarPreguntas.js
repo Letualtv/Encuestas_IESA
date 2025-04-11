@@ -23,7 +23,6 @@ function ajustarFormulario() {
   const numberInputFields = document.getElementById("numberInputFields");
   numberInputFields.style.display = tipo === "numberInput" ? "block" : "none";
 
-  
   // Ajustar campos de encabezado para "matrix2" y "matrix3"
   const encabezadoFields = document.getElementById("encabezadoFields");
   encabezadoFields.style.display = ["matrix2", "matrix3"].includes(tipo)
@@ -130,9 +129,9 @@ function editarPregunta(id) {
         });
       }
       // Rellenar valores específicos para "cajaTexto"
-else if (pregunta.tipo === "cajaTexto") {
-  document.getElementById("placeholder").value = pregunta.placeholder || "";
-
+      else if (pregunta.tipo === "cajaTexto") {
+        document.getElementById("placeholder").value =
+          pregunta.placeholder || "";
       } else if (pregunta.tipo === "matrix1") {
         const opciones = pregunta.opciones || {};
         Object.keys(opciones).forEach((clave) => {
@@ -182,30 +181,43 @@ else if (pregunta.tipo === "cajaTexto") {
       );
 
       if (descripcion) {
-        const texto1Vacio =
-          !descripcion.texto1 || descripcion.texto1.trim() === "";
-        const listaVacia =
-          !descripcion.lista || descripcion.lista.trim() === "";
-        const texto2Vacio =
-          !descripcion.texto2 || descripcion.texto2.trim() === "";
+        const textoVacio =
+          !descripcion.texto || descripcion.texto.trim() === "";
 
-        if (texto1Vacio && listaVacia && texto2Vacio) {
+        if (textoVacio) {
           mostrarDescripcionCheckbox.checked = false;
           descripcionContainer.style.display = "none";
         } else {
           mostrarDescripcionCheckbox.checked = true;
           descripcionContainer.style.display = "block";
-          document.querySelector("#descripcionRule .texto1").value =
-            descripcion.texto1 || "";
-          document.querySelector("#descripcionRule .lista").value =
-            descripcion.lista || "";
-          document.querySelector("#descripcionRule .texto2").value =
-            descripcion.texto2 || "";
-        }
-      } else {
-        mostrarDescripcionCheckbox.checked = false;
-        descripcionContainer.style.display = "none";
-      }
+
+            // Usar directamente el contenedor existente en el HTML
+            const descripcionRuleDiv = document.getElementById("descripcionRule");
+
+            // Reutilizar la instancia de Quill ya inicializada si existe
+            if (quillDescripcion) {
+            quillDescripcion.root.innerHTML = descripcion.texto || "";
+            } else {
+            // Inicializar Quill en el contenedor existente si no está inicializado
+            quillDescripcion = new Quill(descripcionRuleDiv, {
+              theme: "bubble",
+              placeholder: "Escribe la descripción aquí...",
+              modules: {
+              toolbar: [
+                ["bold", "italic", "underline"], // Botones básicos
+                ["link"], // Añadir enlaces
+                [{ list: "ordered" }, { list: "bullet" }], // Listas ordenadas y desordenadas
+                ["clean"], // Limpiar formato
+              ],
+              },
+            });
+            quillDescripcion.root.innerHTML = descripcion.texto || "";
+            }
+          }
+          } else {
+          mostrarDescripcionCheckbox.checked = false;
+          descripcionContainer.style.display = "none";
+          }
 
       // Ajustar parámetros del formulario
       ajustarFormulario();
@@ -274,4 +286,45 @@ function inicializarFormulario() {
 
   // Ajustar parámetros del formulario
   ajustarFormulario();
+}
+
+function cargarDatosPregunta(id) {
+  fetch(`includesCP/obtenerPregunta.php?id=${id}`)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Error al obtener los datos de la pregunta.");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      if (data.success && data.pregunta) {
+        const pregunta = data.pregunta;
+        document.getElementById("preguntaId").value = pregunta.id;
+        document.getElementById("titulo").value = pregunta.titulo;
+        document.getElementById("n_pag").value = pregunta.n_pag;
+        document.getElementById("tipo").value = pregunta.tipo;
+        document.getElementById("subTitulo").value = pregunta.subTitulo || "";
+
+        // Procesar opciones si existen
+        if (pregunta.opciones && typeof pregunta.opciones === "object") {
+          Object.keys(pregunta.opciones).forEach((key) => {
+            // Lógica para cargar las opciones en el formulario
+          });
+        }
+
+        // Procesar encabezado si existe
+        if (pregunta.encabezado && typeof pregunta.encabezado === "object") {
+          // Lógica para cargar el encabezado en el formulario
+        }
+
+        // Procesar otros campos según sea necesario
+      } else {
+        console.error(
+          "Error: Datos de la pregunta no encontrados o inválidos."
+        );
+      }
+    })
+    .catch((error) => {
+      console.error("Error al cargar los datos de la pregunta:", error);
+    });
 }
