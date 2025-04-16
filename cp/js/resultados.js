@@ -44,8 +44,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Obtener datos del backend
     async function fetchData(filters = {}) {
         const url = Object.keys(filters).length > 0
-            ? `includesCP/resultadosDB.php?${new URLSearchParams(filters).toString()}`
-            : 'includesCP/resultadosDB.php';
+            ? `controllers/resultadosDB.php?${new URLSearchParams(filters).toString()}`
+            : 'controllers/resultadosDB.php';
 
         const response = await fetch(url);
         if (!response.ok) {

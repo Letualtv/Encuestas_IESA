@@ -2,7 +2,7 @@
     "faqs": [
         {
             "question": "<h5>\u00bfQu\u00e9 es el IESA-CSIC?<\/h5>",
-            "answer": "El IESA-CSIC (Instituto de Estudios Sociales Avanzados) es un centro p\u00fablico de investigaci\u00f3n cient\u00edfica especializado en Ciencias Sociales, siendo su misi\u00f3n principal avanzar en el conocimiento de los procesos de cambio en las sociedades contempor\u00e1neas. Pertenece al Consejo Superior de Investigaciones Cient\u00edficas (CSIC)."
+            "answer": "<p>El IESA-CSIC (Instituto de Estudios Sociales Avanzados) es un centro p\u00fablico de investigaci\u00f3n cient\u00edfica especializado en Ciencias Sociales, siendo su misi\u00f3n principal avanzar en el conocimiento de los procesos de cambio en las sociedades contempor\u00e1neas. Pertenece al Consejo Superior de Investigaciones Cient\u00edficas (CSIC).<\/p>"
         },
         {
             "question": "<h5>\u00bfCu\u00e1l es la finalidad de este estudio?<\/h5>",

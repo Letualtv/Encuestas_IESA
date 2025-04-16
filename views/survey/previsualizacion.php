@@ -50,6 +50,9 @@
             case 'checkbox':
                 include_once __DIR__ . '/tipo_de_pregunta/checkbox.php';
                 break;
+            case 'dragDrop':
+                include_once __DIR__ . '/tipo_de_pregunta/dragDrop.php';
+                break;
             case 'numberInput':
                 include_once __DIR__ . '/tipo_de_pregunta/numberInput.php';
                 break;

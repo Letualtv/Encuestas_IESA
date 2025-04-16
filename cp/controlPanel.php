@@ -50,6 +50,7 @@
     <script src="js/agregarEliminar.js"></script>
     <script src="js/listadoPreguntas.js"></script>
     <script src="js/reordenarPreguntas.js"></script>
+    
     <script>
         const tipoPregunta = document.getElementById("tipo").value;
         console.log("Tipo de pregunta:", tipoPregunta);

@@ -40,10 +40,10 @@ document
       try {
         // Recopilar datos generales
         const preguntaId = document.getElementById("preguntaId").value;
-        const titulo = document.getElementById("titulo").value;
+        const titulo = QuillManager.obtenerContenidoQuill("titulo");
         const n_pag = document.getElementById("n_pag").value;
         const tipo = document.getElementById("tipo").value;
-        const subTitulo = document.getElementById("subTitulo").value;
+        const subTitulo = QuillManager.obtenerContenidoQuill("subTitulo");
 
         // Recopilar datos específicos según el tipo de pregunta
         const descripcion = recopilarDescripcion();

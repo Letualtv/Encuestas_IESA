@@ -1,6 +1,8 @@
 <!-- Incluir los estilos y scripts de la última versión de Quill -->
 <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.bubble.css" rel="stylesheet" />
 
+
+
 <div class=" mb-2">
     <h5 class="mb-0"><i class="fa-solid fa-list-ul me-2"></i>Agregar / modificar pregunta</h5>
     <hr>
@@ -55,15 +57,16 @@
             <div class="card mt-3">
 
                 <div class=" card-header">
-                    <input type="text" class="form-control shadow-sm fw-bold mb-1" id="titulo" placeholder="Titulo de la pregunta" required>
-
-                    <input type="text" class="form-control shadow-sm" placeholder="Subtitulo de la pregunta" id="subTitulo">
+                <div id="titulo" class="form-control shadow-sm fw-bold mb-1 quill" data-placeholder="Titulo de la pregunta" required>
+                </div>
+                <div id="subTitulo" class="form-control shadow-sm quill">
+                </div>
                 </div>
 
                 <!-- Contenedor para la descripción -->
                 <div class="form-check form-switch ms-3 mt-1 rounded ">
                     <input
-                        class="form-check-input"
+                        class="form-check-input "
                         type="checkbox"
                         id="mostrar-descripcion"
                         onchange="toggleDescripcion()" />
@@ -84,7 +87,7 @@
                     <h6 class="text-muted">Configuración encabezado de matrices</h6>
                     <div class="mb-2">
                         <label for="label">Texto descriptivo en la izquierda:</label>
-                        <input type="text" id="label" name="label" class="form-control form-control-sm" placeholder="Ej: La importancia de la institución...">
+                        <input type="text" id="label" name="label" class="form-control form-control-sm quill" placeholder="Ej: La importancia de la institución...">
                     </div>
                     <div class="row mb-2">
                         <h6 class="text-muted pt-1">Valores de la matriz:</h6>
@@ -92,27 +95,27 @@
                             <label>Extremo izquierdo</label>
                             <div class="input-group input-group-sm">
                                 <input type="text" id="unoClave" name="unoClave" value="1" placeholder="Nº inicio" class="form-control ">
-                                <input type="text" id="unoValor" name="unoValor" placeholder="Texto" class="form-control w-75" placeholder="Ej: Muy en desacuerdo">
+                                <input type="text" id="unoValor" name="unoValor quill" placeholder="Texto" class="form-control w-75" placeholder="Ej: Muy en desacuerdo">
                             </div>
                         </div>
                         <div class="col-6">
                             <label >Extremo derecho </label>
                             <div class="input-group input-group-sm">
                                 <input type="text" id="dosClave" name="dosClave" value="7" placeholder="Nº final" class="form-control ">
-                                <input type="text" id="dosValor" name="dosValor" placeholder="Texto" class="form-control w-75" placeholder="Ej: Muy de acuerdo">
+                                <input type="text" id="dosValor" name="dosValor quill" placeholder="Texto" class="form-control w-75" placeholder="Ej: Muy de acuerdo">
                             </div>
                         </div>
                     </div>
                     <div class="mb-2">
                         <label for="tres" >Campo adicional a la derecha:</label>
-                        <input type="text" id="tres" name="tres" class="form-control form-control-sm" placeholder="Información adicional">
+                        <input type="text" id="tres" name="tres" class="form-control form-control-sm quill" placeholder="Información adicional">
                     </div>
 
                 </div>
 
                 <div id="cajaTextoFields" class="mx-3 mt-3" style="display: none;">
                     <div class="input-group mb-3">
-                        <input type="text" id="placeholder" name="placeholder" class="form-control" placeholder="Escribe la descripción dentro de la caja de texto">
+                        <input type="text" id="placeholder" name="placeholder" class="form-control quill" placeholder="Escribe la descripción dentro de la caja de texto">
 
                     </div>
                 </div>
@@ -171,13 +174,14 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+<script  src="js/quillManager.js"></script>
 <script>
-  const quill = new Quill('#descripcionRule', {
-    theme: 'bubble',
-  });
+QuillManager.inicializarQuillParaInputs('.quill');
 
 
-    
+
+
+    // Inicializar Quill para el editor de texto enriquecido
     document.addEventListener("DOMContentLoaded", function() {
         fetch('includesCP/obtenerSiguienteId.php')
             .then(response => response.json())
